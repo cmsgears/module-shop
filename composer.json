@@ -1,0 +1,21 @@
+{
+	"name": "cmsgears/module-shop",
+	"description": "The Shop Module required for CMSGears based projects. It got shop and products functionality.",
+	"homepage": "http://www.cmsgears.org",
+	"type": "package",
+	"keywords": [ "yii", "yii2", "cmsgears", "module", "shop" ],
+	"license": "GPLv3",
+	"support": {
+        "resources": "http://www.cmsgears.org"
+	},
+	"autoload": {
+		"psr-4": {
+			"cmsgears\\shop\\": ""
+		}
+	},
+    "require": {
+        "php": ">=5.4.0",
+        "cmsgears/module-core": "*",
+		"cmsgears/module-cart": "*"
+    }
+}
