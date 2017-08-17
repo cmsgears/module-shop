@@ -53,6 +53,8 @@ class m170816_094253_core extends Migration {
 		$this->createTable( $this->prefix . 'cart_product', [
 				'id' => $this->bigPrimaryKey( 20 ),
 				'bannerId' => $this->bigInteger( 20 ),
+				'galleryId' => $this->bigInteger( 20 ),
+				'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 				'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
 				'slug' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
 				'type' => $this->string( Yii::$app->core->mediumText )->notNull(),
@@ -69,6 +71,7 @@ class m170816_094253_core extends Migration {
 
 		// Indexes
 		$this->createIndex( 'idx_' . $this->prefix . 'product_banner', $this->prefix . 'cart_product', 'bannerId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product', 'galleryId' );
 	}
 
 	private function upProductVariation() {
@@ -150,6 +153,7 @@ class m170816_094253_core extends Migration {
 
 		// Product
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_banner', $this->prefix . 'cart_product', 'bannerId', $this->prefix . 'core_file', 'id', 'SET NULL' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product', 'galleryId', $this->prefix . 'core_gallery', 'id', 'SET NULL' );
 
 		// Product Variation
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_variation', $this->prefix . 'cart_product_variation', 'productId', $this->prefix . 'cart_product', 'id', 'SET NULL' );
@@ -181,6 +185,7 @@ class m170816_094253_core extends Migration {
 
 		// Product
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_banner', $this->prefix . 'cart_product' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product' );
 
 		// Product Variation
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_variation', $this->prefix . 'cart_product_variation' );
