@@ -24,6 +24,8 @@ use cmsgears\core\common\models\traits\NameTypeTrait;
 use cmsgears\core\common\models\traits\interfaces\VisibilityTrait;
 use cmsgears\core\common\models\traits\interfaces\ApprovalTrait;
 use cmsgears\cms\common\models\traits\resources\ContentTrait;
+use cmsgears\core\common\models\traits\resources\VisualTrait;
+use cmsgears\core\common\models\traits\mappers\AddressTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
@@ -31,7 +33,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * Product Entity
  *
  * @property long $id
- * @property long $bannerId
+ * @property long $avatarId
  * @property long $galleryId
  * @property short $status
  * @property string $name
@@ -87,6 +89,8 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 	use VisibilityTrait;
 	use ApprovalTrait;
 	use ContentTrait;
+	use VisualTrait;
+	use AddressTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -133,7 +137,7 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
         return [
             [ [ 'name' ], 'required' ],
-        	[ [ 'id', 'bannerId', 'status', 'slug', 'type', 'summary', 'description', 'content', 'price', 'galleryId' ], 'safe' ],
+        	[ [ 'id', 'avatarId', 'status', 'slug', 'type', 'summary', 'description', 'content', 'price', 'galleryId' ], 'safe' ],
             [ 'name', 'alphanumhyphenspace' ],
             [ [ 'visibility' ], 'number', 'integerOnly' => true ]
         ];

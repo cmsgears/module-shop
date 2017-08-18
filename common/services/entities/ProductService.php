@@ -10,6 +10,8 @@ use cmsgears\shop\common\config\ShopGlobal;
 
 use cmsgears\shop\common\models\base\ShopTables;
 
+use cmsgears\core\common\models\resources\Gallery;
+
 use cmsgears\shop\common\services\interfaces\entities\IProductService;
 
 class ProductService extends \cmsgears\core\common\services\base\EntityService implements IProductService {
@@ -17,6 +19,8 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	// Variables ---------------------------------------------------
 
 	// Globals -------------------------------
+
+	public $fileService;
 
 	// Constants --------------
 
@@ -41,6 +45,13 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
+
+	public function init() {
+
+		parent::init();
+
+		$this->fileService	= Yii::$app->factory->get( 'fileService' );
+	}
 
 	// Instance methods --------------------------------------------
 
@@ -132,7 +143,11 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	public function create( $model, $config = [] ) {
 
-		return parent::create( $model, $config );
+		$model	= parent::create( $model, $config );
+
+		$this->linkGallery( $model );
+
+		return $model;
 	}
 
 	// Update -------------
@@ -144,13 +159,33 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 		]);
 	}
 
-	public function linkGallery( $model, $gallery ) {
+	public function linkGallery( $product ) {
 
-		$model->galleryId	= $gallery->id;
+		$model 			= new Gallery();
+		$model->name	= $product->name;
+		$model->type	= ShopGlobal::TYPE_PRODUCT;
+		$model->siteId	= Yii::$app->core->siteId;
 
-		return parent::update( $model, [
-				'attributes' => [ 'galleryId' ]
-		]);
+		$gallery		= Yii::$app->factory->get( 'galleryService' )->create( $model );
+
+		if( isset( $gallery ) ) {
+
+			$product->galleryId	= $gallery->id;
+
+			return parent::update( $product, [
+					'attributes' => [ 'galleryId' ]
+			]);
+		}
+	}
+
+	public function updateAvatar( $product, $avatar ) {
+
+		// Save Avatar
+		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
+
+		$product->avatarId	= $avatar->id;
+
+		return parent::update( $product, [ 'attributes' => [ 'avatarId' ] ] );
 	}
 
 	// Delete -------------

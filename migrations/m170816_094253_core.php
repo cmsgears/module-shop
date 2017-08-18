@@ -33,6 +33,7 @@ class m170816_094253_core extends Migration {
 
 		// Product
 		$this->upProduct();
+		$this->upProductMeta();
 		$this->upProductVariation();
 		$this->upProductPlan();
 
@@ -52,7 +53,7 @@ class m170816_094253_core extends Migration {
 
 		$this->createTable( $this->prefix . 'cart_product', [
 				'id' => $this->bigPrimaryKey( 20 ),
-				'bannerId' => $this->bigInteger( 20 ),
+				'avatarId' => $this->bigInteger( 20 ),
 				'galleryId' => $this->bigInteger( 20 ),
 				'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 				'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
@@ -70,8 +71,24 @@ class m170816_094253_core extends Migration {
 		], $this->options );
 
 		// Indexes
-		$this->createIndex( 'idx_' . $this->prefix . 'product_banner', $this->prefix . 'cart_product', 'bannerId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'product_avatar', $this->prefix . 'cart_product', 'avatarId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product', 'galleryId' );
+	}
+
+	private function upProductMeta() {
+
+		$this->createTable( $this->prefix . 'cart_product_meta', [
+				'id' => $this->bigPrimaryKey( 20 ),
+				'modelId' => $this->bigInteger( 20 )->notNull(),
+				'name' => $this->string( Yii::$app->core->mediumText )->notNull(),
+				'label' => $this->string( Yii::$app->core->largeText )->notNull(),
+				'type' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( 'default' ),
+				'valueType' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( 'text' ),
+				'value' => $this->text()
+		], $this->options );
+
+		// Index for columns site, parent, creator and modifier
+		$this->createIndex( 'idx_' . $this->prefix . 'product_meta_parent', $this->prefix . 'cart_product_meta', 'modelId' );
 	}
 
 	private function upProductVariation() {
@@ -152,8 +169,11 @@ class m170816_094253_core extends Migration {
 	private function generateForeignKeys() {
 
 		// Product
-		$this->addForeignKey( 'fk_' . $this->prefix . 'product_banner', $this->prefix . 'cart_product', 'bannerId', $this->prefix . 'core_file', 'id', 'SET NULL' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'product_avatar', $this->prefix . 'cart_product', 'avatarId', $this->prefix . 'core_file', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product', 'galleryId', $this->prefix . 'core_gallery', 'id', 'SET NULL' );
+
+		// Product Meta
+		$this->addForeignKey( 'fk_' . $this->prefix . 'product_meta_parent', $this->prefix . 'cart_product_meta', 'modelId', $this->prefix . 'cart_product', 'id', 'CASCADE' );
 
 		// Product Variation
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_variation', $this->prefix . 'cart_product_variation', 'productId', $this->prefix . 'cart_product', 'id', 'SET NULL' );
@@ -175,6 +195,7 @@ class m170816_094253_core extends Migration {
 		}
 
 		$this->dropTable( $this->prefix . 'cart_product' );
+		$this->dropTable( $this->prefix . 'cart_product_meta' );
 		$this->dropTable( $this->prefix . 'cart_product_variation' );
 		$this->dropTable( $this->prefix . 'cart_product_plan' );
 		$this->dropTable( $this->prefix . 'cart_coupon' );
@@ -184,7 +205,7 @@ class m170816_094253_core extends Migration {
 	private function dropForeignKeys() {
 
 		// Product
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_banner', $this->prefix . 'cart_product' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_avatar', $this->prefix . 'cart_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product' );
 
 		// Product Variation
@@ -197,5 +218,8 @@ class m170816_094253_core extends Migration {
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'subscription_user', $this->prefix . 'cart_sub' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'subscription_product', $this->prefix . 'cart_sub' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'subscription_plan', $this->prefix . 'cart_sub' );
+
+		// Product Meta
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_meta_parent', $this->prefix . 'cart_product_meta' );
 	}
 }

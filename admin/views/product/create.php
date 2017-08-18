@@ -66,7 +66,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 		<div class="filler-height filler-height-medium"></div>
 
 		<div class="align align-right">
-			<?= Html::a( 'Cancle', $returnUrl, [ 'class' => 'btn btn-medium' ] ); ?>
+			<?= Html::a( 'Cancel', $returnUrl, [ 'class' => 'btn btn-medium' ] ); ?>
 			<input class="element-medium" type="submit" value="Create" />
 		</div>
 

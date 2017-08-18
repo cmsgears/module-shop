@@ -8,7 +8,7 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\common\models\resources\Gallery;
+use cmsgears\core\common\models\resources\File;
 
 class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryController {
 
@@ -29,6 +29,9 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 	public function init() {
 
 		parent::init();
+
+		// Views
+		$this->setViewPath( '@cmsgears/module-shop/admin/views/product/gallery' );
 
 		// Config
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
@@ -72,39 +75,21 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 
 		if( isset( $pid ) && isset( $this->parentService ) ) {
 
-			$parent = $this->parentService->getById( $pid );
+			$product	= $this->parentService->getById( $pid );
 
 			Url::remember( [ $this->parentUrl ], 'galleries' );
 
-			$gallery = $parent->gallery;
+			$gallery = $product->gallery;
 
 			if( isset( $gallery ) ) {
 
-				return $this->redirect( [ 'items', 'id' => $gallery->id ] );
-			}
-			else {
+				$avatar	= isset( $product->avatar ) ? $product->avatar : File::loadFile( null, 'Avatar' );
 
-				$gallery 			= new Gallery();
-				$gallery->name		= $parent->name;
-				$gallery->type		= $this->type;
-				$gallery->siteId	= Yii::$app->core->siteId;
-
-				if( $gallery->load( Yii::$app->request->post(), 'Gallery' )  && $gallery->validate() ) {
-
-					$this->modelService->create( $gallery );
-
-					if( $this->parentService->linkGallery( $parent, $gallery ) ) {
-
-						$this->redirect( [ "index?pid=$parent->id" ] );
-					}
-				}
-
-				$templatesMap	= $this->templateService->getIdNameMapByType( $this->templateType, [ 'default' => true ] );
-
-				return $this->render( 'create', [
-						'model' => $gallery,
-						'templatesMap' => $templatesMap
-				]);
+				return $this->render( 'items', [
+					'id' => $gallery->id,
+					'avatar' => $avatar,
+					'product' => $product
+				] );
 			}
 		}
 

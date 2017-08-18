@@ -7,10 +7,15 @@ use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
 // CMG Imports
-use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\shop\common\config\ShopGlobal;
 
 use cmsgears\cms\common\models\resources\ModelContent;
+use cmsgears\core\common\models\resources\Address;
+
+use cmsgears\core\common\utilities\CodeGenUtil;
+
+// SF Imports
+use safaricities\core\common\config\CoreGlobal;
 
 class ProductController extends \cmsgears\core\admin\controllers\base\CrudController {
 
@@ -20,7 +25,10 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 
 	// Public -----------------
 
+	public $provinceService;
+	public $lgaService;
 	public $modelContentService;
+	public $modelAddressService;
 
 	// Protected --------------
 
@@ -37,7 +45,10 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 
 		// Services
 		$this->modelService			= Yii::$app->factory->get( 'productService' );
+		$this->provinceService		= Yii::$app->factory->get( 'provinceService' );
+		$this->lgaService			= Yii::$app->factory->get( 'lgaService' );
 		$this->modelContentService	= Yii::$app->factory->get( 'modelContentService' );
+		$this->modelAddressService	= Yii::$app->factory->get( 'modelAddressService' );
 
 		// Sidebar
 		$this->sidebar			= [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
@@ -131,6 +142,43 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 					'content' => $content,
 					'typeMap' => $modelClass::$typeMap
 			]);
+		}
+
+		// Model not found
+		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+	}
+
+	public function actionLocation( $id ) {
+
+		$product	= $this->modelService->getById( $id );
+
+		if( isset( $product ) ) {
+
+			$model	= isset( $product->primaryAddress ) ? $product->primaryAddress : new Address();
+
+			$model->countryId	= CoreGlobal::COUNTRY_NIGERIA;
+
+			if( $model->load( Yii::$app->request->post(), $model->getClassName() ) && $model->validate() ) {
+
+				$this->modelAddressService->createOrUpdate( $model, [ 'parentId' => $product->id, 'parentType' => ShopGlobal::TYPE_PRODUCT, 'type' => Address::TYPE_PRIMARY ] );
+
+				return $this->refresh();
+			}
+
+			$provinceId		= CoreGlobal::PROVINCE_ABIA;
+			$provinceMap	= $this->provinceService->getMapByCountryId( CoreGlobal::COUNTRY_NIGERIA );
+			$lgaList		= $this->lgaService->getByProvinceId( $provinceId );
+			$lgaMap			= CodeGenUtil::generateIdNameMap( $lgaList );
+			$lgaMap			= array_filter( $lgaMap ); // Remove empty array elements
+
+			return $this->render( 'location', [
+					'model' => $model,
+					'product' => $product,
+					'provinceMap' => $provinceMap,
+					'typeMap' => $typeMap,
+					'lgaMap' => $lgaMap,
+					'provinceId' => $provinceId
+			] );
 		}
 
 		// Model not found
