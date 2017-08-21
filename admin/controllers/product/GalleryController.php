@@ -4,6 +4,7 @@ namespace cmsgears\shop\admin\controllers\product;
 // Yii Imports
 use Yii;
 use yii\helpers\Url;
+use yii\web\NotFoundHttpException;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;

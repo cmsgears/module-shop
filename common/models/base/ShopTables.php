@@ -6,7 +6,9 @@ class ShopTables {
 	// Entities -------------
 
 	// Product
-	const TABLE_PRODUCT		= 'cmg_cart_product';
+	const TABLE_PRODUCT			= 'cmg_cart_product';
+
+	const TABLE_PRODUCT_META	= 'cmg_cart_product_meta';
 
 	// Resources ------------
 

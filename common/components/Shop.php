@@ -43,9 +43,11 @@ class Shop extends \yii\base\Component {
 
 		// Register services
 		$this->registerEntityServices();
+		$this->registerResourceServices();
 
 		// Init services
 		$this->initEntityServices();
+		$this->initResourceServices();
 	}
 
 	public function registerEntityServices() {
@@ -55,10 +57,24 @@ class Shop extends \yii\base\Component {
 		$factory->set( 'cmsgears\shop\common\services\interfaces\entities\IProductService', 'cmsgears\shop\common\services\entities\ProductService' );
 	}
 
+	public function registerResourceServices() {
+
+		$factory	= Yii::$app->factory->getContainer();
+
+		$factory->set( 'cmsgears\shop\common\services\interfaces\resources\IProductMetaService', 'cmsgears\shop\common\services\resources\ProductMetaService' );
+	}
+
 	public function initEntityServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'productService', 'cmsgears\shop\common\services\entities\ProductService' );
+	}
+
+	public function initResourceServices() {
+
+		$factory	= Yii::$app->factory->getContainer();
+
+		$factory->set( 'productMetaService', 'cmsgears\shop\common\services\resources\ProductMetaService' );
 	}
 }

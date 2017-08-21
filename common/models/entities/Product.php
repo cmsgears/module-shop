@@ -26,6 +26,7 @@ use cmsgears\core\common\models\traits\interfaces\ApprovalTrait;
 use cmsgears\cms\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\VisualTrait;
 use cmsgears\core\common\models\traits\mappers\AddressTrait;
+use cmsgears\core\common\models\traits\mappers\TagTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
@@ -91,6 +92,7 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 	use ContentTrait;
 	use VisualTrait;
 	use AddressTrait;
+	use TagTrait;
 
 	// Constructor and Initialisation ------------------------------
 

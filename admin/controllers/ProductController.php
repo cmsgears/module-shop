@@ -11,6 +11,7 @@ use cmsgears\shop\common\config\ShopGlobal;
 
 use cmsgears\cms\common\models\resources\ModelContent;
 use cmsgears\core\common\models\resources\Address;
+use cmsgears\shop\common\models\entities\Product;
 
 use cmsgears\core\common\utilities\CodeGenUtil;
 
@@ -63,6 +64,8 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 			'create' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
 			'update' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
 			'delete' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
+			'location' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Location' ] ],
+			'setting' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Setting' ] ],
 		];
 	}
 
@@ -175,9 +178,38 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 					'model' => $model,
 					'product' => $product,
 					'provinceMap' => $provinceMap,
-					'typeMap' => $typeMap,
 					'lgaMap' => $lgaMap,
 					'provinceId' => $provinceId
+			] );
+		}
+
+		// Model not found
+		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+	}
+
+	public function actionSetting( $id ) {
+
+		$model	= $this->modelService->getById( $id );
+
+		if( isset( $model ) ) {
+
+			$statusMap		= Product::$statusMap;
+			$visibilityMap	= Product::$visibilityMap;
+			$content		= $model->modelContent;
+
+			if( $model->load( Yii::$app->request->post(), $model->getClassName() ) && $content->load( Yii::$app->request->post(), $content->getClassName() )
+				&& $model->validate() && $content->validate() ) {
+
+				$this->modelService->update( $model, [ 'admin' => true ] );
+
+				$this->modelContentService->update( $content );
+			}
+
+			return $this->render( 'setting', [
+					'model' => $model,
+					'statusMap' => $statusMap,
+					'visibilityMap' => $visibilityMap,
+					'content' => $content
 			] );
 		}
 

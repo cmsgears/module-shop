@@ -5,55 +5,54 @@ use cmsgears\widgets\popup\Popup;
 use cmsgears\widgets\grid\DataGrid;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title	= 'Products | ' . $coreProperties->getSiteTitle();
+$this->title	= 'Product Attributes | ' . $coreProperties->getSiteTitle();
 
 // Templates
 $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
+
+$productId			= $product->id;
 ?>
 
 <?= DataGrid::widget([
-	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => 'create', 'data' => [ ],
+	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?id=$productId", 'data' => [ 'productId' => $productId ],
 	'title' => 'Products', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
-	'searchColumns' => [ 'name' => 'Name', 'title' => 'Title' ],
+	'searchColumns' => [ 'name' => 'Name' ],
 	'sortColumns' => [
-		'name' => 'Name', 'cdate' => 'Created At', 'udate' => 'Updated At'
+		'name' => 'Name'
 	],
 	'filters' => [ 'status' => [ 'active' => 'Active' ] ],
 	'reportColumns' => [
 		'name' => [ 'title' => 'Name', 'type' => 'text' ],
-		'title' => [ 'title' => 'Title', 'type' => 'text' ],
-		'desc' => [ 'title' => 'Description', 'type' => 'text' ],
 		'active' => [ 'title' => 'Active', 'type' => 'flag' ]
 	],
 	'bulkPopup' => 'popup-grid-bulk', 'bulkActions' => [
 		'model' => [ 'delete' => 'Delete' ]
 	],
 	'header' => false, 'footer' => true,
-	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null , 'x2', null, 'x3', 'x3', 'x3', 'x2'] ],
+	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null , 'x3', 'x3', 'x4', 'x3', null  ] ],
 	'gridColumns' => [
 		'bulk' => 'Action',
 		'name' => 'Name',
-		'type' => [ 'title' => 'Type', 'generate' => function( $model ) { return $model->getTypeStr(); } ],
-		'description' => 'Description',
-		'createdAt' => 'Created on',
-		'modifiedAt' => 'Updated on',
+		'label' => 'Label',
+		'value' => 'Value',
+		'valueType' => 'Value Type',
 		'actions' => 'Actions'
 	],
 	'gridCards' => [ 'root' => 'col col12', 'factor' => 'x3' ],
 	'templateDir' => '@themes/admin/views/templates/widget/grid',
 	//'dataView' => "$moduleTemplates/grid/data/gallery",
 	//'cardView' => "$moduleTemplates/grid/cards/gallery",
-	'actionView' => "$moduleTemplates/grid/actions/product"
+	'actionView' => "$moduleTemplates/grid/actions/meta"
 ]) ?>
 
 <?= Popup::widget([
-	'title' => 'Update Product', 'size' => 'medium',
+	'title' => 'Update Attribute', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/bulk" ]
+	'data' => [ 'model' => 'Attribute', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/meta/bulk" ]
 ]) ?>
 
 <?= Popup::widget([
-	'title' => 'Delete Product', 'size' => 'medium',
+	'title' => 'Delete Attribute', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/delete?id=" ]
+	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/meta/delete?id=" ]
 ]) ?>

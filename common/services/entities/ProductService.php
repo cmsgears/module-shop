@@ -12,6 +12,8 @@ use cmsgears\shop\common\models\base\ShopTables;
 
 use cmsgears\core\common\models\resources\Gallery;
 
+use cmsgears\core\common\services\traits\SlugTypeTrait;
+
 use cmsgears\shop\common\services\interfaces\entities\IProductService;
 
 class ProductService extends \cmsgears\core\common\services\base\EntityService implements IProductService {
@@ -30,6 +32,8 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	public static $modelTable	= ShopTables::TABLE_PRODUCT;
 
+	public static $typed		= true;
+
 	public static $parentType	= ShopGlobal::TYPE_PRODUCT;
 
 	// Protected --------------
@@ -43,6 +47,8 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
+
+	use SlugTypeTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -154,8 +160,10 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	public function update( $model, $config = [] ) {
 
+		$attributes	= [ 'name', 'description', 'type', 'status', 'visibility' ];
+
 		return parent::update( $model, [
-				'attributes' => [ 'name', 'description', 'type' ]
+				'attributes' => $attributes
 		]);
 	}
 
