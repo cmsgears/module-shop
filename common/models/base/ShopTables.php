@@ -15,9 +15,6 @@ class ShopTables {
 	// Variation
 	const TABLE_PRODUCT_VARIATION	= 'cmg_cart_product_variation';
 
-	// Plan
-	const TABLE_PRODUCT_PLAN		= 'cmg_cart_product_plan';
-
 	// Coupon
 	const TABLE_PRODUCT_COUPON		= 'cmg_cart_coupon';
 

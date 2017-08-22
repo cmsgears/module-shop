@@ -216,4 +216,6 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 		// Model not found
 		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
+
+	public function actionShop( $id ) { }
 }

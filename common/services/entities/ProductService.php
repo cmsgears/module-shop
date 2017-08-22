@@ -189,7 +189,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	public function updateAvatar( $product, $avatar ) {
 
 		// Save Avatar
-		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
+		$this->fileService->saveFiles( $product, [ 'avatarId' => $avatar ] );
 
 		$product->avatarId	= $avatar->id;
 
