@@ -12,6 +12,7 @@ use cmsgears\shop\common\config\ShopGlobal;
 use cmsgears\cms\common\models\resources\ModelContent;
 use cmsgears\core\common\models\resources\Address;
 use cmsgears\shop\common\models\entities\Product;
+use cmsgears\cart\common\models\resources\Uom;
 
 use cmsgears\core\common\utilities\CodeGenUtil;
 
@@ -30,6 +31,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 	public $lgaService;
 	public $modelContentService;
 	public $modelAddressService;
+	public $uomService;
 
 	// Protected --------------
 
@@ -50,6 +52,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 		$this->lgaService			= Yii::$app->factory->get( 'lgaService' );
 		$this->modelContentService	= Yii::$app->factory->get( 'modelContentService' );
 		$this->modelAddressService	= Yii::$app->factory->get( 'modelAddressService' );
+		$this->uomService			= Yii::$app->factory->get( 'uomService' );
 
 		// Sidebar
 		$this->sidebar			= [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
@@ -66,6 +69,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 			'delete' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
 			'location' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Location' ] ],
 			'setting' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Setting' ] ],
+			'shop' => [ [ 'label' => 'Shop', 'url' => $this->returnUrl ], [ 'label' => 'Shop' ] ],
 		];
 	}
 
@@ -217,5 +221,28 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
 
-	public function actionShop( $id ) { }
+	public function actionShop( $id ) {
+
+		$model	= $this->modelService->getById( $id );
+
+		if( isset( $model ) ) {
+
+			if( $model->load( Yii::$app->request->post(), $model->getClassName() ) && $model->validate() ) {
+
+				$this->modelService->update( $model, [ 'admin' => true ] );
+
+				return $this->refresh();
+			}
+
+			$uomMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_QUANTITY, Uom::GROUP_LENGTH_METRIC ], false );
+
+			return $this->render( 'shop', [
+					'model' => $model,
+					'uomMap' => $uomMap
+			] );
+		}
+
+		// Model not found
+		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+	}
 }

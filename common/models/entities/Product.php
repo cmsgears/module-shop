@@ -12,6 +12,7 @@ use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\shop\common\config\ShopGlobal;
 
 use cmsgears\shop\common\models\base\ShopTables;
+use cmsgears\shop\common\models\resources\ProductVariation;
 use cmsgears\core\common\models\resources\Gallery;
 
 use cmsgears\core\common\models\interfaces\IApproval;
@@ -36,19 +37,39 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property long $id
  * @property long $avatarId
  * @property long $galleryId
+ * @property integer $primaryUnitId
+ * @property integer $purchasingUnitId
+ * @property integer $quantityUnitId
+ * @property integer $weightUnitId
+ * @property integer $volumeUnitId
+ * @property integer $lengthUnitId
  * @property short $status
  * @property string $name
  * @property string $slug
  * @property string $type
+ * @property float $price
+ * @property integer $discount
+ * @property integer $sku
+ * @property integer $primary
+ * @property integer $purchase
+ * @property integer $quantity
+ * @property integer $total
+ * @property integer $weight
+ * @property integer $volume
+ * @property integer $length
+ * @property integer $width
+ * @property integer $height
+ * @property integer $radius
  * @property integer $visibility
  * @property string $summary
  * @property string $description
- * @property string $content
- * @property float $price
+ * @property boolean $shop
  * @property long $createdBy
  * @property long $modifiedBy
  * @property datetime $createdAt
  * @property datetime $modifedAt
+ * @property string $content
+ * @property string $data
  */
 
 class Product extends \cmsgears\core\common\models\base\Entity implements IApproval, IVisibility {
@@ -138,10 +159,17 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 	public function rules() {
 
         return [
-            [ [ 'name' ], 'required' ],
-        	[ [ 'id', 'avatarId', 'status', 'slug', 'type', 'summary', 'description', 'content', 'price', 'galleryId' ], 'safe' ],
-            [ 'name', 'alphanumhyphenspace' ],
-            [ [ 'visibility' ], 'number', 'integerOnly' => true ]
+        		// Required, Safe
+        		[ [ 'name' ], 'required' ],
+        		[ [ 'id', 'avatarId', 'galleryId', 'content', 'data', 'purchase', 'status', 'slug', 'summary', 'description', 'price' ], 'safe' ],
+        		// Text Limit
+        		[ [ 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+        		[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+        		// Other
+        		[ [ 'price', 'discount', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'visibility', 'shop' ], 'number', 'min' => 0 ],
+        		[ [ 'purchasingUnitId', 'quantityUnitId', 'uomId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+        		[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
+        		[ [ 'startDate', 'endDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ]
         ];
     }
 
@@ -172,6 +200,11 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 	public function getGallery() {
 
 		return $this->hasOne( Gallery::className(), [ 'id' => 'galleryId' ] );
+	}
+
+	public function getVariation() {
+
+		return $this->hasOne( ProductVariation::className(), [ 'id' => 'modelId' ] );
 	}
 
 	// Static Methods ----------------------------------------------

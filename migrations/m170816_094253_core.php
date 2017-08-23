@@ -54,6 +54,10 @@ class m170816_094253_core extends Migration {
 				'id' => $this->bigPrimaryKey( 20 ),
 				'avatarId' => $this->bigInteger( 20 ),
 				'galleryId' => $this->bigInteger( 20 ),
+				'uomId' => $this->bigInteger( 20 ),
+				'primaryUnitId' => $this->bigInteger( 20 ),
+				'purchasingUnitId' => $this->bigInteger( 20 ),
+				'quantityUnitId' => $this->bigInteger( 20 ),
 				'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 				'active' => $this->boolean()->notNull()->defaultValue( false ),
 				'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
@@ -62,14 +66,9 @@ class m170816_094253_core extends Migration {
 				'visibility' => $this->smallInteger( 6 )->notNull()->defaultValue( 0 ),
 				'summary' => $this->text(),
 				'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
-				'primaryUnitId' => $this->bigInteger( 20 ),
-				'purchasingUnitId' => $this->bigInteger( 20 ),
-				'quantityUnitId' => $this->bigInteger( 20 ),
-				'weightUnitId' => $this->bigInteger( 20 ),
-				'volumeUnitId' => $this->bigInteger( 20 ),
-				'lengthUnitId' => $this->bigInteger( 20 ),
 				'sku' => $this->string( Yii::$app->core->xLargeText )->defaultValue( null ),
 				'price' => $this->double( 2 )->notNull()->defaultValue( 0 ),
+				'discount' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 				'discount' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 				'primary' => $this->float( 2 )->notNull()->defaultValue( 0 ),
 				'purchase' => $this->float( 2 )->notNull()->defaultValue( 0 ),
@@ -85,6 +84,9 @@ class m170816_094253_core extends Migration {
 				'modifiedBy' => $this->bigInteger( 20 ),
 				'createdAt' => $this->dateTime()->notNull(),
 				'modifiedAt' => $this->dateTime(),
+				'startDate' => $this->date()->defaultValue( null ),
+				'endDate' => $this->date()->defaultValue( null ),
+				'shop' => $this->boolean()->notNull()->defaultValue( false ),
 				'content' => $this->text(),
 				'data' => $this->text()
 		], $this->options );
@@ -94,10 +96,7 @@ class m170816_094253_core extends Migration {
 		$this->createIndex( 'idx_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product', 'galleryId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_prim', $this->prefix . 'cart_product', 'primaryUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_pur', $this->prefix . 'cart_product', 'purchasingUnitId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'product_qty', $this->prefix . 'cart_product', 'quantityUnitId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'product_wt', $this->prefix . 'cart_product', 'weightUnitId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'product_volume', $this->prefix . 'cart_product', 'volumeUnitId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'product_length', $this->prefix . 'cart_product', 'lengthUnitId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'product_uom', $this->prefix . 'cart_product', 'uomId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_creator', $this->prefix . 'cart_product', 'createdBy' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_modifier', $this->prefix . 'cart_product', 'modifiedBy' );
 	}
@@ -122,21 +121,19 @@ class m170816_094253_core extends Migration {
 
 		$this->createTable( $this->prefix . 'cart_product_variation', [
 				'id' => $this->bigPrimaryKey( 20 ),
-				'productId' => $this->bigInteger( 20 ),
+				'modelId' => $this->bigInteger( 20 ),
 				'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
-				'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
-				'priceRegular' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-				'priceSales' => $this->double( 2 )->notNull()->defaultValue( 0 ),
-				'quantity' => $this->float( 2 )->defaultValue( 0 ),
+				'quantity' => $this->float( 2 )->notNull()->defaultValue( 0 ),
+				'type' => $this->string( Yii::$app->core->mediumText )->notNull(),
+				'value' => $this->double( 2 )->notNull()->defaultValue( 0 ),
 				'startDate' => $this->date(),
 				'endDate' => $this->date(),
 				'active' => $this->boolean()->notNull()->defaultValue( false ),
+				'content' => $this->text(),
 		], $this->options );
 
 		// Indexes
-		$this->createIndex( 'idx_' . $this->prefix . 'product_variation', $this->prefix . 'cart_product_variation', 'productId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'product_price_regular', $this->prefix . 'cart_product_variation', 'priceRegular' );
-		$this->createIndex( 'idx_' . $this->prefix . 'product_price_sales', $this->prefix . 'cart_product_variation', 'priceSales' );
+		$this->createIndex( 'idx_' . $this->prefix . 'product_variation', $this->prefix . 'cart_product_variation', 'modelId' );
 	}
 
 	private function upCoupon() {
@@ -188,10 +185,7 @@ class m170816_094253_core extends Migration {
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product', 'galleryId', $this->prefix . 'core_gallery', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_prim', $this->prefix . 'cart_product', 'primaryUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_pur', $this->prefix . 'cart_product', 'purchasingUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'product_qty', $this->prefix . 'cart_product', 'quantityUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'product_wt', $this->prefix . 'cart_product', 'weightUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'product_volume', $this->prefix . 'cart_product', 'volumeUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'product_length', $this->prefix . 'cart_product', 'lengthUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'product_uom', $this->prefix . 'cart_product', 'uomId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_creator', $this->prefix . 'cart_product', 'createdBy', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_modifier', $this->prefix . 'cart_product', 'modifiedBy', $this->prefix . 'core_user', 'id', 'SET NULL' );
 
@@ -199,12 +193,11 @@ class m170816_094253_core extends Migration {
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_meta_parent', $this->prefix . 'cart_product_meta', 'modelId', $this->prefix . 'cart_product', 'id', 'CASCADE' );
 
 		// Product Variation
-		$this->addForeignKey( 'fk_' . $this->prefix . 'product_variation', $this->prefix . 'cart_product_variation', 'productId', $this->prefix . 'cart_product', 'id', 'SET NULL' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'product_variation', $this->prefix . 'cart_product_variation', 'modelId', $this->prefix . 'cart_product', 'id', 'SET NULL' );
 
 		// Subscription
 		$this->addForeignKey( 'fk_' . $this->prefix . 'subscription_user', $this->prefix . 'cart_sub', 'userId', $this->prefix . 'core_user', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'subscription_product', $this->prefix . 'cart_sub', 'productId', $this->prefix . 'cart_product', 'id', 'SET NULL' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'subscription_plan', $this->prefix . 'cart_sub', 'planId', $this->prefix . 'cart_product_plan', 'id', 'SET NULL' );
 	}
 
 	public function down() {
@@ -228,10 +221,7 @@ class m170816_094253_core extends Migration {
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_gallery', $this->prefix . 'cart_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_prim', $this->prefix . 'cart_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_pur', $this->prefix . 'cart_product' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_qty', $this->prefix . 'cart_product' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_wt', $this->prefix . 'cart_product' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_volume', $this->prefix . 'cart_product' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_length', $this->prefix . 'cart_product' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_uom', $this->prefix . 'cart_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_creator', $this->prefix . 'cart_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_modifier', $this->prefix . 'cart_product' );
 

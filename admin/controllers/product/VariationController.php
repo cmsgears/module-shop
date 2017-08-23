@@ -7,17 +7,17 @@ use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
 // CMG Imports
-use cmsgears\shop\common\config\ShopGlobal;
+use cmsgears\shop\common\models\base\ShopTables;
 
-use cmsgears\core\common\models\resources\File;
-
-class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryController {
+class VariationController extends \cmsgears\core\admin\controllers\base\CrudController {
 
 	// Variables ---------------------------------------------------
 
 	// Globals ----------------
 
 	// Public -----------------
+
+	public $productService;
 
 	// Protected --------------
 
@@ -30,14 +30,11 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 		parent::init();
 
 		// Views
-		$this->setViewPath( '@cmsgears/module-shop/admin/views/product/gallery' );
-
-		// Config
-		$this->type			= ShopGlobal::TYPE_PRODUCT;
-		$this->parentUrl	= '/shop/product/all';
+		$this->setViewPath( '@cmsgears/module-shop/admin/views/product/variation' );
 
 		// Services
-		$this->parentService	= Yii::$app->factory->get( 'productService' );
+		$this->modelService		= Yii::$app->factory->get( 'productVariationService' );
+		$this->productService	= Yii::$app->factory->get( 'productService' );
 
 		// Sidebar
 		$this->sidebar		= [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
@@ -49,8 +46,7 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 		// Breadcrumbs
 		$this->breadcrumbs	= [
 			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/product/all' ] ] ],
-			'index' => [ [ 'label' => 'Gallery' ] ],
-			'items' => [ [ 'label' => 'Gallery', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ],
+			'all' => [ [ 'label' => 'Variations' ] ],
 		];
 	}
 
@@ -70,23 +66,20 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 
 	// GalleryController ---------------------
 
-	public function actionIndex( $pid = null ) {
+	public function actionAll( $pid = null ) {
 
-		if( isset( $pid ) && isset( $this->parentService ) ) {
+		if( isset( $pid ) ) {
 
-			$product	= $this->parentService->getById( $pid );
+			$variationTable	= ShopTables::TABLE_PRODUCT_VARIATION;
 
-			Url::remember( [ $this->parentUrl ], 'galleries' );
+			Url::remember( Yii::$app->request->getUrl(), 'Variations' );
 
-			$gallery = $product->gallery;
+			$dataProvider = $this->modelService->getPage( [ 'conditions' => [ "$variationTable.modelId=$pid" ] ] );
 
-			if( isset( $gallery ) ) {
+			if( isset( $models ) ) {
 
-				$avatar	= isset( $product->avatar ) ? $product->avatar : File::loadFile( null, 'Avatar' );
-
-				return $this->render( 'items', [
-					'id' => $gallery->id,
-					'avatar' => $avatar,
+				return $this->render( 'all', [
+					'models' => $models,
 					'product' => $product
 				] );
 			}

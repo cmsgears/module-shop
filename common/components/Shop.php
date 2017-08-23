@@ -62,6 +62,7 @@ class Shop extends \yii\base\Component {
 		$factory	= Yii::$app->factory->getContainer();
 
 		$factory->set( 'cmsgears\shop\common\services\interfaces\resources\IProductMetaService', 'cmsgears\shop\common\services\resources\ProductMetaService' );
+		$factory->set( 'cmsgears\shop\common\services\interfaces\resources\IProductVariationService', 'cmsgears\shop\common\services\resources\ProductVariationService' );
 	}
 
 	public function initEntityServices() {
@@ -76,5 +77,6 @@ class Shop extends \yii\base\Component {
 		$factory	= Yii::$app->factory->getContainer();
 
 		$factory->set( 'productMetaService', 'cmsgears\shop\common\services\resources\ProductMetaService' );
+		$factory->set( 'productVariationService', 'cmsgears\shop\common\services\resources\ProductVariationService' );
 	}
 }

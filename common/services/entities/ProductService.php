@@ -160,7 +160,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	public function update( $model, $config = [] ) {
 
-		$attributes	= [ 'name', 'description', 'type', 'status', 'visibility' ];
+		$attributes	= [ 'name', 'description', 'type', 'status', 'visibility', 'shop', 'quantity', 'price', 'startDate', 'endDate', 'content', 'uomId' ];
 
 		return parent::update( $model, [
 				'attributes' => $attributes
