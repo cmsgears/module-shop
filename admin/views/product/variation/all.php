@@ -5,7 +5,7 @@ use cmsgears\widgets\popup\Popup;
 use cmsgears\widgets\grid\DataGrid;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title	= 'Product Attributes | ' . $coreProperties->getSiteTitle();
+$this->title	= 'Product Variations | ' . $coreProperties->getSiteTitle();
 
 // Templates
 $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
@@ -33,26 +33,26 @@ $productId			= $product->id;
 	'gridColumns' => [
 		'bulk' => 'Action',
 		'name' => 'Name',
-		'label' => 'Label',
+		'quantity' => 'Qty',
+		'type' => [ 'title' => 'Type', 'generate' => function( $model ) { return $model->getTypeStr(); } ],
 		'value' => 'Value',
-		'valueType' => 'Value Type',
 		'actions' => 'Actions'
 	],
 	'gridCards' => [ 'root' => 'col col12', 'factor' => 'x3' ],
 	'templateDir' => '@themes/admin/views/templates/widget/grid',
-	//'dataView' => "$moduleTemplates/grid/data/gallery",
-	//'cardView' => "$moduleTemplates/grid/cards/gallery",
-	'actionView' => "$moduleTemplates/grid/actions/meta"
+	//'dataView' => "$moduleTemplates/grid/data/generic",
+	//'cardView' => "$moduleTemplates/grid/cards/generic",
+	'actionView' => "$moduleTemplates/grid/actions/generic"
 ]) ?>
 
 <?= Popup::widget([
-	'title' => 'Update Attribute', 'size' => 'medium',
+	'title' => 'Update Variation', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Attribute', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/meta/bulk" ]
+	'data' => [ 'model' => 'Attribute', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/variation/bulk" ]
 ]) ?>
 
 <?= Popup::widget([
-	'title' => 'Delete Attribute', 'size' => 'medium',
+	'title' => 'Delete Variation', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/meta/delete?id=" ]
+	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/variation/delete?id=" ]
 ]) ?>

@@ -6,9 +6,6 @@ use Yii;
 use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
-// CMG Imports
-use cmsgears\shop\common\models\resources\ProductMeta;
-
 class MetaController extends \cmsgears\core\admin\controllers\base\CrudController {
 
 	// Variables ---------------------------------------------------
@@ -91,7 +88,7 @@ class MetaController extends \cmsgears\core\admin\controllers\base\CrudControlle
 
 			$modelClass	= $this->modelService->getModelClass();
 			$model		= new $modelClass;
-			$typeMap	= ProductMeta::$typeMap;
+			$typeMap	= $modelClass::$typeMap;
 			$productId	= $product->id;
 
 			$model->modelId	= $productId;
@@ -130,7 +127,9 @@ class MetaController extends \cmsgears\core\admin\controllers\base\CrudControlle
 		// Update if exist
 		if( isset( $model ) && isset( $product ) ) {
 
-			$typeMap	= ProductMeta::$typeMap;
+			$modelClass	= $this->modelService->getModelClass();
+
+			$typeMap	= $modelClass::$typeMap;
 
 			if( isset( $this->scenario ) ) {
 

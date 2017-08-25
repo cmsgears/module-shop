@@ -5,7 +5,10 @@ namespace cmsgears\shop\admin\controllers\apix\product;
 use Yii;
 use yii\filters\VerbFilter;
 
-class GalleryController extends \cmsgears\core\admin\controllers\base\Controller {
+// CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
+
+class VariationController extends \cmsgears\core\admin\controllers\base\Controller {
 
 	// Variables ---------------------------------------------------
 
@@ -17,7 +20,20 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\Controller
 
 	// Private ----------------
 
+
 	// Constructor and Initialisation ------------------------------
+
+	public function init() {
+
+		parent::init();
+
+		// Permissions
+		$this->crudPermission	= CoreGlobal::PERM_GALLERY_ADMIN;
+
+		// Services
+		$this->modelService		= Yii::$app->factory->get( 'productVariationService' );
+
+	}
 
 	// Instance methods --------------------------------------------
 
@@ -33,15 +49,17 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\Controller
 			'rbac' => [
 				'class' => Yii::$app->core->getRbacFilterClass(),
 				'actions' => [
-					'createItem' => [ 'permission' => $this->crudPermission ],
-					'deleteItem' => [ 'permission' => $this->crudPermission ]
+
+					'bulk' => [ 'permission' => $this->crudPermission ],
+					'delete' => [ 'permission' => $this->crudPermission ]
 				]
 			],
 			'verbs' => [
 				'class' => VerbFilter::className(),
 				'actions' => [
-					'createItem' => [ 'post' ],
-					'deleteItem' => [ 'post' ]
+
+					'bulk' => [ 'post' ],
+					'delete' => [ 'post' ]
 				]
 			]
 		];
@@ -53,8 +71,8 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\Controller
 
 		return [
 
-			'create-item' => [ 'class' => 'cmsgears\core\common\actions\gallery\CreateItem' ],
-			'delete-item' => [ 'class' => 'cmsgears\core\common\actions\gallery\DeleteItem' ]
+			'bulk' => [ 'class' => 'cmsgears\core\common\actions\grid\Bulk' ],
+			'delete' => [ 'class' => 'cmsgears\core\common\actions\grid\Delete' ]
 		];
 	}
 
@@ -62,5 +80,5 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\Controller
 
 	// CMG parent classes --------------------
 
-	// GalleryController ---------------------
+	// VariationController -------------------
 }

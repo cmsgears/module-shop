@@ -169,7 +169,9 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
         		[ [ 'price', 'discount', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'visibility', 'shop' ], 'number', 'min' => 0 ],
         		[ [ 'purchasingUnitId', 'quantityUnitId', 'uomId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
         		[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
-        		[ [ 'startDate', 'endDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ]
+        		[ [ 'startDate', 'endDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ],
+        		[ [ 'startDate' ], 'validateDate' ],
+        		[ [ 'endDate' ], 'validateDate' ]
         ];
     }
 
@@ -189,6 +191,22 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 	// CMG parent classes --------------------
 
 	// Validators ----------------------------
+
+	public function validateDate( $attribute, $param ) {
+
+		if( isset( $this->startDate ) && strlen( $this->endDate ) > 0 ) {
+
+			$startDate	= strtotime( $this->startDate );
+			$endDate	= strtotime( $this->endDate );
+
+			if( $endDate < $startDate ) {
+
+				$this->addError('startDate','Please provide correct Start Date');
+
+				$this->addError('endDate','Please provide correct End Date');
+			}
+		}
+	}
 
 	// Product -------------------------------
 

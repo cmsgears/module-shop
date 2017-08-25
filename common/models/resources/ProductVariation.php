@@ -1,8 +1,12 @@
 <?php
 namespace cmsgears\shop\common\models\resources;
 
+// Yii Imports
+use Yii;
+
 // CMG Imports
 use cmsgears\shop\common\models\base\ShopTables;
+use cmsgears\shop\common\models\entities\Product;
 
 /**
  * ProductVariation Resource
@@ -70,11 +74,12 @@ class ProductVariation extends \cmsgears\core\common\models\base\Entity {
 		return [
 				// Required, Safe
 				[ [ 'name', 'quantity', 'type', 'value' ], 'required' ],
-				[ [ 'startDate', 'endDate', 'description', 'active' ], 'safe' ],
+				[ [ 'startDate', 'endDate', 'content', 'active' ], 'safe' ],
 
 				// Other
 				[ [ 'active' ], 'number', 'min' => 0 ],
-				[ [ 'startDate', 'endDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ]
+				[ [ 'startDate', 'endDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ],
+				[ [ 'startDate', 'endDate' ], 'validateDate' ]
 		];
 	}
 
@@ -83,6 +88,32 @@ class ProductVariation extends \cmsgears\core\common\models\base\Entity {
 	// CMG parent classes --------------------
 
 	// Validators ----------------------------
+
+	public function validateDate( $attribute, $param ) {
+
+		$product	= $this->product;
+
+		if( isset( $product->startDate ) || isset( $product->endDate ) ) {
+
+			// Will consider product endDate as 10 years if no end date were mentioned by creator.
+			$tenYears	= date( 'Y-m-d', strtotime("+10 years" ) );
+
+			// Product
+			$pStartDate	= strtotime( $product->startDate );
+			$pEndDate	= isset( $product->endDate ) ? strtotime( $product->endDate ) : strtotime( $tenYears );
+
+			// Variation
+			$startDate	= strtotime( $this->startDate );
+			$endDate	= strtotime( $this->endDate );
+
+			if( $startDate < $pStartDate || $endDate > $pEndDate || $endDate < $startDate ) {
+
+				$this->addError('startDate','Please provide correct Start Date');
+
+				$this->addError('endDate','Please provide correct End Date');
+			}
+		}
+	}
 
 	// ProductVariation ----------------------
 
@@ -103,6 +134,16 @@ class ProductVariation extends \cmsgears\core\common\models\base\Entity {
 	// CMG parent classes --------------------
 
 	// ProductVariation ----------------------
+
+	public function getTypeStr() {
+
+		return self::$typeMap[ $this->type ];
+	}
+
+	public function getProduct() {
+
+		return $this->hasOne( Product::className(), [ 'id' => 'modelId' ] );
+	}
 
 	// Read - Query -----------
 

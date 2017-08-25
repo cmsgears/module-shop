@@ -40,9 +40,9 @@ $productId			= $product->id;
 	],
 	'gridCards' => [ 'root' => 'col col12', 'factor' => 'x3' ],
 	'templateDir' => '@themes/admin/views/templates/widget/grid',
-	//'dataView' => "$moduleTemplates/grid/data/gallery",
-	//'cardView' => "$moduleTemplates/grid/cards/gallery",
-	'actionView' => "$moduleTemplates/grid/actions/meta"
+	//'dataView' => "$moduleTemplates/grid/data/generic",
+	//'cardView' => "$moduleTemplates/grid/cards/generic",
+	'actionView' => "$moduleTemplates/grid/actions/generic"
 ]) ?>
 
 <?= Popup::widget([

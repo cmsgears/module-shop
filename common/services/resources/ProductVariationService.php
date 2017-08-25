@@ -107,5 +107,14 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Entity
 
 	// Update -------------
 
+	public function update( $model, $config = [] ) {
+
+		$attributes	= [ 'name', 'quantity', 'type', 'value', 'startDate', 'endDate', 'active', 'content' ];
+
+		return parent::update( $model, [
+				'attributes' => $attributes
+		]);
+	}
+
 	// Delete -------------
 }
