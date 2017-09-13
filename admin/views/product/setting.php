@@ -55,8 +55,8 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 						'options' => [ 'class' => 'box-mapper-auto' ],
 						'type' => ShopGlobal::TYPE_PRODUCT,
 						'model' => $model, 'app' => 'category',
-						'mapActionUrl' => "shop/product/assign-category?slug=$model->slug&type=$model->type",
-						'deleteActionUrl' => "shop/product/remove-category?slug=$model->slug&type=$model->type"
+						'mapActionUrl' => "shop/shop/assign-category?slug=$model->slug&type=$model->type",
+						'deleteActionUrl' => "shop/shop/remove-category?slug=$model->slug&type=$model->type"
 					]) ?>
 				</div>
 			</div>
@@ -70,8 +70,8 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 						'options' => [ 'id' => 'box-tag-mapper', 'class' => 'box-tag-mapper' ],
 						'loadAssets' => true,
 						'model' => $model, 'app' => 'category',
-						'mapActionUrl' => "shop/product/assign-tags?slug=$model->slug&type=$model->type",
-						'deleteActionUrl' => "shop/product/remove-tag?slug=$model->slug&type=$model->type"
+						'mapActionUrl' => "shop/shop/assign-tags?slug=$model->slug&type=$model->type",
+						'deleteActionUrl' => "shop/shop/remove-tag?slug=$model->slug&type=$model->type"
 					])?>
 				</div>
 			</div>

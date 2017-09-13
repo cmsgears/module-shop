@@ -28,9 +28,9 @@ $galleryItems	= isset( $product->gallery ) ? $product->gallery->files : [];
 										'model' => $avatar,
 										'dragger' => false,
 										'postAction' => true,
-										'postActionUrl' => "shop/product/avatar?id=$product->id",
+										'postActionUrl' => "shop/shop/avatar?id=$product->id",
 										'cmtApp' => 'shop',
-										'cmtController' => 'product',
+										'cmtController' => 'shop',
 										'cmtAction' => 'avatar'
 								] ); ?>
 							</div>
@@ -46,7 +46,7 @@ $galleryItems	= isset( $product->gallery ) ? $product->gallery->files : [];
 									'modelClass' => 'File',
 									'dragger' => false,
 									'postAction' => true,
-									'postActionUrl' => "shop/product/gallery/create-item?id=$id",
+									'postActionUrl' => "shop/shop/gallery/create-item?id=$id",
 									'cmtApp' => 'shop',
 									'cmtController' => 'gallery',
 									'cmtAction' => 'addItem'

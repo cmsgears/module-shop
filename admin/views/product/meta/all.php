@@ -48,11 +48,11 @@ $productId			= $product->id;
 <?= Popup::widget([
 	'title' => 'Update Attribute', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Attribute', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/meta/bulk" ]
+	'data' => [ 'model' => 'Attribute', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/shop/meta/bulk" ]
 ]) ?>
 
 <?= Popup::widget([
 	'title' => 'Delete Attribute', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/meta/delete?id=" ]
+	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/shop/meta/delete?id=" ]
 ]) ?>

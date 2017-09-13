@@ -18,6 +18,7 @@ use cmsgears\core\common\models\resources\Gallery;
 use cmsgears\core\common\models\interfaces\IApproval;
 use cmsgears\core\common\models\interfaces\IVisibility;
 
+use cmsgears\core\common\models\traits\CreateModifyTrait;
 use cmsgears\core\common\models\traits\resources\MetaTrait;
 use cmsgears\core\common\models\traits\mappers\CategoryTrait;
 use cmsgears\core\common\models\traits\SlugTypeTrait;
@@ -104,6 +105,7 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	// Traits ------------------------------------------------------
 
+    use CreateModifyTrait;
 	use MetaTrait;
 	use CategoryTrait;
 	use SlugTypeTrait;
@@ -163,10 +165,9 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
         		[ [ 'name' ], 'required' ],
         		[ [ 'id', 'avatarId', 'galleryId', 'content', 'data', 'purchase', 'status', 'slug', 'summary', 'description', 'price' ], 'safe' ],
         		// Text Limit
-        		[ [ 'type' ], 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
         		[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
         		// Other
-        		[ [ 'price', 'discount', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'visibility', 'shop' ], 'number', 'min' => 0 ],
+        		[ [ 'price', 'discount', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'visibility', 'shop', 'type' ], 'number', 'min' => 0 ],
         		[ [ 'purchasingUnitId', 'quantityUnitId', 'uomId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
         		[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
         		[ [ 'startDate', 'endDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ],

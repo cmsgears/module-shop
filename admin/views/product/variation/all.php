@@ -48,11 +48,11 @@ $productId			= $product->id;
 <?= Popup::widget([
 	'title' => 'Update Variation', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Attribute', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/variation/bulk" ]
+	'data' => [ 'model' => 'Attribute', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/shop/variation/bulk" ]
 ]) ?>
 
 <?= Popup::widget([
 	'title' => 'Delete Variation', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/variation/delete?id=" ]
+	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/shop/variation/delete?id=" ]
 ]) ?>

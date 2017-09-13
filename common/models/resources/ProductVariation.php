@@ -95,7 +95,7 @@ class ProductVariation extends \cmsgears\core\common\models\base\Entity {
 
 		if( isset( $product->startDate ) || isset( $product->endDate ) ) {
 
-			// Will consider product endDate as 10 years if no end date were mentioned by creator.
+			// Will consider shop endDate as 10 years if no end date were mentioned by creator.
 			$tenYears	= date( 'Y-m-d', strtotime("+10 years" ) );
 
 			// Product

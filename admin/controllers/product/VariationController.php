@@ -32,22 +32,22 @@ class VariationController extends \cmsgears\core\admin\controllers\base\CrudCont
 		parent::init();
 
 		// Views
-		$this->setViewPath( '@cmsgears/module-shop/admin/views/product/variation' );
+		$this->setViewPath( '@cmsgears/module-shop/admin/views/shop/variation' );
 
 		// Services
 		$this->modelService		= Yii::$app->factory->get( 'productVariationService' );
 		$this->productService	= Yii::$app->factory->get( 'productService' );
 
 		// Sidebar
-		$this->sidebar		= [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
+		$this->sidebar		= [ 'parent' => 'sidebar-shop', 'child' => 'shop' ];
 
 		// Return Url
 		$this->returnUrl	= Url::previous( 'products' );
-		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all/' ], true );
+		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/shop/all/' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/product/all' ] ] ],
+			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/shop/all' ] ] ],
 			'all' => [ [ 'label' => 'Variations' ] ],
 			'create' => [ [ 'label' => 'Variations', 'url' => $this->returnUrl ], [ 'label' => 'Create' ] ],
 			'update' => [ [ 'label' => 'Variations', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
@@ -86,7 +86,7 @@ class VariationController extends \cmsgears\core\admin\controllers\base\CrudCont
 
 				return $this->render( 'all', [
 					'dataProvider' => $dataProvider,
-					'product' => $product
+					'shop' => $product
 				] );
 			}
 		}
@@ -118,7 +118,7 @@ class VariationController extends \cmsgears\core\admin\controllers\base\CrudCont
 
 			return $this->render( 'create', [
 					'model' => $model,
-					'product' => $product,
+					'shop' => $product,
 					'typeMap' => $typeMap
 			]);
 		}
@@ -151,7 +151,7 @@ class VariationController extends \cmsgears\core\admin\controllers\base\CrudCont
 			// Render view
 			return $this->render( 'update', [
 					'model' => $model,
-					'product' => $product,
+					'shop' => $product,
 					'typeMap' => $typeMap
 			]);
 		}

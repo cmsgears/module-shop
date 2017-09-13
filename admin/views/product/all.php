@@ -43,17 +43,17 @@ $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
 	'templateDir' => '@themes/admin/views/templates/widget/grid',
 	//'dataView' => "$moduleTemplates/grid/data/gallery",
 	//'cardView' => "$moduleTemplates/grid/cards/gallery",
-	'actionView' => "$moduleTemplates/grid/actions/product"
+	'actionView' => "$moduleTemplates/grid/actions/shop"
 ]) ?>
 
 <?= Popup::widget([
 	'title' => 'Update Product', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/bulk" ]
+	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/shop/bulk" ]
 ]) ?>
 
 <?= Popup::widget([
 	'title' => 'Delete Product', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/delete?id=" ]
+	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/shop/delete?id=" ]
 ]) ?>

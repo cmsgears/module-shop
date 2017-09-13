@@ -10,7 +10,7 @@ use cmsgears\core\common\models\entities\User;
 
 use cmsgears\core\common\utilities\DateUtil;
 
-class m170823_072005_data extends Migration {
+class m170829_050749_shop_data extends Migration {
 
 	// Public Variables
 

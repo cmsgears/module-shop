@@ -30,25 +30,25 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 		parent::init();
 
 		// Views
-		$this->setViewPath( '@cmsgears/module-shop/admin/views/product/gallery' );
+		$this->setViewPath( '@cmsgears/module-shop/admin/views/shop/gallery' );
 
 		// Config
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
-		$this->parentUrl	= '/shop/product/all';
+		$this->parentUrl	= '/shop/shop/all';
 
 		// Services
 		$this->parentService	= Yii::$app->factory->get( 'productService' );
 
 		// Sidebar
-		$this->sidebar		= [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
+		$this->sidebar		= [ 'parent' => 'sidebar-shop', 'child' => 'shop' ];
 
 		// Return Url
 		$this->returnUrl	= Url::previous( 'products' );
-		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all/' ], true );
+		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/shop/all/' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/product/all' ] ] ],
+			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/shop/all' ] ] ],
 			'index' => [ [ 'label' => 'Gallery' ] ],
 			'items' => [ [ 'label' => 'Gallery', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ],
 		];
@@ -87,7 +87,7 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 				return $this->render( 'items', [
 					'id' => $gallery->id,
 					'avatar' => $avatar,
-					'product' => $product
+					'shop' => $product
 				] );
 			}
 		}

@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m170816_094253_core extends Migration {
+class m170829_050630_shop_core extends Migration {
 
 	// Public Variables
 
@@ -231,7 +231,6 @@ class m170816_094253_core extends Migration {
 		// Subscription
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'subscription_user', $this->prefix . 'cart_sub' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'subscription_product', $this->prefix . 'cart_sub' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'subscription_plan', $this->prefix . 'cart_sub' );
 
 		// Product Meta
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_meta_parent', $this->prefix . 'cart_product_meta' );

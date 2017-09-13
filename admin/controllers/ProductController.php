@@ -55,11 +55,11 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 		$this->uomService			= Yii::$app->factory->get( 'uomService' );
 
 		// Sidebar
-		$this->sidebar			= [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
+		$this->sidebar			= [ 'parent' => 'sidebar-shop', 'child' => 'shop' ];
 
 		// Return Url
 		$this->returnUrl		= Url::previous( 'products' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all' ], true );
+		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/shop/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs		= [
@@ -180,7 +180,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 
 			return $this->render( 'location', [
 					'model' => $model,
-					'product' => $product,
+					'shop' => $product,
 					'provinceMap' => $provinceMap,
 					'lgaMap' => $lgaMap,
 					'provinceId' => $provinceId
