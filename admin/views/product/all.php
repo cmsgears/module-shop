@@ -29,11 +29,10 @@ $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
 		'model' => [ 'delete' => 'Delete' ]
 	],
 	'header' => false, 'footer' => true,
-	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null , 'x2', null, 'x3', 'x3', 'x3', 'x2'] ],
+	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null , 'x2', 'x3', 'x3', 'x3', 'x3'] ],
 	'gridColumns' => [
 		'bulk' => 'Action',
 		'name' => 'Name',
-		'type' => [ 'title' => 'Type', 'generate' => function( $model ) { return $model->getTypeStr(); } ],
 		'description' => 'Description',
 		'createdAt' => 'Created on',
 		'modifiedAt' => 'Updated on',
@@ -43,7 +42,7 @@ $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
 	'templateDir' => '@themes/admin/views/templates/widget/grid',
 	//'dataView' => "$moduleTemplates/grid/data/gallery",
 	//'cardView' => "$moduleTemplates/grid/cards/gallery",
-	'actionView' => "$moduleTemplates/grid/actions/shop"
+	'actionView' => "$moduleTemplates/grid/actions/product"
 ]) ?>
 
 <?= Popup::widget([

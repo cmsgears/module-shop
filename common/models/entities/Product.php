@@ -119,6 +119,16 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	// Constructor and Initialisation ------------------------------
 
+    public function init() {
+
+        parent::init();
+
+        self::$visibilityMap = [
+            IVisibility::VISIBILITY_PRIVATE => 'Private',
+            IVisibility::VISIBILITY_PUBLIC => 'Public'
+        ];
+    }
+
 	// Instance methods --------------------------------------------
 
 	// Yii interfaces ------------------------

@@ -32,7 +32,7 @@ class VariationController extends \cmsgears\core\admin\controllers\base\CrudCont
 		parent::init();
 
 		// Views
-		$this->setViewPath( '@cmsgears/module-shop/admin/views/shop/variation' );
+		$this->setViewPath( '@cmsgears/module-shop/admin/views/product/variation' );
 
 		// Services
 		$this->modelService		= Yii::$app->factory->get( 'productVariationService' );
@@ -86,7 +86,7 @@ class VariationController extends \cmsgears\core\admin\controllers\base\CrudCont
 
 				return $this->render( 'all', [
 					'dataProvider' => $dataProvider,
-					'shop' => $product
+					'product' => $product
 				] );
 			}
 		}
@@ -118,7 +118,7 @@ class VariationController extends \cmsgears\core\admin\controllers\base\CrudCont
 
 			return $this->render( 'create', [
 					'model' => $model,
-					'shop' => $product,
+					'product' => $product,
 					'typeMap' => $typeMap
 			]);
 		}
@@ -151,7 +151,7 @@ class VariationController extends \cmsgears\core\admin\controllers\base\CrudCont
 			// Render view
 			return $this->render( 'update', [
 					'model' => $model,
-					'shop' => $product,
+					'product' => $product,
 					'typeMap' => $typeMap
 			]);
 		}

@@ -30,7 +30,7 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 		parent::init();
 
 		// Views
-		$this->setViewPath( '@cmsgears/module-shop/admin/views/shop/gallery' );
+		$this->setViewPath( '@cmsgears/module-shop/admin/views/product/gallery' );
 
 		// Config
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
@@ -87,7 +87,7 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 				return $this->render( 'items', [
 					'id' => $gallery->id,
 					'avatar' => $avatar,
-					'shop' => $product
+					'product' => $product
 				] );
 			}
 		}

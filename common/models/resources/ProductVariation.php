@@ -145,6 +145,42 @@ class ProductVariation extends \cmsgears\core\common\models\base\Entity {
 		return $this->hasOne( Product::className(), [ 'id' => 'modelId' ] );
 	}
 
+	public function getPrice() {
+
+	    $price  = $this->product->price;
+	    $value  = $this->value;
+	    $type   = $this->type;
+	    $total  = 0;
+
+	    switch( $type ) {
+
+            case self::TYPE_FLAT : {
+
+                $total  = $price - $value;
+
+                break;
+            }
+
+            case self::TYPE_PERCENT : {
+
+                $total  = ( $price * $value ) / 100;
+
+                $total  = $price - $total;
+
+                break;
+            }
+
+            case self::TYPE_ADD_ON : {
+
+                $total  = $value;
+
+                break;
+            }
+        }
+
+        return $total;
+    }
+
 	// Read - Query -----------
 
 	// Read - Find ------------

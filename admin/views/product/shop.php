@@ -5,9 +5,6 @@ use yii\helpers\Html;
 
 // CMG Imports
 use cmsgears\core\common\widgets\Editor;
-use cmsgears\files\widgets\ImageUploader;
-use cmsgears\files\widgets\VideoUploader;
-use cmsgears\icons\widgets\IconChooser;
 
 $coreProperties = $this->context->getCoreProperties();
 $this->title 	= 'Product Shop | ' . $coreProperties->getSiteTitle();

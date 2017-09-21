@@ -17,7 +17,7 @@ $user	= Yii::$app->user->getIdentity();
 		</div>
 		<div class="tab-content clear <?php if( strcmp( $parent, 'sidebar-shop' ) == 0 ) echo 'expanded visible';?>">
 			<ul>
-				<li class='sidebar-shop <?php if( strcmp( $child, 'shop' ) == 0 ) echo 'active';?>'><?= Html::a( "Products", ['/shop/shop/all'] ) ?></li>
+				<li class='sidebar-shop <?php if( strcmp( $child, 'shop' ) == 0 ) echo 'active';?>'><?= Html::a( "Products", ['/shop/product/all'] ) ?></li>
 			</ul>
 		</div>
 	</div>

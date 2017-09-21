@@ -210,10 +210,10 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 			}
 
 			return $this->render( 'setting', [
-					'model' => $model,
-					'statusMap' => $statusMap,
-					'visibilityMap' => $visibilityMap,
-					'content' => $content
+                'model' => $model,
+                'statusMap' => $statusMap,
+                'visibilityMap' => $visibilityMap,
+                'content' => $content
 			] );
 		}
 

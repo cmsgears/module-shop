@@ -72,7 +72,7 @@ class MetaController extends \cmsgears\core\admin\controllers\base\CrudControlle
 
 			return $this->render( 'all', [
 					'dataProvider' => $dataProvider,
-					'shop' => $product
+					'product' => $product
 			]);
 		}
 
@@ -108,7 +108,7 @@ class MetaController extends \cmsgears\core\admin\controllers\base\CrudControlle
 			return $this->render( 'create', [
 					'model' => $model,
 					'typeMap' => $typeMap,
-					'shop' => $product
+					'product' => $product
 			]);
 		}
 
@@ -146,7 +146,7 @@ class MetaController extends \cmsgears\core\admin\controllers\base\CrudControlle
 			// Render view
 			return $this->render( 'update', [
 					'model' => $model,
-					'shop' => $product,
+					'product' => $product,
 					'typeMap' => $typeMap
 			]);
 		}
