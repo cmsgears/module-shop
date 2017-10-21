@@ -11,8 +11,10 @@ use cmsgears\shop\common\config\ShopGlobal;
 use cmsgears\shop\common\models\base\ShopTables;
 
 use cmsgears\core\common\models\resources\Gallery;
+use cmsgears\shop\common\models\entities\Product;
 
 use cmsgears\core\common\services\traits\SlugTypeTrait;
+use cmsgears\core\common\services\traits\ApprovalTrait;
 
 use cmsgears\shop\common\services\interfaces\entities\IProductService;
 
@@ -34,7 +36,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	public static $typed		= true;
 
-	public static $parentType	= ShopGlobal::TYPE_PRODUCT;
+	public static $modelType	= ShopGlobal::TYPE_PRODUCT;
 
 	// Protected --------------
 
@@ -49,6 +51,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	// Traits ------------------------------------------------------
 
 	use SlugTypeTrait;
+    use ApprovalTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -157,6 +160,11 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	}
 
 	// Update -------------
+    
+    public function submit( $model ) {
+        
+        $this->notifyAdmin( $model );
+    }
 
 	public function update( $model, $config = [] ) {
 
@@ -194,6 +202,166 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 		$product->avatarId	= $avatar->id;
 
 		return parent::update( $product, [ 'attributes' => [ 'avatarId' ] ] );
+	}
+    
+    // Trigger Admin Notifications where applicable and Update status
+	protected function notifyAdmin( $model, $config = [] ) {
+
+		$config[ 'admin' ]	= true;
+
+		if( $model->status < Product::STATUS_SUBMITTED ) {
+
+			$this->updateStatus( $model, Product::STATUS_SUBMITTED );
+
+			$config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_SUBMIT;
+			$config[ 'title' ]      = ShopGlobal::TITLE_REGISTERED;
+
+			// Send admin notification for new product.
+			$this->sendNotification( $model, $config );
+
+			$model->refresh();
+		}
+        else if( $model->isRejected() ) {
+
+			$this->updateStatus( $model, Product::STATUS_RE_SUBMIT );
+
+			$config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_RESUBMIT;
+			$config[ 'title' ]      = ShopGlobal::TITLE_RESUBMIT;
+
+			// Send admin notification for re-submit product.
+			$this->sendNotification( $model, $config );
+		}                
+        else if( $model->isFrojen() || $model->isBlocked() ) {
+
+			if( $model->isFrojen() ) {
+
+				$this->updateStatus( $model, Product::STATUS_UPLIFT_FREEZE );
+
+				$config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_UP_FREEZE;
+				$config[ 'title' ]      = ShopGlobal::TITLE_UPLIFT_FREEZE;
+
+				// Send admin notification for uplift freeze.
+				$this->sendNotification( $model, $config );
+			}
+
+			if( $model->isBlocked() ) {
+
+				$this->updateStatus( $model, Product::STATUS_UPLIFT_BLOCK );
+
+				$config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_UP_BLOCK;
+				$config[ 'title' ]      = ShopGlobal::TITLE_UPLIFT_BLOCK;
+
+				// Send admin notification for uplift block.
+				$this->sendNotification( $model, $config );
+			}
+		}
+	}
+    
+    // Trigger User Notifications where applicable and Update status
+    public function notifyUser( $model, $config = [] ) {
+
+        $email	= $model->creator->email;
+        $status	= isset( $config[ 'status' ] ) ? $config[ 'status' ] : $model->status;
+
+        $config[ 'admin' ]	= false;
+
+        switch( $status ) {
+
+            case Product::STATUS_ACTIVE: {
+
+                $this->approve( $model );
+
+                $config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_APPROVE;
+                $config[ 'title' ]		= ShopGlobal::TITLE_APPROVE;
+
+                $this->sendNotification( $model, $config );
+
+                break;
+            }
+
+            case Product::STATUS_REJECTED: {
+
+                $message    = $this->getMessage();
+
+                $this->reject( $model, $message );
+
+                $config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_REJECT;
+                $config[ 'title' ]      = ShopGlobal::TITLE_REJECT;
+                $config[ 'message' ]	= $message;
+
+                $this->sendNotification( $model, $config );
+
+                break;
+            }
+
+            case Product::STATUS_FROJEN: {
+
+                $message    = $this->getMessage();
+
+                $this->freeze( $model, $message );
+
+                $config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_FREEZE;
+                $config[ 'title' ]      = ShopGlobal::TITLE_FREEZE;
+                $config[ 'message' ]	= $message;
+
+                $this->sendNotification( $model, $config );
+
+                break;
+            }
+
+            case Product::STATUS_BLOCKED: {
+
+                $message    = $this->getMessage();
+
+                $this->block( $model, $message );
+
+                $config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_BLOCKED;
+                $config[ 'title' ]      = ShopGlobal::TITLE_BLOCKED;
+                $config[ 'message' ]	= $message;
+
+                $this->sendNotification( $model, $config );
+
+                break;
+            }
+        }
+	}
+    
+    protected function sendNotification( $product, $config = [] ) {
+
+		$templateType           = $config[ 'template' ];
+		$title                  = $config[ 'title' ];		
+		$id                     = $product->id;
+		$name                   = $product->name;
+		$templateVars           = [];
+		$templateConfig         = [];
+                
+		$templateConfig[ 'parentId' ]	= $id;
+		$templateConfig[ 'parentType' ]	= self::$modelType;
+		$templateConfig[ 'title' ]      = $title;
+
+		if( isset( $config[ 'admin' ] ) && $config[ 'admin' ] ) {
+
+			$templateConfig[ 'adminLink' ]	= "/shop/product/watch?id=$id";
+		}
+		else {
+                        
+            $templateConfig[ 'link' ]	= "/shop/product/review?id=$id";
+			$templateConfig[ 'users' ]	= [ $product->createdBy ];
+		}
+
+		$templateVars[ 'productName' ]	= $name;
+
+		if( isset( $config[ 'message' ] ) && $config[ 'message' ] != null ) {
+
+			$templateVars[ 'message' ]	= $config[ 'message' ];
+		}
+
+		return Yii::$app->eventManager->triggerNotification( $templateType, $templateVars, $templateConfig );
+	}
+    
+    protected function getMessage() {
+
+        return Yii::$app->request->post( 'message' ) != null ? Yii::$app->request->post( 'message' ) : "No reason were specified.";
 	}
 
 	// Delete -------------

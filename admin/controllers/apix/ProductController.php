@@ -35,7 +35,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\Controller
 		$this->crudPermission	= CoreGlobal::PERM_GALLERY_ADMIN;
 
 		// Services
-		$this->modelService		= Yii::$app->factory->get( 'productService' );
+		$this->modelService	= Yii::$app->factory->get( 'productService' );
 
 	}
 

@@ -59,7 +59,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 
 		// Return Url
 		$this->returnUrl		= Url::previous( 'products' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/shop/all' ], true );
+		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs		= [
@@ -70,6 +70,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 			'location' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Location' ] ],
 			'setting' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Setting' ] ],
 			'shop' => [ [ 'label' => 'Shop', 'url' => $this->returnUrl ], [ 'label' => 'Shop' ] ],
+                        'watch' => [ [ 'label' => 'Shop', 'url' => $this->returnUrl ], [ 'label' => 'Watch' ] ],
 		];
 	}
 
@@ -245,4 +246,26 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 		// Model not found
 		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
+        
+        public function actionWatch( $id ) {
+            
+            $model  = $this->modelService->getById( $id );
+            
+            if( $model->load( Yii::$app->request->post(), 'Product' ) ) {
+
+                $status	= Yii::$app->request->post( 'status' );
+
+                $this->modelService->notifyUser( $model, [ 'status' => $status ] );
+
+                return $this->redirect( $this->returnUrl );
+            }
+            
+            if( isset( $model ) ) {
+                
+                return $this->render( 'watch', [ 'model' => $model ] );
+            }
+            
+            // Model not found
+            throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+        }
 }

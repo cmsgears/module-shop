@@ -8,5 +8,6 @@ use yii\helpers\Html;
 <span title="Setting"><?= Html::a( "", [ "product/setting?id=$model->id" ], [ 'class' => 'cmti cmti-setting' ] ) ?></span>
 <span title="Shop"><?= Html::a( "", [ "product/shop?id=$model->id" ], [ 'class' => 'cmti cmti-cart' ] ) ?></span>
 <span title="Variations"><?= Html::a( "", [ "product/variation/all?pid=$model->id" ], [ 'class' => 'cmti cmti-asterisk' ] ) ?></span>
+<span title="Watch"><?= Html::a( "", [ "product/watch?id=$model->id" ], [ 'class' => 'cmti cmti-eye' ] ) ?></span>
 
 <span class="action action-pop action-delete cmti cmti-close-c" title="Delete" target="<?= $model->id ?>" popup="popup-grid-delete"></span>
