@@ -29,6 +29,7 @@ use cmsgears\cms\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\VisualTrait;
 use cmsgears\core\common\models\traits\mappers\AddressTrait;
 use cmsgears\core\common\models\traits\mappers\TagTrait;
+use cmsgears\community\common\models\traits\mappers\FollowTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
@@ -116,6 +117,7 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 	use VisualTrait;
 	use AddressTrait;
 	use TagTrait;
+    use FollowTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -223,7 +225,7 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	public function getTypeStr() {
 
-		return self::$typeMap[ $this->type ];
+		return static::$typeMap[ $this->type ];
 	}
 
 	public function getGallery() {

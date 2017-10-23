@@ -57,7 +57,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\Controller
 					'bulk' => [ 'permission' => $this->crudPermission ],
 					'delete' => [ 'permission' => $this->crudPermission ],
 					'avatar' => [ 'permission' => $this->crudPermission ],
-					'assign-category' => [ 'permission' => $this->crudPermission ],
+					'assign-category' => [ 'permission' => $this->crudPermission, 'filters' => [ 'discover' ] ],
 					'remove-category' => [ 'permission' => $this->crudPermission ],
 					'assign-tags' => [ 'permission' => $this->crudPermission ],
 					'remove-tag' => [ 'permission' => $this->crudPermission ],

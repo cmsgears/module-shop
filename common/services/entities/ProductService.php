@@ -36,7 +36,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	public static $typed		= true;
 
-	public static $modelType	= ShopGlobal::TYPE_PRODUCT;
+	public static $parentType	= ShopGlobal::TYPE_PRODUCT;
 
 	// Protected --------------
 
