@@ -336,7 +336,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 		$templateConfig         = [];
                 
 		$templateConfig[ 'parentId' ]	= $id;
-		$templateConfig[ 'parentType' ]	= self::$modelType;
+		$templateConfig[ 'parentType' ]	= self::$parentType;
 		$templateConfig[ 'title' ]      = $title;
 
 		if( isset( $config[ 'admin' ] ) && $config[ 'admin' ] ) {

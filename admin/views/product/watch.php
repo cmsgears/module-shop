@@ -13,7 +13,7 @@ $this->title	= 'Watch | ' . $coreProperties->getSiteTitle();
 
 $modelContent           = $model->modelContent;
 $avatar                 = $model->avatar;
-$bannerUrl		= CodeGenUtil::getFileUrl( $modelContent->banner, [ 'image' => 'avatar.jpg' ] );
+$bannerUrl		= CodeGenUtil::getFileUrl( $modelContent->banner, [ 'image' => 'avatar-site' ] );
 $avatar			= $avatar->getFileUrl() == null ? $avatar->getFileUrl() : $avatar;
 $avatar			= CodeGenUtil::getThumbUrl( $avatar, [ 'image' => 'avatar-thumb.jpg' ] );
 ?>

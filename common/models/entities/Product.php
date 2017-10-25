@@ -20,6 +20,7 @@ use cmsgears\core\common\models\interfaces\IVisibility;
 
 use cmsgears\core\common\models\traits\CreateModifyTrait;
 use cmsgears\core\common\models\traits\resources\MetaTrait;
+use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\mappers\CategoryTrait;
 use cmsgears\core\common\models\traits\SlugTypeTrait;
 use cmsgears\core\common\models\traits\NameTypeTrait;
@@ -108,6 +109,7 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
     use CreateModifyTrait;
 	use MetaTrait;
+    use DataTrait;
 	use CategoryTrait;
 	use SlugTypeTrait;
 	use NameTypeTrait;
