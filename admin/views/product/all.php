@@ -29,13 +29,14 @@ $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
 		'model' => [ 'delete' => 'Delete' ]
 	],
 	'header' => false, 'footer' => true,
-	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null , 'x2', 'x3', 'x3', 'x3', 'x3'] ],
+	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null , 'x2', 'x3', 'x2', 'x2', 'x2', 'x3'] ],
 	'gridColumns' => [
 		'bulk' => 'Action',
 		'name' => 'Name',
 		'description' => 'Description',
 		'createdAt' => 'Created on',
 		'modifiedAt' => 'Updated on',
+		'status' => [ 'title' => 'Status', 'generate' => function( $model ) { return $model->getStatusStr(); } ],
 		'actions' => 'Actions'
 	],
 	'gridCards' => [ 'root' => 'col col12', 'factor' => 'x3' ],
