@@ -43,6 +43,9 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 
 		parent::init();
 
+		// Views
+		$this->viewPath			= "@cmsgears/module-shop/admin/views/product";
+
 		// Permission
 		$this->crudPermission	= ShopGlobal::PERM_SHOP;
 
@@ -246,26 +249,26 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 		// Model not found
 		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
 	}
-        
-        public function actionWatch( $id ) {
-            
-            $model  = $this->modelService->getById( $id );
-            
-            if( $model->load( Yii::$app->request->post(), 'Product' ) ) {
 
-                $status	= Yii::$app->request->post( 'status' );
+	public function actionWatch( $id ) {
 
-                $this->modelService->notifyUser( $model, [ 'status' => $status ] );
+		$model  = $this->modelService->getById( $id );
 
-                return $this->redirect( $this->returnUrl );
-            }
-            
-            if( isset( $model ) ) {
-                
-                return $this->render( 'watch', [ 'model' => $model ] );
-            }
-            
-            // Model not found
-            throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
-        }
+		if( $model->load( Yii::$app->request->post(), 'Product' ) ) {
+
+			$status	= Yii::$app->request->post( 'status' );
+
+			$this->modelService->notifyUser( $model, [ 'status' => $status ] );
+
+			return $this->redirect( $this->returnUrl );
+		}
+
+		if( isset( $model ) ) {
+
+			return $this->render( 'watch', [ 'model' => $model ] );
+		}
+
+		// Model not found
+		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
+	}
 }
