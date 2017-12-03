@@ -238,7 +238,7 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 				return $this->refresh();
 			}
 
-			$uomMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_QUANTITY, Uom::GROUP_LENGTH_METRIC ], false );
+			$uomMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_QUANTITY, Uom::GROUP_LENGTH_METRIC, Uom::GROUP_LENGTH_US, Uom::GROUP_TIME ], false );
 
 			return $this->render( 'shop', [
 					'model' => $model,
