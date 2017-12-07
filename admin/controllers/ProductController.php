@@ -70,10 +70,9 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 			'create' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
 			'update' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
 			'delete' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
-			'location' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Location' ] ],
 			'setting' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Setting' ] ],
 			'shop' => [ [ 'label' => 'Shop', 'url' => $this->returnUrl ], [ 'label' => 'Shop' ] ],
-                        'watch' => [ [ 'label' => 'Shop', 'url' => $this->returnUrl ], [ 'label' => 'Watch' ] ],
+			'watch' => [ [ 'label' => 'Shop', 'url' => $this->returnUrl ], [ 'label' => 'Watch' ] ],
 		];
 	}
 
@@ -153,42 +152,6 @@ class ProductController extends \cmsgears\core\admin\controllers\base\CrudContro
 					'content' => $content,
 					'typeMap' => $modelClass::$typeMap
 			]);
-		}
-
-		// Model not found
-		throw new NotFoundHttpException( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
-	}
-
-	public function actionLocation( $id ) {
-
-		$product	= $this->modelService->getById( $id );
-
-		if( isset( $product ) ) {
-
-			$model	= isset( $product->primaryAddress ) ? $product->primaryAddress : new Address();
-
-			$model->countryId	= CoreGlobal::COUNTRY_NIGERIA;
-
-			if( $model->load( Yii::$app->request->post(), $model->getClassName() ) && $model->validate() ) {
-
-				$this->modelAddressService->createOrUpdate( $model, [ 'parentId' => $product->id, 'parentType' => ShopGlobal::TYPE_PRODUCT, 'type' => Address::TYPE_PRIMARY ] );
-
-				return $this->refresh();
-			}
-
-			$provinceId		= CoreGlobal::PROVINCE_ABIA;
-			$provinceMap	= $this->provinceService->getMapByCountryId( CoreGlobal::COUNTRY_NIGERIA );
-			$lgaList		= $this->lgaService->getByProvinceId( $provinceId );
-			$lgaMap			= CodeGenUtil::generateIdNameMap( $lgaList );
-			$lgaMap			= array_filter( $lgaMap ); // Remove empty array elements
-
-			return $this->render( 'location', [
-					'model' => $model,
-					'shop' => $product,
-					'provinceMap' => $provinceMap,
-					'lgaMap' => $lgaMap,
-					'provinceId' => $provinceId
-			] );
 		}
 
 		// Model not found
