@@ -89,7 +89,19 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 					'asc' => [ 'name' => SORT_ASC ],
 					'desc' => ['name' => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'name'
+					'label' => 'Name'
+				],
+				'price' => [
+					'asc' => [ 'price' => SORT_ASC ],
+					'desc' => ['price' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Price'
+				],
+				'quantity' => [
+					'asc' => [ 'quantity' => SORT_ASC ],
+					'desc' => ['quantity' => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Quantity'
 				],
 				'cdate' => [
 					'asc' => [ 'createdAt' => SORT_ASC ],
@@ -160,9 +172,9 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	}
 
 	// Update -------------
-    
+
     public function submit( $model ) {
-        
+
         $this->notifyAdmin( $model );
     }
 
@@ -203,7 +215,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 		return parent::update( $product, [ 'attributes' => [ 'avatarId' ] ] );
 	}
-    
+
     // Trigger Admin Notifications where applicable and Update status
 	protected function notifyAdmin( $model, $config = [] ) {
 
@@ -230,7 +242,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 			// Send admin notification for re-submit product.
 			$this->sendNotification( $model, $config );
-		}                
+		}
         else if( $model->isFrojen() || $model->isBlocked() ) {
 
 			if( $model->isFrojen() ) {
@@ -256,7 +268,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 			}
 		}
 	}
-    
+
     // Trigger User Notifications where applicable and Update status
     public function notifyUser( $model, $config = [] ) {
 
@@ -325,16 +337,16 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
             }
         }
 	}
-    
+
     protected function sendNotification( $product, $config = [] ) {
 
 		$templateType           = $config[ 'template' ];
-		$title                  = $config[ 'title' ];		
+		$title                  = $config[ 'title' ];
 		$id                     = $product->id;
 		$name                   = $product->name;
 		$templateVars           = [];
 		$templateConfig         = [];
-                
+
 		$templateConfig[ 'parentId' ]	= $id;
 		$templateConfig[ 'parentType' ]	= self::$parentType;
 		$templateConfig[ 'title' ]      = $title;
@@ -344,7 +356,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 			$templateConfig[ 'adminLink' ]	= "/shop/product/watch?id=$id";
 		}
 		else {
-                        
+
             $templateConfig[ 'link' ]	= "/shop/product/review?id=$id";
 			$templateConfig[ 'users' ]	= [ $product->createdBy ];
 		}
@@ -358,7 +370,7 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 		return Yii::$app->eventManager->triggerNotification( $templateType, $templateVars, $templateConfig );
 	}
-    
+
     protected function getMessage() {
 
         return Yii::$app->request->post( 'message' ) != null ? Yii::$app->request->post( 'message' ) : "No reason were specified.";
