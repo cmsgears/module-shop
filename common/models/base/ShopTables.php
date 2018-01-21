@@ -1,0 +1,23 @@
+<?php
+namespace cmsgears\shop\common\models\base;
+
+class ShopTables {
+
+	// Entities -------------
+
+	// Product
+	const TABLE_PRODUCT			= 'cmg_cart_product';
+
+	const TABLE_PRODUCT_META	= 'cmg_cart_product_meta';
+
+	// Resources ------------
+
+	// Variation
+	const TABLE_PRODUCT_VARIATION	= 'cmg_cart_product_variation';
+
+	// Coupon
+	const TABLE_PRODUCT_COUPON		= 'cmg_cart_coupon';
+
+	// Subscription
+	const TABLE_SUBSCRIPTION		= 'cmg_cart_sub';
+}
