@@ -1,23 +1,37 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\common\models\base;
 
-class ShopTables {
+// CMG Imports
+use cmsgears\core\common\models\base\DbTables;
+
+/**
+ * It provide table name constants of db tables available in Shop Module.
+ *
+ * @since 1.0.0
+ */
+class ShopTables extends DbTables {
 
 	// Entities -------------
 
 	// Product
-	const TABLE_PRODUCT			= 'cmg_cart_product';
-
-	const TABLE_PRODUCT_META	= 'cmg_cart_product_meta';
+	const TABLE_PRODUCT			= 'cmg_shop_product';
 
 	// Resources ------------
 
+	// Product
+	const TABLE_PRODUCT_META	= 'cmg_shop_product_meta';
+
 	// Variation
-	const TABLE_PRODUCT_VARIATION	= 'cmg_cart_product_variation';
+	const TABLE_VARIATION		= 'cmg_shop_variation';
 
-	// Coupon
-	const TABLE_PRODUCT_COUPON		= 'cmg_cart_coupon';
+	// Mappers --------------
 
-	// Subscription
-	const TABLE_SUBSCRIPTION		= 'cmg_cart_sub';
 }
