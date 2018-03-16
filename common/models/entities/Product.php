@@ -81,6 +81,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property string $description
  * @property integer $status
  * @property integer $visibility
+ * @property boolean $reviews
  * @property string $sku
  * @property float $price
  * @property float $discount
@@ -205,7 +206,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IContent,
 			// Other
 			[ [ 'status', 'visibility' ], 'number', 'integerOnly' => true, 'min' => 0 ],
 			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
-			[ [ 'shop', 'gridCacheValid' ], 'boolean' ],
+			[ [ 'reviews', 'shop', 'gridCacheValid' ], 'boolean' ],
 			[ [ 'siteId', 'templateId', 'avatarId', 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
 			[ [ 'startDate', 'endDate' ], 'date' ],
@@ -353,6 +354,16 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IContent,
 	public function getTypeStr() {
 
 		return static::$typeMap[ $this->type ];
+	}
+
+	public function getReviewsStr() {
+
+		return Yii::$app->formatter->asBoolean( $this->reviews );
+	}
+
+	public function getShopStr() {
+
+		return Yii::$app->formatter->asBoolean( $this->shop );
 	}
 
 	/**

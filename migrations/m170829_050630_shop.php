@@ -84,6 +84,7 @@ class m170829_050630_shop extends Migration {
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'visibility' => $this->smallInteger( 6 )->notNull()->defaultValue( 0 ),
 			'sku' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ),
+			'reviews' => $this->boolean()->notNull()->defaultValue( false ),
 			'price' => $this->double()->notNull()->defaultValue( 0 ),
 			'discount' => $this->double()->notNull()->defaultValue( 0 ),
 			'total' => $this->float()->notNull()->defaultValue( 0 ),
