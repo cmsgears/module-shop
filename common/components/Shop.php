@@ -1,10 +1,24 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\common\components;
 
 // Yii Imports
 use Yii;
+use yii\base\Component;
 
-class Shop extends \yii\base\Component {
+/**
+ * Shop component register the services provided by Shop Module.
+ *
+ * @since 1.0.0
+ */
+class Shop extends Component {
 
 	// Global -----------------
 
@@ -17,13 +31,13 @@ class Shop extends \yii\base\Component {
 	// Constructor and Initialisation ------------------------------
 
 	/**
-	 * Initialise the CMG Shop Component.
+	 * Initialize the services.
 	 */
 	public function init() {
 
 		parent::init();
 
-		// Register application components and objects i.e. CMG and Project
+		// Register components and objects
 		$this->registerComponents();
 	}
 
@@ -35,10 +49,13 @@ class Shop extends \yii\base\Component {
 
 	// Cart ----------------------------------
 
-	// Properties
+	// Properties ----------------
 
-	// Components and Objects
+	// Components and Objects ----
 
+	/**
+	 * Register the services.
+	 */
 	public function registerComponents() {
 
 		// Register services
@@ -50,13 +67,9 @@ class Shop extends \yii\base\Component {
 		$this->initResourceServices();
 	}
 
-	public function registerEntityServices() {
-
-		$factory = Yii::$app->factory->getContainer();
-
-		$factory->set( 'cmsgears\shop\common\services\interfaces\entities\IProductService', 'cmsgears\shop\common\services\entities\ProductService' );
-	}
-
+	/**
+	 * Registers resource services.
+	 */
 	public function registerResourceServices() {
 
 		$factory	= Yii::$app->factory->getContainer();
@@ -65,13 +78,19 @@ class Shop extends \yii\base\Component {
 		$factory->set( 'cmsgears\shop\common\services\interfaces\resources\IProductVariationService', 'cmsgears\shop\common\services\resources\ProductVariationService' );
 	}
 
-	public function initEntityServices() {
+	/**
+	 * Registers entity services.
+	 */
+	public function registerEntityServices() {
 
 		$factory = Yii::$app->factory->getContainer();
 
-		$factory->set( 'productService', 'cmsgears\shop\common\services\entities\ProductService' );
+		$factory->set( 'cmsgears\shop\common\services\interfaces\entities\IProductService', 'cmsgears\shop\common\services\entities\ProductService' );
 	}
 
+	/**
+	 * Initialize resource services.
+	 */
 	public function initResourceServices() {
 
 		$factory	= Yii::$app->factory->getContainer();
@@ -79,4 +98,15 @@ class Shop extends \yii\base\Component {
 		$factory->set( 'productMetaService', 'cmsgears\shop\common\services\resources\ProductMetaService' );
 		$factory->set( 'productVariationService', 'cmsgears\shop\common\services\resources\ProductVariationService' );
 	}
+
+	/**
+	 * Initialize entity services.
+	 */
+	public function initEntityServices() {
+
+		$factory = Yii::$app->factory->getContainer();
+
+		$factory->set( 'productService', 'cmsgears\shop\common\services\entities\ProductService' );
+	}
+
 }

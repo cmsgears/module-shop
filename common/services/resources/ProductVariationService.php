@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\common\services\resources;
 
 // CMG Imports
@@ -6,7 +14,14 @@ use cmsgears\shop\common\models\base\ShopTables;
 
 use cmsgears\shop\common\services\interfaces\resources\IProductVariationService;
 
-class ProductVariationService extends \cmsgears\core\common\services\base\EntityService implements IProductVariationService {
+use cmsgears\core\common\services\base\ResourceService;
+
+/**
+ * ProductVariationService provide service methods of product variation.
+ *
+ * @since 1.0.0
+ */
+class ProductVariationService extends ResourceService implements IProductVariationService {
 
 	// Variables ---------------------------------------------------
 
@@ -62,6 +77,15 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Entity
 
 	// Update -------------
 
+	public function update( $model, $config = [] ) {
+
+		$attributes	= [ 'name', 'quantity', 'type', 'value', 'startDate', 'endDate', 'active', 'content' ];
+
+		return parent::update( $model, [
+			'attributes' => $attributes
+		]);
+	}
+
 	// Delete -------------
 
 	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
@@ -85,6 +109,14 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Entity
 		}
 	}
 
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
+
 	// Static Methods ----------------------------------------------
 
 	// CMG parent classes --------------------
@@ -107,14 +139,6 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Entity
 
 	// Update -------------
 
-	public function update( $model, $config = [] ) {
-
-		$attributes	= [ 'name', 'quantity', 'type', 'value', 'startDate', 'endDate', 'active', 'content' ];
-
-		return parent::update( $model, [
-				'attributes' => $attributes
-		]);
-	}
-
 	// Delete -------------
+
 }

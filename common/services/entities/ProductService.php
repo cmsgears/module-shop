@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\common\services\entities;
 
 // Yii Imports
@@ -18,7 +26,14 @@ use cmsgears\core\common\services\traits\ApprovalTrait;
 
 use cmsgears\shop\common\services\interfaces\entities\IProductService;
 
-class ProductService extends \cmsgears\core\common\services\base\EntityService implements IProductService {
+use cmsgears\core\common\services\base\EntityService;
+
+/**
+ * ProductService provide service methods of product model.
+ *
+ * @since 1.0.0
+ */
+class ProductService extends EntityService implements IProductService {
 
 	// Variables ---------------------------------------------------
 
@@ -399,6 +414,14 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 		}
 	}
 
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
+
 	// Static Methods ----------------------------------------------
 
 	// CMG parent classes --------------------
@@ -422,4 +445,5 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	// Update -------------
 
 	// Delete -------------
+
 }

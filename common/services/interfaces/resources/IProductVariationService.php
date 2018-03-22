@@ -1,7 +1,23 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\common\services\interfaces\resources;
 
-interface IProductVariationService extends \cmsgears\core\common\services\interfaces\base\IEntityService {
+// CMG Imports
+use cmsgears\core\common\services\interfaces\base\IResourceService;
+
+/**
+ * IProductVariationService declares methods specific to product variation.
+ *
+ * @since 1.0.0
+ */
+interface IProductVariationService extends IResourceService {
 
 	// Data Provider ------
 
@@ -13,10 +29,20 @@ interface IProductVariationService extends \cmsgears\core\common\services\interf
 
 	// Read - Maps -----
 
+	// Read - Others ---
+
 	// Create -------------
 
 	// Update -------------
 
 	// Delete -------------
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 }
