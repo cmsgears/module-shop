@@ -15,6 +15,7 @@
 	},
     "require": {
         "cmsgears/module-core": "*",
+		"cmsgears/module-cms": "*",
 		"cmsgears/module-cart": "*"
     }
 }
