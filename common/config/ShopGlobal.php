@@ -3,6 +3,8 @@ namespace cmsgears\shop\common\config;
 
 /**
  * The ShopGlobal class defines the global constants and variables available for shop module.
+ *
+ * @since 1.0.0
  */
 class ShopGlobal {
 

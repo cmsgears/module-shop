@@ -10,8 +10,6 @@
 namespace cmsgears\shop\common\services\resources;
 
 // CMG Imports
-use cmsgears\shop\common\models\base\ShopTables;
-
 use cmsgears\shop\common\services\interfaces\resources\IProductVariationService;
 
 use cmsgears\core\common\services\base\ResourceService;
@@ -31,9 +29,7 @@ class ProductVariationService extends ResourceService implements IProductVariati
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\shop\common\models\resources\ProductVariation';
-
-	public static $modelTable	= ShopTables::TABLE_PRODUCT_VARIATION;
+	public static $modelClass = '\cmsgears\shop\common\models\resources\ProductVariation';
 
 	// Protected --------------
 
@@ -88,6 +84,8 @@ class ProductVariationService extends ResourceService implements IProductVariati
 
 	// Delete -------------
 
+	// Bulk ---------------
+
 	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
 
 		switch( $column ) {
@@ -108,8 +106,6 @@ class ProductVariationService extends ResourceService implements IProductVariati
 			}
 		}
 	}
-
-	// Bulk ---------------
 
 	// Notifications ------
 

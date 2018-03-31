@@ -50,6 +50,7 @@ class m170829_050630_shop extends Migration {
 		// Product
 		$this->upProduct();
 		$this->upProductMeta();
+		$this->upProductFollower();
 
 		// Variation
 		$this->upVariation();
@@ -83,7 +84,8 @@ class m170829_050630_shop extends Migration {
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'visibility' => $this->smallInteger( 6 )->notNull()->defaultValue( 0 ),
-			'sku' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ),
+			'sku' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ), // Ideal for Vendor Code
+			'code' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ), // Useful for Shop Code
 			'reviews' => $this->boolean()->notNull()->defaultValue( false ),
 			'price' => $this->double()->notNull()->defaultValue( 0 ),
 			'discount' => $this->double()->notNull()->defaultValue( 0 ),
@@ -137,6 +139,23 @@ class m170829_050630_shop extends Migration {
 
 		// Index for columns site, parent, creator and modifier
 		$this->createIndex( 'idx_' . $this->prefix . 'product_meta_parent', $this->prefix . 'shop_product_meta', 'modelId' );
+	}
+
+	private function upProductFollower() {
+
+        $this->createTable( $this->prefix . 'shop_product_follower', [
+			'id' => $this->bigPrimaryKey( 20 ),
+			'userId' => $this->bigInteger( 20 )->notNull(),
+			'modelId' => $this->bigInteger( 20 )->notNull(),
+			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
+			'active' => $this->boolean()->notNull()->defaultValue( false ),
+			'createdAt' => $this->dateTime()->notNull(),
+			'modifiedAt' => $this->dateTime()
+        ], $this->options );
+
+        // Index for columns user and model
+		$this->createIndex( 'idx_' . $this->prefix . 'product_follower_user', $this->prefix . 'shop_product_follower', 'userId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'product_follower_parent', $this->prefix . 'shop_product_follower', 'modelId' );
 	}
 
 	private function upVariation() {
@@ -205,6 +224,10 @@ class m170829_050630_shop extends Migration {
 		// Product Meta
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_meta_parent', $this->prefix . 'shop_product_meta', 'modelId', $this->prefix . 'shop_product', 'id', 'CASCADE' );
 
+		// Product Follower
+        $this->addForeignKey( 'fk_' . $this->prefix . 'product_follower_user', $this->prefix . 'shop_product_follower', 'userId', $this->prefix . 'core_user', 'id', 'CASCADE' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'productpage_follower_parent', $this->prefix . 'shop_product_follower', 'modelId', $this->prefix . 'cms_page', 'id', 'CASCADE' );
+
 		// Product Variation
 		$this->addForeignKey( 'fk_' . $this->prefix . 'variation_template', $this->prefix . 'shop_variation', 'templateId', $this->prefix . 'core_template', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'variation_product', $this->prefix . 'shop_variation', 'productId', $this->prefix . 'shop_product', 'id', 'CASCADE' );
@@ -247,6 +270,10 @@ class m170829_050630_shop extends Migration {
 
 		// Product Meta
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_meta_parent', $this->prefix . 'shop_product_meta' );
+
+		// Product Follower
+        $this->dropForeignKey( 'fk_' . $this->prefix . 'product_follower_user', $this->prefix . 'shop_product_follower' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'productpage_follower_parent', $this->prefix . 'shop_product_follower' );
 
 		// Variation
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'variation_template', $this->prefix . 'shop_variation' );

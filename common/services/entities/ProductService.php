@@ -16,9 +16,6 @@ use yii\data\Sort;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\shop\common\models\base\ShopTables;
-
-use cmsgears\core\common\models\resources\Gallery;
 use cmsgears\shop\common\models\entities\Product;
 
 use cmsgears\core\common\services\traits\SlugTypeTrait;
@@ -46,8 +43,6 @@ class ProductService extends EntityService implements IProductService {
 	// Public -----------------
 
 	public static $modelClass	= '\cmsgears\shop\common\models\entities\Product';
-
-	public static $modelTable	= ShopTables::TABLE_PRODUCT;
 
 	public static $typed		= true;
 
@@ -93,40 +88,46 @@ class ProductService extends EntityService implements IProductService {
 
 	public function getPage( $config = [] ) {
 
-		$modelClass		= static::$modelClass;
-		$modelTable		= static::$modelTable;
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
 
 		// Sorting ----------
 
 		$sort = new Sort([
 			'attributes' => [
+				'id' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Id'
+				],
 				'name' => [
-					'asc' => [ 'name' => SORT_ASC ],
-					'desc' => ['name' => SORT_DESC ],
+					'asc' => [ "$modelTable.name" => SORT_ASC ],
+					'desc' => [ "$modelTable.name" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Name'
 				],
 				'price' => [
-					'asc' => [ 'price' => SORT_ASC ],
-					'desc' => ['price' => SORT_DESC ],
+					'asc' => [ "$modelTable.price" => SORT_ASC ],
+					'desc' => [ "$modelTable.price" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Price'
 				],
 				'quantity' => [
-					'asc' => [ 'quantity' => SORT_ASC ],
-					'desc' => ['quantity' => SORT_DESC ],
+					'asc' => [ "$modelTable.quantity" => SORT_ASC ],
+					'desc' => [ "$modelTable.quantity" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Quantity'
 				],
 				'cdate' => [
-					'asc' => [ 'createdAt' => SORT_ASC ],
-					'desc' => ['createdAt' => SORT_DESC ],
+					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
+					'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'cdate',
 				],
 				'udate' => [
-					'asc' => [ 'modifiedAt' => SORT_ASC ],
-					'desc' => ['modifiedAt' => SORT_DESC ],
+					'asc' => [ "$modelTable.modifiedAt" => SORT_ASC ],
+					'desc' => [ "$modelTable.modifiedAt" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'udate',
 				]
@@ -153,7 +154,11 @@ class ProductService extends EntityService implements IProductService {
 
 		if( isset( $searchCol ) ) {
 
-			$search = [ 'name' => "$modelTable.name", 'slug' => "$modelTable.slug", 'template' => "$modelTable.template" ];
+			$search = [
+				'name' => "$modelTable.name",
+				'slug' => "$modelTable.slug",
+				'template' => "$modelTable.template"
+			];
 
 			$config[ 'search-col' ] = $search[ $searchCol ];
 		}
@@ -161,7 +166,8 @@ class ProductService extends EntityService implements IProductService {
 		// Reporting --------
 
 		$config[ 'report-col' ]	= [
-				'name' => "$modelTable.name", 'slug' => "$modelTable.slug"
+			'name' => "$modelTable.name",
+			'slug' => "$modelTable.slug"
 		];
 
 		// Result -----------
@@ -179,7 +185,7 @@ class ProductService extends EntityService implements IProductService {
 
 	public function create( $model, $config = [] ) {
 
-		$model	= parent::create( $model, $config );
+		$model = parent::create( $model, $config );
 
 		$this->linkGallery( $model );
 
@@ -198,25 +204,25 @@ class ProductService extends EntityService implements IProductService {
 		$attributes	= [ 'name', 'description', 'type', 'status', 'visibility', 'shop', 'quantity', 'price', 'startDate', 'endDate', 'content', 'uomId' ];
 
 		return parent::update( $model, [
-				'attributes' => $attributes
+			'attributes' => $attributes
 		]);
 	}
 
 	public function linkGallery( $product ) {
 
-		$model 			= new Gallery();
+		$model 			= Yii::$app->factory->get( 'galleryService' )->getModelObject();
 		$model->name	= $product->name;
 		$model->type	= ShopGlobal::TYPE_PRODUCT;
 		$model->siteId	= Yii::$app->core->siteId;
 
-		$gallery		= Yii::$app->factory->get( 'galleryService' )->create( $model );
+		$gallery = Yii::$app->factory->get( 'galleryService' )->create( $model );
 
 		if( isset( $gallery ) ) {
 
 			$product->galleryId	= $gallery->id;
 
 			return parent::update( $product, [
-					'attributes' => [ 'galleryId' ]
+				'attributes' => [ 'galleryId' ]
 			]);
 		}
 	}
@@ -305,7 +311,6 @@ class ProductService extends EntityService implements IProductService {
 
                 break;
             }
-
             case Product::STATUS_REJECTED: {
 
                 $message    = $this->getMessage();
@@ -320,7 +325,6 @@ class ProductService extends EntityService implements IProductService {
 
                 break;
             }
-
             case Product::STATUS_FROJEN: {
 
                 $message    = $this->getMessage();
@@ -335,7 +339,6 @@ class ProductService extends EntityService implements IProductService {
 
                 break;
             }
-
             case Product::STATUS_BLOCKED: {
 
                 $message    = $this->getMessage();
@@ -355,12 +358,12 @@ class ProductService extends EntityService implements IProductService {
 
     protected function sendNotification( $product, $config = [] ) {
 
-		$templateType           = $config[ 'template' ];
-		$title                  = $config[ 'title' ];
-		$id                     = $product->id;
-		$name                   = $product->name;
-		$templateVars           = [];
-		$templateConfig         = [];
+		$templateType	= $config[ 'template' ];
+		$title			= $config[ 'title' ];
+		$id				= $product->id;
+		$name			= $product->name;
+		$templateVars	= [];
+		$templateConfig	= [];
 
 		$templateConfig[ 'parentId' ]	= $id;
 		$templateConfig[ 'parentType' ]	= self::$parentType;
@@ -368,7 +371,7 @@ class ProductService extends EntityService implements IProductService {
 
 		if( isset( $config[ 'admin' ] ) && $config[ 'admin' ] ) {
 
-			$templateConfig[ 'adminLink' ]	= "/shop/product/watch?id=$id";
+			$templateConfig[ 'adminLink' ] = "/shop/product/watch?id=$id";
 		}
 		else {
 
@@ -376,11 +379,11 @@ class ProductService extends EntityService implements IProductService {
 			$templateConfig[ 'users' ]	= [ $product->createdBy ];
 		}
 
-		$templateVars[ 'productName' ]	= $name;
+		$templateVars[ 'productName' ] = $name;
 
 		if( isset( $config[ 'message' ] ) && $config[ 'message' ] != null ) {
 
-			$templateVars[ 'message' ]	= $config[ 'message' ];
+			$templateVars[ 'message' ] = $config[ 'message' ];
 		}
 
 		return Yii::$app->eventManager->triggerNotification( $templateType, $templateVars, $templateConfig );
@@ -392,6 +395,8 @@ class ProductService extends EntityService implements IProductService {
 	}
 
 	// Delete -------------
+
+	// Bulk ---------------
 
 	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
 
@@ -413,8 +418,6 @@ class ProductService extends EntityService implements IProductService {
 			}
 		}
 	}
-
-	// Bulk ---------------
 
 	// Notifications ------
 

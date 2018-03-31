@@ -27,6 +27,7 @@ use cmsgears\core\common\models\interfaces\base\IMultiSite;
 use cmsgears\core\common\models\interfaces\base\INameType;
 use cmsgears\core\common\models\interfaces\base\ISlugType;
 use cmsgears\core\common\models\interfaces\base\IVisibility;
+use cmsgears\core\common\models\interfaces\resources\IComment;
 use cmsgears\core\common\models\interfaces\resources\IContent;
 use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
@@ -39,6 +40,7 @@ use cmsgears\cms\common\models\interfaces\resources\IPageContent;
 use cmsgears\core\common\models\base\Entity;
 use cmsgears\shop\common\models\base\ShopTables;
 use cmsgears\shop\common\models\resources\Variation;
+use cmsgears\shop\common\models\mappers\ProductFollower;
 
 use cmsgears\core\common\models\traits\base\ApprovalTrait;
 use cmsgears\core\common\models\traits\base\AuthorTrait;
@@ -47,6 +49,7 @@ use cmsgears\core\common\models\traits\base\MultiSiteTrait;
 use cmsgears\core\common\models\traits\base\NameTypeTrait;
 use cmsgears\core\common\models\traits\base\SlugTypeTrait;
 use cmsgears\core\common\models\traits\base\VisibilityTrait;
+use cmsgears\core\common\models\traits\resources\CommentTrait;
 use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
@@ -83,6 +86,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $visibility
  * @property boolean $reviews
  * @property string $sku
+ * @property string $code
  * @property float $price
  * @property float $discount
  * @property float $total
@@ -108,7 +112,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Product extends Entity implements IApproval, IAuthor, ICategory, IContent, IData, IFollower,
+class Product extends Entity implements IApproval, IAuthor, ICategory, IComment, IContent, IData, IFollower,
 	IGridCache, IMultiSite, INameType, IPageContent, ISlugType, ITag, ITemplate, IVisibility, IVisual {
 
 	// Variables ---------------------------------------------------
@@ -136,6 +140,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IContent,
 	use ApprovalTrait;
     use AuthorTrait;
 	use CategoryTrait;
+	use CommentTrait;
 	use ContentTrait;
     use DataTrait;
 	use FollowerTrait;
@@ -177,9 +182,10 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IContent,
 			'sluggableBehavior' => [
 				'class' => SluggableBehavior::class,
 				'attribute' => 'name',
-				'slugAttribute' => 'slug', // Unique for combination of Site Id
+				'slugAttribute' => 'slug', // Unique for Site Id
+				'immutable' => true,
 				'ensureUnique' => true,
-				'uniqueValidator' => [ 'targetAttribute' => 'siteId' ]
+				'uniqueValidator' => [ 'targetAttribute' => [ 'siteId', 'slug' ] ]
 			]
         ];
     }
@@ -200,7 +206,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IContent,
 			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ 'icon', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-			[ [ 'slug', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ [ 'slug', 'sku', 'code' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxxLargeText ],
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
@@ -334,6 +340,26 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IContent,
 	public function getLengthUnit() {
 
 		return $this->hasOne( Uom::class, [ 'id' => 'lengthUnitId' ] )->from( CartTables::TABLE_UOM . ' as lengthUnit' );
+	}
+
+	/**
+	 * Returns page or post followers.
+	 *
+	 * @return \cmsgears\shop\common\models\mappers\ProductFollower[]
+	 */
+	public function getProductFollowers() {
+
+		return $this->hasMany( ProductFollower::class, [ 'modelId' => 'id' ] );
+	}
+
+	/**
+	 * Returns meta and attributes.
+	 *
+	 * @return \cmsgears\shop\common\models\resources\ProductMeta[]
+	 */
+	public function getMetas() {
+
+		return $this->hasMany( ProductMeta::class, [ 'productId' => 'id' ] );
 	}
 
 	/**

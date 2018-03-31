@@ -10,8 +10,6 @@
 namespace cmsgears\shop\common\services\resources;
 
 // CMG Imports
-use cmsgears\shop\common\models\base\ShopTables;
-
 use cmsgears\shop\common\services\interfaces\resources\IProductMetaService;
 
 use cmsgears\core\common\services\base\MetaService;
@@ -31,11 +29,7 @@ class ProductMetaService extends MetaService implements IProductMetaService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\shop\common\models\resources\ProductMeta';
-
-	public static $modelTable	= ShopTables::TABLE_PRODUCT_META;
-
-	public static $parentType	= null;
+	public static $modelClass = '\cmsgears\shop\common\models\resources\ProductMeta';
 
 	// Protected --------------
 
@@ -81,6 +75,8 @@ class ProductMetaService extends MetaService implements IProductMetaService {
 
 	// Delete -------------
 
+	// Bulk ---------------
+
 	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
 
 		switch( $column ) {
@@ -101,8 +97,6 @@ class ProductMetaService extends MetaService implements IProductMetaService {
 			}
 		}
 	}
-
-	// Bulk ---------------
 
 	// Notifications ------
 
