@@ -249,6 +249,7 @@ class m170829_050630_shop extends Migration {
 
 		$this->dropTable( $this->prefix . 'shop_product' );
 		$this->dropTable( $this->prefix . 'shop_product_meta' );
+		$this->dropTable( $this->prefix . 'shop_product_follower' );
 
 		$this->dropTable( $this->prefix . 'shop_variation' );
 	}

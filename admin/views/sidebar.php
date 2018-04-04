@@ -9,7 +9,7 @@ $core	= Yii::$app->core;
 $user	= Yii::$app->user->getIdentity();
 ?>
 
-<?php if( $core->hasModule( 'shop' ) && $user->isPermitted( ShopGlobal::PERM_SHOP ) ) { ?>
+<?php if( $core->hasModule( 'shop' ) && $user->isPermitted( ShopGlobal::PERM_SHOP_ADMIN ) ) { ?>
 	<div id="sidebar-shop" class="collapsible-tab has-children <?php if( strcmp( $parent, 'sidebar-shop' ) == 0 ) echo 'active';?>">
 		<div class="row tab-header">
 			<div class="tab-icon"><span class="cmti cmti-cart"></span></div>
