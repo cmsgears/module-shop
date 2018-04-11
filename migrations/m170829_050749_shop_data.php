@@ -184,10 +184,10 @@ class m170829_050749_shop_data extends Migration {
 			'name' => 'Config Shop', 'slug' => 'config-shop',
 			'type' => CoreGlobal::TYPE_SYSTEM,
 			'description' => 'Shop configuration form.',
-			'successMessage' => 'All configurations saved successfully.',
+			'success' => 'All configurations saved successfully.',
 			'captcha' => false,
 			'visibility' => Form::VISIBILITY_PROTECTED,
-			'active' => true, 'userMail' => false,'adminMail' => false,
+			'status' => Form::STATUS_ACTIVE, 'userMail' => false,'adminMail' => false,
 			'createdAt' => DateUtil::getDateTime(),
 			'modifiedAt' => DateUtil::getDateTime()
 		]);
