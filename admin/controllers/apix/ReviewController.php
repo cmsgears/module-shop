@@ -7,22 +7,19 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\admin;
-
-// Yii Imports
-use Yii;
+namespace cmsgears\shop\admin\controllers\apix;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\common\base\Module as BaseModule;
+use cmsgears\core\admin\controllers\apix\CommentController as BaseCommentController;
 
 /**
- * The Admin Module of Shop Module.
+ * ReviewController provides actions specific to product reviews.
  *
  * @since 1.0.0
  */
-class Module extends BaseModule {
+class ReviewController extends BaseCommentController {
 
 	// Variables ---------------------------------------------------
 
@@ -30,15 +27,9 @@ class Module extends BaseModule {
 
 	// Public -----------------
 
-	public $controllerNamespace = 'cmsgears\shop\admin\controllers';
-
-	public $config = [ ShopGlobal::CONFIG_SHOP ];
-
 	// Protected --------------
 
 	// Private ----------------
-
-	// Traits ------------------------------------------------------
 
 	// Constructor and Initialisation ------------------------------
 
@@ -46,7 +37,8 @@ class Module extends BaseModule {
 
 		parent::init();
 
-		$this->setViewPath( '@cmsgears/module-shop/admin/views' );
+		// Permission
+		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 	}
 
 	// Instance methods --------------------------------------------
@@ -55,17 +47,14 @@ class Module extends BaseModule {
 
 	// Yii parent classes --------------------
 
+	// yii\base\Component -----
+
+	// yii\base\Controller ----
+
 	// CMG interfaces ------------------------
 
 	// CMG parent classes --------------------
 
-	// Module --------------------------------
-
-	public function getSidebarHtml() {
-
-		$path	= Yii::getAlias( '@cmsgears' ) . '/module-shop/admin/views/sidebar.php';
-
-		return $path;
-	}
+	// ReviewController ----------------------
 
 }

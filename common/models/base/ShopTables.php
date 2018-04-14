@@ -27,12 +27,13 @@ class ShopTables extends DbTables {
 	// Resources ------------
 
 	// Product
-	const TABLE_PRODUCT_META		= 'cmg_shop_product_meta';
-	const TABLE_PRODUCT_FOLLOWER	= 'cmg_shop_product_follower';
+	const TABLE_PRODUCT_META	= 'cmg_shop_product_meta';
 
 	// Variation
 	const TABLE_VARIATION		= 'cmg_shop_variation';
 
 	// Mappers --------------
+
+	const TABLE_PRODUCT_FOLLOWER = 'cmg_shop_product_follower';
 
 }

@@ -7,23 +7,22 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\admin\controllers\product;
+namespace cmsgears\shop\admin\controllers\apix;
 
 // Yii Imports
 use Yii;
-use yii\helpers\Url;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\base\GalleryController as BaseGalleryController;
+use cmsgears\core\admin\controllers\apix\AttributeController as BaseAttributeController;
 
 /**
- * GalleryController provide actions specific to product gallery.
+ * AttributeController provides actions specific to product attributes.
  *
  * @since 1.0.0
  */
-class GalleryController extends BaseGalleryController {
+class AttributeController extends BaseAttributeController {
 
 	// Variables ---------------------------------------------------
 
@@ -44,27 +43,8 @@ class GalleryController extends BaseGalleryController {
 		// Permission
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
-		// Config
-		$this->type			= ShopGlobal::TYPE_PRODUCT;
-		$this->parentUrl	= '/shop/product/all';
-		$this->modelContent	= true;
-
 		// Services
-		$this->parentService = Yii::$app->factory->get( 'productService' );
-
-		// Sidebar
-		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
-
-		// Return Url
-		$this->returnUrl = Url::previous( 'products' );
-		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all/' ], true );
-
-		// Breadcrumbs
-		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  $this->returnUrl ] ],
-			'direct' => [ [ 'label' => 'Gallery' ] ],
-			'items' => [ [ 'label' => 'Gallery', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ],
-		];
+		$this->modelService = Yii::$app->factory->get( 'productMetaService' );
 	}
 
 	// Instance methods --------------------------------------------
@@ -81,6 +61,6 @@ class GalleryController extends BaseGalleryController {
 
 	// CMG parent classes --------------------
 
-	// GalleryController ---------------------
+	// AttributeController -------------------
 
 }

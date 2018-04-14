@@ -16,14 +16,14 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\base\GalleryController as BaseGalleryController;
+use cmsgears\cms\admin\controllers\base\TagController as BaseTagController;
 
 /**
- * GalleryController provide actions specific to product gallery.
+ * TagController provides actions specific to product tags.
  *
  * @since 1.0.0
  */
-class GalleryController extends BaseGalleryController {
+class TagController extends BaseTagController {
 
 	// Variables ---------------------------------------------------
 
@@ -46,24 +46,22 @@ class GalleryController extends BaseGalleryController {
 
 		// Config
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
-		$this->parentUrl	= '/shop/product/all';
-		$this->modelContent	= true;
-
-		// Services
-		$this->parentService = Yii::$app->factory->get( 'productService' );
+		$this->templateType	= ShopGlobal::TYPE_PRODUCT;
 
 		// Sidebar
-		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
+		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-tag' ];
 
 		// Return Url
-		$this->returnUrl = Url::previous( 'products' );
-		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all/' ], true );
+		$this->returnUrl = Url::previous( 'tags' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/tag/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  $this->returnUrl ] ],
-			'direct' => [ [ 'label' => 'Gallery' ] ],
-			'items' => [ [ 'label' => 'Gallery', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ],
+			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/product/all' ] ] ],
+			'all' => [ [ 'label' => 'Tags' ] ],
+			'create' => [ [ 'label' => 'Tags', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Tags', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Tags', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 
@@ -81,6 +79,13 @@ class GalleryController extends BaseGalleryController {
 
 	// CMG parent classes --------------------
 
-	// GalleryController ---------------------
+	// TagController -------------------------
+
+	public function actionAll( $config = [] ) {
+
+		Url::remember( Yii::$app->request->getUrl(), 'tags' );
+
+		return parent::actionAll( $config );
+	}
 
 }

@@ -16,14 +16,14 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\base\GalleryController as BaseGalleryController;
+use cmsgears\core\admin\controllers\base\TemplateController as BaseTemplateController;
 
 /**
- * GalleryController provide actions specific to product gallery.
+ * TemplateController provide actions specific to product templates.
  *
  * @since 1.0.0
  */
-class GalleryController extends BaseGalleryController {
+class TemplateController extends BaseTemplateController {
 
 	// Variables ---------------------------------------------------
 
@@ -45,25 +45,22 @@ class GalleryController extends BaseGalleryController {
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
 		// Config
-		$this->type			= ShopGlobal::TYPE_PRODUCT;
-		$this->parentUrl	= '/shop/product/all';
-		$this->modelContent	= true;
-
-		// Services
-		$this->parentService = Yii::$app->factory->get( 'productService' );
+		$this->type = ShopGlobal::TYPE_PRODUCT;
 
 		// Sidebar
-		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
+		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-template' ];
 
 		// Return Url
-		$this->returnUrl = Url::previous( 'products' );
-		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all/' ], true );
+		$this->returnUrl = Url::previous( 'templates' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/template/all' ], true );
 
 		// Breadcrumbs
-		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  $this->returnUrl ] ],
-			'direct' => [ [ 'label' => 'Gallery' ] ],
-			'items' => [ [ 'label' => 'Gallery', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ],
+		$this->breadcrumbs = [
+			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/product/all' ] ] ],
+			'all' => [ [ 'label' => 'Templates' ] ],
+			'create' => [ [ 'label' => 'Templates', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Templates', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Templates', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 
@@ -81,6 +78,13 @@ class GalleryController extends BaseGalleryController {
 
 	// CMG parent classes --------------------
 
-	// GalleryController ---------------------
+	// TemplateController --------------------
+
+	public function actionAll( $config = [] ) {
+
+		Url::remember( Yii::$app->request->getUrl(), 'templates' );
+
+		return parent::actionAll( $config );
+	}
 
 }

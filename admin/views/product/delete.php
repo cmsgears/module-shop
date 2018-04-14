@@ -17,7 +17,7 @@ use cmsgears\widgets\category\CategoryAuto;
 use cmsgears\widgets\tag\TagMapper;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title 	= 'Update Product | ' . $coreProperties->getSiteTitle();
+$this->title 	= 'Delete Product | ' . $coreProperties->getSiteTitle();
 $returnUrl		= $this->context->returnUrl;
 $apixBase		= $this->context->apixBase;
 
@@ -25,7 +25,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 ?>
 <div class="box-crud-wrap row">
 	<div class="box-crud-wrap-main colf colf3x2">
-		<?php $form = ActiveForm::begin( [ 'id' => 'frm-product', 'options' => [ 'class' => 'form' ] ] ); ?>
+		<?php $form = ActiveForm::begin( [ 'id' => 'frm-listing', 'options' => [ 'class' => 'form' ] ] ); ?>
 		<div class="box box-crud">
 			<div class="box-header">
 				<div class="box-header-title">Basic Details</div>
@@ -34,48 +34,53 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content">
 					<div class="row">
 						<div class="col col3">
-							<?= $form->field( $model, 'name' ) ?>
+							<?= $form->field( $model, 'name' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 						<div class="col col3">
-							<?= $form->field( $model, 'slug' ) ?>
+							<?= $form->field( $model, 'slug' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 						<div class="col col3">
-							<?= $form->field( $model, 'title' ) ?>
+							<?= $form->field( $model, 'title' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $content, 'templateId' )->dropDownList( $templatesMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $content, 'templateId' )->dropDownList( $templatesMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'description' )->textarea() ?>
+							<?= $form->field( $model, 'description' )->textarea( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'status' )->dropDownList( $statusMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'status' )->dropDownList( $statusMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'visibility' )->dropDownList( $visibilityMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'visibility' )->dropDownList( $visibilityMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= IconChooser::widget( [ 'model' => $model, 'options' => [ 'class' => 'icon-picker-wrap' ] ] ) ?>
+							<?= IconChooser::widget( [ 'model' => $model, 'options' => [ 'class' => 'icon-picker-wrap', 'disabled' => true ] ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'order' ) ?>
+							<?= $form->field( $content, 'publishedAt' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col3">
-							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'reviews', null, 'cmti cmti-checkbox' ) ?>
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'reviews', [ 'disabled' => true ], 'cmti cmti-checkbox' ) ?>
 						</div>
 						<div class="col col3">
-							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'pinned', null, 'cmti cmti-checkbox' ) ?>
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'pinned', [ 'disabled' => true ], 'cmti cmti-checkbox' ) ?>
 						</div>
 						<div class="col col3">
-							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'featured', null, 'cmti cmti-checkbox' ) ?>
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'featured', [ 'disabled' => true ], 'cmti cmti-checkbox' ) ?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col col2">
+							<?= $form->field( $model, 'order' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 				</div>
@@ -90,60 +95,60 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content">
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'primaryUnitId' )->dropDownList( $shopUnitsMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'primaryUnitId' )->dropDownList( $shopUnitsMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'primary' ) ?>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col col2">
-							<?= $form->field( $model, 'purchasingUnitId' )->dropDownList( $shopUnitsMap, [ 'class' => 'cmt-select' ] ) ?>
-						</div>
-						<div class="col col2">
-							<?= $form->field( $model, 'purchase' ) ?>
+							<?= $form->field( $model, 'primary' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'quantityUnitId' )->dropDownList( $shopUnitsMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'purchasingUnitId' )->dropDownList( $shopUnitsMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'quantity' ) ?>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col col2">
-							<?= $form->field( $model, 'weightUnitId' )->dropDownList( $weightUnitsMap, [ 'class' => 'cmt-select' ] ) ?>
-						</div>
-						<div class="col col2">
-							<?= $form->field( $model, 'weight' ) ?>
+							<?= $form->field( $model, 'purchase' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'volumeUnitId' )->dropDownList( $volumeUnitsMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'quantityUnitId' )->dropDownList( $shopUnitsMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'volume' ) ?>
+							<?= $form->field( $model, 'quantity' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'lengthUnitId' )->dropDownList( $lengthUnitsMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'weightUnitId' )->dropDownList( $weightUnitsMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
+						</div>
+						<div class="col col2">
+							<?= $form->field( $model, 'weight' )->textInput( [ 'readonly' => 'true' ] ) ?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col col2">
+							<?= $form->field( $model, 'volumeUnitId' )->dropDownList( $volumeUnitsMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
+						</div>
+						<div class="col col2">
+							<?= $form->field( $model, 'volume' )->textInput( [ 'readonly' => 'true' ] ) ?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col col2">
+							<?= $form->field( $model, 'lengthUnitId' )->dropDownList( $lengthUnitsMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2 row">
 							<div class="col col2">
-								<?= $form->field( $model, 'length' ) ?>
+								<?= $form->field( $model, 'length' )->textInput( [ 'readonly' => 'true' ] ) ?>
 							</div>
 							<div class="col col2">
-								<?= $form->field( $model, 'width' ) ?>
+								<?= $form->field( $model, 'width' )->textInput( [ 'readonly' => 'true' ] ) ?>
 							</div>
 							<div class="col col2">
-								<?= $form->field( $model, 'height' ) ?>
+								<?= $form->field( $model, 'height' )->textInput( [ 'readonly' => 'true' ] ) ?>
 							</div>
 							<div class="col col2">
-								<?= $form->field( $model, 'radius' ) ?>
+								<?= $form->field( $model, 'radius' )->textInput( [ 'readonly' => 'true' ] ) ?>
 							</div>
 						</div>
 					</div>
@@ -159,15 +164,15 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content">
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'price' ) ?>
+							<?= $form->field( $model, 'price' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'discount' ) ?>
+							<?= $form->field( $model, 'discount' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'shop', null, 'cmti cmti-checkbox' ) ?>
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'shop', [ 'disabled' => 'true' ], 'cmti cmti-checkbox' ) ?>
 						</div>
 					</div>
 				</div>
@@ -183,15 +188,15 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					<div class="row padding padding-small-v">
 						<div class="col col3">
 							<label>Avatar</label>
-							<?= AvatarUploader::widget( [ 'model' => $avatar ] ) ?>
+							<?= AvatarUploader::widget( [ 'model' => $avatar, 'disabled' => 'true' ] ) ?>
 						</div>
 						<div class="col col3">
 							<label>Banner</label>
-							<?= ImageUploader::widget( [ 'model' => $banner ] ) ?>
+							<?= ImageUploader::widget( [ 'model' => $banner, 'disabled' => 'true' ] ) ?>
 						</div>
 						<div class="col col3">
 							<label>Video</label>
-							<?= VideoUploader::widget( [ 'model' => $video ] ) ?>
+							<?= VideoUploader::widget( [ 'model' => $video, 'disabled' => 'true' ] ) ?>
 						</div>
 					</div>
 				</div>
@@ -228,18 +233,18 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content">
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $content, 'seoName' ) ?>
+							<?= $form->field( $content, 'seoName' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $content, 'seoRobot' ) ?>
+							<?= $form->field( $content, 'seoRobot' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $content, 'seoKeywords' )->textarea() ?>
+							<?= $form->field( $content, 'seoKeywords' )->textarea( [ 'readonly' => 'true' ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $content, 'seoDescription' )->textarea() ?>
+							<?= $form->field( $content, 'seoDescription' )->textarea( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 				</div>
@@ -247,8 +252,8 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 		</div>
 		<div class="filler-height filler-height-medium"></div>
 		<div class="align align-right">
-			<?= Html::a( 'View All', $returnUrl, [ 'class' => 'btn btn-medium' ] ); ?>
-			<input class="element-medium" type="submit" value="Update" />
+			<?= Html::a( 'Cancel', $returnUrl, [ 'class' => 'btn btn-medium' ] ); ?>
+			<input class="element-medium" type="submit" value="Delete" />
 		</div>
 		<div class="filler-height filler-height-medium"></div>
 		<?php ActiveForm::end(); ?>
@@ -261,9 +266,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					<?= CategoryAuto::widget([
 						'options' => [ 'class' => 'box-mapper-auto' ],
 						'type' => ShopGlobal::TYPE_PRODUCT,
-						'model' => $model, 'app' => 'category',
-						'mapActionUrl' => "$apixBase/assign-category?slug=$model->slug&type=$model->type",
-						'deleteActionUrl' => "$apixBase/remove-category?slug=$model->slug&type=$model->type"
+						'model' => $model, 'disabled' => true
 					]) ?>
 				</div>
 			</div>
@@ -276,9 +279,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					<?= TagMapper::widget([
 						'options' => [ 'id' => 'box-tag-mapper', 'class' => 'box-tag-mapper' ],
 						'loadAssets' => true,
-						'model' => $model, 'app' => 'category',
-						'mapActionUrl' => "$apixBase/assign-tags?slug=$model->slug&type=$model->type",
-						'deleteActionUrl' => "$apixBase/remove-tag?slug=$model->slug&type=$model->type"
+						'model' => $model, 'disabled' => true
 					])?>
 				</div>
 			</div>

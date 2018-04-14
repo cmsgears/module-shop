@@ -24,6 +24,7 @@ use cmsgears\shop\common\models\entities\Product;
  * @property boolean $active
  * @property int $createdAt
  * @property int $modifiedAt
+ * @property string data
  *
  * @since 1.0.0
  */

@@ -7,19 +7,19 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\common\services\resources;
+namespace cmsgears\shop\common\services\mappers;
 
 // CMG Imports
-use cmsgears\shop\common\services\interfaces\resources\IProductMetaService;
+use cmsgears\shop\common\services\interfaces\mappers\IProductFollowerService;
 
-use cmsgears\core\common\services\base\MetaService;
+use cmsgears\core\common\services\base\FollowerService;
 
 /**
- * ProductMetaService provide service methods of product meta.
+ * ProductFollowerService provide service methods of product followers.
  *
  * @since 1.0.0
  */
-class ProductMetaService extends MetaService implements IProductMetaService {
+class ProductFollowerService extends FollowerService implements IProductFollowerService {
 
 	// Variables ---------------------------------------------------
 
@@ -29,7 +29,7 @@ class ProductMetaService extends MetaService implements IProductMetaService {
 
 	// Public -----------------
 
-	public static $modelClass = '\cmsgears\shop\common\models\resources\ProductMeta';
+	public static $modelClass = '\cmsgears\shop\common\models\mappers\ProductFollower';
 
 	// Protected --------------
 
@@ -55,7 +55,7 @@ class ProductMetaService extends MetaService implements IProductMetaService {
 
 	// CMG parent classes --------------------
 
-	// ProductMetaService --------------------
+	// ProductFollowerService ----------------
 
 	// Data Provider ------
 
@@ -87,7 +87,7 @@ class ProductMetaService extends MetaService implements IProductMetaService {
 
 	// CMG parent classes --------------------
 
-	// ProductMetaService --------------------
+	// ProductFollowerService ----------------
 
 	// Data Provider ------
 

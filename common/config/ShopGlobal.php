@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\common\config;
 
 /**
@@ -18,25 +26,9 @@ class ShopGlobal {
 
 	// Templates -------------------------------------------------------
 
-    const TEMPLATE_NOTIFY_SUBMIT    = 'product-submit';
-    const TEMPLATE_NOTIFY_RESUBMIT	= 'resubmit-product';
-	const TEMPLATE_NOTIFY_UP_FREEZE	= 'uplift-product-freeze';
-	const TEMPLATE_NOTIFY_UP_BLOCK	= 'uplift-product-block';
-	const TEMPLATE_NOTIFY_REJECT	= 'reject-product';
-	const TEMPLATE_NOTIFY_APPROVE	= 'approve-product';
-	const TEMPLATE_NOTIFY_FREEZE	= 'freeze-product';
-	const TEMPLATE_NOTIFY_BLOCKED	= 'block-product';
-
-    const TITLE_REGISTERED		= 'Product Registered';
-	const TITLE_RESUBMIT		= 'Product Resubmitted';
-	const TITLE_UPLIFT_FREEZE	= 'Requested Uplift Freeze';
-	const TITLE_UPLIFT_BLOCK	= 'Requested Uplift Block';
-	const TITLE_REJECT          = 'Product Rejected';
-	const TITLE_APPROVE         = 'Product Approved';
-	const TITLE_FREEZE          = 'Product Frozen';
-	const TITLE_BLOCKED         = 'Product Blocked';
-
 	// Config ----------------------------------------------------------
+
+	const CONFIG_SHOP = 'shop';
 
 	// Roles -----------------------------------------------------------
 
@@ -72,7 +64,10 @@ class ShopGlobal {
 
 	// Model Fields ----------------------------------------------------
 
-	const FIELD_PRODUCT			= 'productField';
-	const FIELD_ADDON_PRODUCT	= 'addonProductField';
+	// Generic Fields
+	const FIELD_PRODUCT				= 'productField';
+	const FIELD_PRODUCT_VARIATION	= 'productVariationField';
+
+	const FIELD_SHOP	= 'shopField';
 
 }

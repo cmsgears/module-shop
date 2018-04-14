@@ -66,7 +66,6 @@ class m170829_050630_shop extends Migration {
 		$this->createTable( $this->prefix . 'shop_product', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'siteId' => $this->bigInteger( 20 )->notNull(),
-			'templateId' => $this->bigInteger( 20 ),
 			'avatarId' => $this->bigInteger( 20 ),
 			'primaryUnitId' => $this->bigInteger( 20 ),
 			'purchasingUnitId' => $this->bigInteger( 20 )->notNull(),
@@ -84,22 +83,25 @@ class m170829_050630_shop extends Migration {
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'visibility' => $this->smallInteger( 6 )->notNull()->defaultValue( 0 ),
+			'order' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'sku' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ), // Ideal for Vendor Code
 			'code' => $this->string( Yii::$app->core->xxLargeText )->defaultValue( null ), // Useful for Shop Code
-			'reviews' => $this->boolean()->notNull()->defaultValue( false ),
 			'price' => $this->double()->notNull()->defaultValue( 0 ),
-			'discount' => $this->double()->notNull()->defaultValue( 0 ),
+			'discount' => $this->double()->defaultValue( 0 ),
 			'total' => $this->float()->notNull()->defaultValue( 0 ),
-			'primary' => $this->float()->notNull()->defaultValue( 0 ),
+			'primary' => $this->float()->defaultValue( 0 ),
 			'purchase' => $this->float()->notNull()->defaultValue( 0 ),
-			'quantity' => $this->float()->notNull()->defaultValue( 0 ),
-			'weight' => $this->float()->notNull()->defaultValue( 0 ),
-			'volume' => $this->float()->notNull()->defaultValue( 0 ),
-			'length' => $this->float()->notNull()->defaultValue( 0 ),
-			'width' => $this->float()->notNull()->defaultValue( 0 ),
-			'height' => $this->float()->notNull()->defaultValue( 0 ),
-			'radius' => $this->float()->notNull()->defaultValue( 0 ),
+			'quantity' => $this->float()->defaultValue( 0 ),
+			'weight' => $this->float()->defaultValue( 0 ),
+			'volume' => $this->float()->defaultValue( 0 ),
+			'length' => $this->float()->defaultValue( 0 ),
+			'width' => $this->float()->defaultValue( 0 ),
+			'height' => $this->float()->defaultValue( 0 ),
+			'radius' => $this->float()->defaultValue( 0 ),
 			'shop' => $this->boolean()->notNull()->defaultValue( false ),
+			'pinned' => $this->boolean()->notNull()->defaultValue( false ),
+			'featured' => $this->boolean()->notNull()->defaultValue( false ),
+			'reviews' => $this->boolean()->notNull()->defaultValue( false ),
 			'startDate' => $this->date()->defaultValue( null ),
 			'endDate' => $this->date()->defaultValue( null ),
 			'createdAt' => $this->dateTime()->notNull(),
@@ -113,7 +115,6 @@ class m170829_050630_shop extends Migration {
 
 		// Indexes
 		$this->createIndex( 'idx_' . $this->prefix . 'product_site', $this->prefix . 'shop_product', 'siteId' );
-		$this->createIndex( 'idx_' . $this->prefix . 'product_template', $this->prefix . 'shop_product', 'templateId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_avatar', $this->prefix . 'shop_product', 'avatarId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_prim', $this->prefix . 'shop_product', 'primaryUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_pur', $this->prefix . 'shop_product', 'purchasingUnitId' );
@@ -133,8 +134,10 @@ class m170829_050630_shop extends Migration {
 			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
 			'label' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText ),
+			'active' => $this->boolean()->notNull()->defaultValue( false ),
 			'valueType' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( Meta::VALUE_TYPE_TEXT ),
-			'value' => $this->text()
+			'value' => $this->text(),
+			'data' => $this->mediumText()
 		], $this->options );
 
 		// Index for columns site, parent, creator and modifier
@@ -150,7 +153,8 @@ class m170829_050630_shop extends Migration {
 			'type' => $this->smallInteger( 6 )->defaultValue( 0 ),
 			'active' => $this->boolean()->notNull()->defaultValue( false ),
 			'createdAt' => $this->dateTime()->notNull(),
-			'modifiedAt' => $this->dateTime()
+			'modifiedAt' => $this->dateTime(),
+			'data' => $this->mediumText()
         ], $this->options );
 
         // Index for columns user and model
@@ -210,7 +214,6 @@ class m170829_050630_shop extends Migration {
 
 		// Product
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_site', $this->prefix . 'shop_product', 'siteId', $this->prefix . 'core_site', 'id', 'CASCADE' );
-		$this->addForeignKey( 'fk_' . $this->prefix . 'product_template', $this->prefix . 'shop_product', 'templateId', $this->prefix . 'core_template', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_avatar', $this->prefix . 'shop_product', 'avatarId', $this->prefix . 'core_file', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_prim', $this->prefix . 'shop_product', 'primaryUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_pur', $this->prefix . 'shop_product', 'purchasingUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
@@ -258,7 +261,6 @@ class m170829_050630_shop extends Migration {
 
 		// Product
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_site', $this->prefix . 'shop_product' );
-		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_template', $this->prefix . 'shop_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_avatar', $this->prefix . 'shop_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_prim', $this->prefix . 'shop_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_pur', $this->prefix . 'shop_product' );

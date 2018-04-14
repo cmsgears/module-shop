@@ -60,10 +60,12 @@ class Shop extends Component {
 
 		// Register services
 		$this->registerEntityServices();
+		$this->registerMapperServices();
 		$this->registerResourceServices();
 
 		// Init services
 		$this->initEntityServices();
+		$this->initMapperServices();
 		$this->initResourceServices();
 	}
 
@@ -76,6 +78,16 @@ class Shop extends Component {
 
 		$factory->set( 'cmsgears\shop\common\services\interfaces\resources\IProductMetaService', 'cmsgears\shop\common\services\resources\ProductMetaService' );
 		$factory->set( 'cmsgears\shop\common\services\interfaces\resources\IProductVariationService', 'cmsgears\shop\common\services\resources\ProductVariationService' );
+	}
+
+	/**
+	 * Registers mapper services.
+	 */
+	public function registerMapperServices() {
+
+		$factory = Yii::$app->factory->getContainer();
+
+		$factory->set( 'cmsgears\shop\common\services\interfaces\mappers\IProductFollowerService', 'cmsgears\shop\common\services\mappers\ProductFollowerService' );
 	}
 
 	/**
@@ -97,6 +109,16 @@ class Shop extends Component {
 
 		$factory->set( 'productMetaService', 'cmsgears\shop\common\services\resources\ProductMetaService' );
 		$factory->set( 'productVariationService', 'cmsgears\shop\common\services\resources\ProductVariationService' );
+	}
+
+	/**
+	 * Initialize mapper services.
+	 */
+	public function initMapperServices() {
+
+		$factory = Yii::$app->factory->getContainer();
+
+		$factory->set( 'productFollowerService', 'cmsgears\shop\common\services\mappers\ProductFollowerService' );
 	}
 
 	/**

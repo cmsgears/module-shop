@@ -10,30 +10,24 @@
 namespace cmsgears\shop\common\components;
 
 // CMG Imports
-use cmsgears\shop\common\config\ShopGlobal;
-
-use cmsgears\core\common\base\MessageSource as BaseMessageSource;
+use cmsgears\core\common\base\Mailer as BaseMailer;
 
 /**
- * MessageSource stores and provide the messages and message templates available in
- * Shop Module.
+ * Mailer triggers the mails provided by Shop Module.
  *
  * @since 1.0.0
  */
-class MessageSource extends BaseMessageSource {
+class Mailer extends BaseMailer {
 
 	// Global -----------------
 
 	// Public -----------------
 
-	// Protected --------------
+	public $htmlLayout	= '@cmsgears/module-cms/common/mails/layouts/html';
+	public $textLayout	= '@cmsgears/module-cms/common/mails/layouts/text';
+	public $viewPath	= '@cmsgears/module-cms/common/mails/views';
 
-	protected $messageDb = [
-		// Generic Fields
-		ShopGlobal::FIELD_PRODUCT => 'Product',
-		ShopGlobal::FIELD_PRODUCT_VARIATION => 'Product Variation',
-		ShopGlobal::FIELD_SHOP => 'Shop'
-	];
+	// Protected --------------
 
 	// Private ----------------
 
@@ -45,6 +39,6 @@ class MessageSource extends BaseMessageSource {
 
 	// CMG parent classes --------------------
 
-	// MessageSource -------------------------
+	// Mailer --------------------------------
 
 }

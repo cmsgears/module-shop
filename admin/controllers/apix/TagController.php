@@ -7,44 +7,54 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\common\components;
+namespace cmsgears\shop\admin\controllers\apix;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\common\base\MessageSource as BaseMessageSource;
+use cmsgears\core\admin\controllers\apix\TagController as BaseTagController;
 
 /**
- * MessageSource stores and provide the messages and message templates available in
- * Shop Module.
+ * TagController provides actions specific to product tags.
  *
  * @since 1.0.0
  */
-class MessageSource extends BaseMessageSource {
+class TagController extends BaseTagController {
 
-	// Global -----------------
+	// Variables ---------------------------------------------------
+
+	// Globals ----------------
 
 	// Public -----------------
 
 	// Protected --------------
 
-	protected $messageDb = [
-		// Generic Fields
-		ShopGlobal::FIELD_PRODUCT => 'Product',
-		ShopGlobal::FIELD_PRODUCT_VARIATION => 'Product Variation',
-		ShopGlobal::FIELD_SHOP => 'Shop'
-	];
-
 	// Private ----------------
 
 	// Constructor and Initialisation ------------------------------
 
+	public function init() {
+
+		parent::init();
+
+		// Permission
+		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
+	}
+
 	// Instance methods --------------------------------------------
+
+	// Yii interfaces ------------------------
 
 	// Yii parent classes --------------------
 
+	// yii\base\Component -----
+
+	// yii\base\Controller ----
+
+	// CMG interfaces ------------------------
+
 	// CMG parent classes --------------------
 
-	// MessageSource -------------------------
+	// TagController -------------------------
 
 }
