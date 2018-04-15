@@ -120,84 +120,8 @@ class ProductService extends ContentService implements IProductService {
 					'default' => SORT_DESC,
 					'label' => 'Template',
 				],
-				'name' => [
-					'asc' => [ "$modelTable.name" => SORT_ASC ],
-					'desc' => [ "$modelTable.name" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Name'
-				],
-				'slug' => [
-					'asc' => [ "$modelTable.slug" => SORT_ASC ],
-					'desc' => [ "$modelTable.slug" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Slug'
-				],
-	            'type' => [
-	                'asc' => [ "$modelTable.type" => SORT_ASC ],
-	                'desc' => [ "$modelTable.type" => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'Type'
-	            ],
-	            'icon' => [
-	                'asc' => [ "$modelTable.icon" => SORT_ASC ],
-	                'desc' => [ "$modelTable.icon" => SORT_DESC ],
-	                'default' => SORT_DESC,
-	                'label' => 'Icon'
-	            ],
-				'title' => [
-					'asc' => [ "$modelTable.title" => SORT_ASC ],
-					'desc' => [ "$modelTable.title" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Title'
-				],
-				'status' => [
-					'asc' => [ "$modelTable.status" => SORT_ASC ],
-					'desc' => [ "$modelTable.status" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Status'
-				],
-				'visibility' => [
-					'asc' => [ "$modelTable.visibility" => SORT_ASC ],
-					'desc' => [ "$modelTable.visibility" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Visibility'
-				],
-				'order' => [
-					'asc' => [ "$modelTable.order" => SORT_ASC ],
-					'desc' => [ "$modelTable.order" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Order'
-				],
-				'price' => [
-					'asc' => [ "$modelTable.price" => SORT_ASC ],
-					'desc' => [ "$modelTable.price" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Price'
-				],
-				'total' => [
-					'asc' => [ "$modelTable.total" => SORT_ASC ],
-					'desc' => [ "$modelTable.total" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Total'
-				],
-				'shop' => [
-					'asc' => [ "$modelTable.shop" => SORT_ASC ],
-					'desc' => [ "$modelTable.shop" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Shop'
-				],
-				'pinned' => [
-					'asc' => [ "$modelTable.pinned" => SORT_ASC ],
-					'desc' => [ "$modelTable.pinned" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Pinned'
-				],
-				'featured' => [
-					'asc' => [ "$modelTable.featured" => SORT_ASC ],
-					'desc' => [ "$modelTable.featured" => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Featured'
-				],
+				'name', 'slug', 'type', 'icon', 'title', 'status', 'visibility',
+				'order', 'price', 'discount', 'total', 'track', 'stock', 'sold', 'shop', 'pinned', 'featured',
 				'cdate' => [
 					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
 					'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
@@ -300,11 +224,8 @@ class ProductService extends ContentService implements IProductService {
 		if( isset( $searchCol ) ) {
 
 			$search = [
-				'name' => "$modelTable.name",
-				'title' => "$modelTable.title",
-				'desc' => "$modelTable.description",
-				'summary' => "modelContent.summary",
-				'content' => "modelContent.content"
+				'name' => "$modelTable.name", 'title' => "$modelTable.title", 'desc' => "$modelTable.description",
+				'summary' => "modelContent.summary", 'content' => "modelContent.content"
 			];
 
 			$config[ 'search-col' ] = $search[ $searchCol ];
@@ -313,19 +234,12 @@ class ProductService extends ContentService implements IProductService {
 		// Reporting --------
 
 		$config[ 'report-col' ]	= [
-			'name' => "$modelTable.name",
-			'title' => "$modelTable.title",
-			'desc' => "$modelTable.description",
-			'summary' => "modelContent.summary",
-			'content' => "modelContent.content",
-			'status' => "$modelTable.status",
-			'visibility' => "$modelTable.visibility",
-			'order' => "$modelTable.order",
-			'price' => "$modelTable.price",
-			'total' => "$modelTable.total",
-			'shop' => "$modelTable.shop",
-			'pinned' => "$modelTable.pinned",
-			'featured' => "$modelTable.featured"
+			'name' => "$modelTable.name", 'title' => "$modelTable.title", 'desc' => "$modelTable.description",
+			'summary' => "modelContent.summary", 'content' => "modelContent.content",
+			'status' => "$modelTable.status", 'visibility' => "$modelTable.visibility", 'order' => "$modelTable.order",
+			'price' => "$modelTable.price", 'total' => "$modelTable.total",
+			'shop' => "$modelTable.shop", 'track' => "$modelTable.track", 'stock' => "$modelTable.stock", 'sold' => "$modelTable.sold",
+			'pinned' => "$modelTable.pinned", 'featured' => "$modelTable.featured"
 		];
 
 		// Result -----------
@@ -453,7 +367,7 @@ class ProductService extends ContentService implements IProductService {
 			'avatarId', 'name', 'slug', 'icon',
 			'title', 'description', 'visibility', 'content',
 			'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius',
-			'sku', 'code', 'shop', 'price', 'discount', 'total', 'startDate', 'endDate'
+			'sku', 'code', 'shop', 'price', 'discount', 'total', 'track', 'stock', 'sold', 'warn', 'startDate', 'endDate'
 		];
 
 		// Save Files

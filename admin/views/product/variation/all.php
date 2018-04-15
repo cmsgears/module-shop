@@ -7,52 +7,73 @@ use cmsgears\widgets\grid\DataGrid;
 $coreProperties = $this->context->getCoreProperties();
 $this->title	= 'Product Variations | ' . $coreProperties->getSiteTitle();
 
-// Templates
+// View Templates
 $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
-
-$productId			= $product->id;
+$themeTemplates		= '@themes/admin/views/templates';
 ?>
-
 <?= DataGrid::widget([
-	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?id=$productId", 'data' => [ 'productId' => $productId ],
-	'title' => 'Products', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
-	'searchColumns' => [ 'name' => 'Name' ],
+	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?pid={$product->id}", 'data' => [ 'product' => $product ],
+	'title' => 'Product Variations', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'searchColumns' => [ 'name' => 'Name', 'title' => 'Title', 'desc' => 'Description', 'content' => 'Content' ],
 	'sortColumns' => [
-		'name' => 'Name'
+		'name' => 'Name', 'type' => 'Type', 'title' => 'Title', 'template' => 'Template',
+		'dtype' => 'Discount Type', 'price' => 'Price', 'discount' => 'Discount', 'total' => 'Total',
+		'quantity' => 'Quantity', 'track' => 'Track', 'stock' => 'Stock', 'sold' => 'Sold', 'active' => 'Active',
+		'sdate' => 'Start Date', 'edate' => 'End Date', 'cdate' => 'Created At', 'udate' => 'Updated At'
 	],
-	'filters' => [ 'status' => [ 'active' => 'Active' ] ],
+	'filters' => [
+		'model' => [ 'active' => 'Active', 'inactive' => 'Inactive' ]
+	],
 	'reportColumns' => [
 		'name' => [ 'title' => 'Name', 'type' => 'text' ],
-		'active' => [ 'title' => 'Active', 'type' => 'flag' ]
+		'title' => [ 'title' => 'Title', 'type' => 'text' ],
+		'desc' => [ 'title' => 'Description', 'type' => 'text' ],
+		'content' => [ 'title' => 'Content', 'type' => 'text' ],
+		'type' => [ 'title' => 'Type', 'type' => 'select', 'options' => $typeMap ],
+		'dtype' => [ 'title' => 'Discount Type', 'type' => 'select', 'options' => $discountTypeMap ],
+		'order' => [ 'title' => 'Order', 'type' => 'range' ],
+		'price' => [ 'title' => 'price', 'type' => 'range' ],
+		'total' => [ 'title' => 'Total', 'type' => 'range' ],
+		'track' => [ 'title' => 'Track', 'type' => 'flag' ],
+		'stock' => [ 'title' => 'Stock', 'type' => 'range' ],
+		'sold' => [ 'title' => 'Sold', 'type' => 'range' ]
 	],
 	'bulkPopup' => 'popup-grid-bulk', 'bulkActions' => [
-		'model' => [ 'delete' => 'Delete' ]
+		'model' => [ 'active' => 'Activate', 'inactive' => 'Deactivate', 'delete' => 'Delete' ]
 	],
 	'header' => false, 'footer' => true,
-	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null , 'x3', 'x3', 'x4', 'x3', null  ] ],
+	'grid' => true, 'columns' => [ 'root' => 'colf colf15', 'factor' => [ null, null, 'x2', 'x2', null, null, null, null, null, null, null, 'x2' ] ],
 	'gridColumns' => [
 		'bulk' => 'Action',
+		'icon' => [ 'title' => 'Icon', 'generate' => function( $model ) {
+			$icon = "<div class='align align-center'><i class=\"$model->icon\"></i></div>" ; return $icon;
+		}],
 		'name' => 'Name',
-		'quantity' => 'Qty',
-		'type' => [ 'title' => 'Type', 'generate' => function( $model ) { return $model->getTypeStr(); } ],
-		'value' => 'Value',
+		'template' => [ 'title' => 'Template', 'generate' => function( $model ) { return isset( $model->template ) ? $model->template->name : null; } ],
+		'qty' => [ 'title' => 'Quantity', 'generate' => function( $model ) { return $model->quantity . ' ' . $model->unit->name; } ],
+		'active' => [ 'title' => 'Active', 'generate' => function( $model ) { return $model->getActiveStr(); } ],
+		'price' => 'Price',
+		'total' => 'Total',
+		'track' => [ 'title' => 'Track', 'generate' => function( $model ) { return $model->getTrackStr(); } ],
+		'stock' => 'Stock',
+		'sold' => 'Sold',
 		'actions' => 'Actions'
 	],
 	'gridCards' => [ 'root' => 'col col12', 'factor' => 'x3' ],
-	'templateDir' => '@themes/admin/views/templates/widget/grid',
-	//'dataView' => "$moduleTemplates/grid/data/generic",
-	//'cardView' => "$moduleTemplates/grid/cards/generic",
-	'actionView' => "$moduleTemplates/grid/actions/generic"
+	'templateDir' => "$themeTemplates/widget/grid",
+	//'dataView' => "$moduleTemplates/grid/data/variation",
+	//'cardView' => "$moduleTemplates/grid/cards/variation",
+	'actionView' => "$moduleTemplates/grid/actions/variation"
 ]) ?>
 
 <?= Popup::widget([
-	'title' => 'Update Variation', 'size' => 'medium',
-	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Attribute', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/shop/variation/bulk" ]
+	'title' => 'Apply Bulk Action', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
+	'data' => [ 'model' => 'Product Variation', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/variation/bulk" ]
 ]) ?>
 
 <?= Popup::widget([
-	'title' => 'Delete Variation', 'size' => 'medium',
-	'templateDir' => Yii::getAlias( '@themes/admin/views/templates/widget/popup/grid' ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/shop/variation/delete?id=" ]
+	'title' => 'Delete Product Variation', 'size' => 'medium',
+	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
+	'data' => [ 'model' => 'Product Variation', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/variation/delete?id=" ]
 ]) ?>

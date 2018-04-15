@@ -21,6 +21,8 @@ interface IProductVariationService extends IResourceService {
 
 	// Data Provider ------
 
+	public function getPageByProductId( $productId, $config = [] );
+
 	// Read ---------------
 
 	// Read - Models ---

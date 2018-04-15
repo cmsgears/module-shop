@@ -13,7 +13,7 @@ $themeTemplates		= '@themes/admin/views/templates';
 ?>
 <?= DataGrid::widget([
 	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => 'create', 'data' => [ ],
-	'title' => 'Blocks', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'title' => 'Products', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
 	'searchColumns' => [ 'name' => 'Name', 'title' => 'Title', 'desc' => 'Description', 'summary' => 'Summary', 'content' => 'Content' ],
 	'sortColumns' => [
 		'name' => 'Name', 'title' => 'Title', 'status' => 'Status', 'template' => 'Template',
@@ -42,7 +42,10 @@ $themeTemplates		= '@themes/admin/views/templates';
 		'featured' => [ 'title' => 'Featured', 'type' => 'flag' ],
 		'shop' => [ 'title' => 'Shop', 'type' => 'flag' ],
 		'price' => [ 'title' => 'price', 'type' => 'range' ],
-		'total' => [ 'title' => 'Total', 'type' => 'range' ]
+		'total' => [ 'title' => 'Total', 'type' => 'range' ],
+		'track' => [ 'title' => 'Track', 'type' => 'flag' ],
+		'stock' => [ 'title' => 'Stock', 'type' => 'range' ],
+		'sold' => [ 'title' => 'Sold', 'type' => 'range' ]
 	],
 	'bulkPopup' => 'popup-grid-bulk', 'bulkActions' => [
 		'status' => [ 'confirmed' => 'Confirm', 'rejected' => 'Reject', 'active' => 'Activate', 'frozen' => 'Freeze', 'blocked' => 'Block', 'terminated' => 'Terminate' ],

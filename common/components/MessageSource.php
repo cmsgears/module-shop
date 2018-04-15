@@ -31,6 +31,7 @@ class MessageSource extends BaseMessageSource {
 	protected $messageDb = [
 		// Generic Fields
 		ShopGlobal::FIELD_PRODUCT => 'Product',
+		ShopGlobal::FIELD_ADDON_PRODUCT => 'Addon Product',
 		ShopGlobal::FIELD_PRODUCT_VARIATION => 'Product Variation',
 		ShopGlobal::FIELD_SHOP => 'Shop'
 	];

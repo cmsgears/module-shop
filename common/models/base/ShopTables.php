@@ -30,7 +30,7 @@ class ShopTables extends DbTables {
 	const TABLE_PRODUCT_META	= 'cmg_shop_product_meta';
 
 	// Variation
-	const TABLE_VARIATION		= 'cmg_shop_variation';
+	const TABLE_PRODUCT_VARIATION = 'cmg_shop_variation';
 
 	// Mappers --------------
 

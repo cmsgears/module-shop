@@ -29,7 +29,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 	<div class="box-crud-wrap-main row row-large">
 		<div class="filler-height filler-height-medium"></div>
 		<?php if( $model->isSubmitted() || $model->isReSubmit() ) { ?>
-			<h5>Review Listing</h5> <hr />
+			<h5>Review Product</h5> <hr />
 			<?php $form = ActiveForm::begin( [ 'id' => 'frm-approval' ] ); ?>
 			<?= $form->field( $model, 'name' )->hiddenInput()->label( false ) ?>
 			<div class="align align-center">
@@ -51,7 +51,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 			</div>
 			<?php ActiveForm::end(); ?>
 		<?php } else if( $model->isApprovable() ) { ?>
-			<h5>Review Listing</h5> <hr />
+			<h5>Review Product</h5> <hr />
 			<?php $form = ActiveForm::begin( [ 'id' => 'frm-approval' ] ); ?>
 			<?= $form->field( $model, 'name' )->hiddenInput()->label( false ) ?>
 			<div class="align align-center">
@@ -86,7 +86,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 			</div>
 		<?php } ?>
 		<div class="filler-height filler-height-medium"></div>
-		<?php $form = ActiveForm::begin( [ 'id' => 'frm-listing', 'options' => [ 'class' => 'form' ] ] ); ?>
+		<?php $form = ActiveForm::begin( [ 'id' => 'frm-product', 'options' => [ 'class' => 'form' ] ] ); ?>
 		<div class="box box-crud">
 			<div class="box-header">
 				<div class="box-header-title">Basic Details</div>
@@ -118,6 +118,14 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 						</div>
 						<div class="col col2">
 							<?= $form->field( $model, 'visibility' )->dropDownList( $visibilityMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col col2">
+							<?= $form->field( $model, 'startDate' )->textInput( [ 'readonly' => 'true' ] ) ?>
+						</div>
+						<div class="col col2">
+							<?= $form->field( $model, 'endDate' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
@@ -234,6 +242,22 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					<div class="row">
 						<div class="col col2">
 							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'shop', [ 'disabled' => 'true' ], 'cmti cmti-checkbox' ) ?>
+						</div>
+						<div class="col col2">
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'track', [ 'class' => 'cmt-checkbox cmt-choice cmt-field-group', 'group-target' => 'keep-stock', 'disabled' => 'true' ], 'cmti cmti-checkbox' ) ?>
+						</div>
+					</div>
+					<div class="row keep-stock">
+						<div class="col col2">
+							<?= $form->field( $model, 'stock' )->textInput( [ 'readonly' => 'true' ] ) ?>
+						</div>
+						<div class="col col2">
+							<?= $form->field( $model, 'sold' )->textInput( [ 'readonly' => 'true' ] ) ?>
+						</div>
+					</div>
+					<div class="row keep-stock">
+						<div class="col col2">
+							<?= $form->field( $model, 'warn' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 				</div>

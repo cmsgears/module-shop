@@ -22,6 +22,7 @@ $user	= Yii::$app->user->getIdentity();
 				<li class="product-tag <?= $child == 'product-tag' ? 'active' : null ?>"><?= Html::a( 'Product Tags', ['/shop/product/tag/all'] ) ?></li>
 				<li class="product-reviews <?= $child == 'product-reviews' ? 'active' : null ?>"><?= Html::a( 'Product Reviews', ['/shop/product/review/all'] ) ?></li>
 				<li class="product-template <?= $child == 'product-template' ? 'active' : null ?>"><?= Html::a( 'Product Templates', ['/shop/product/template/all'] ) ?></li>
+				<li class="variation-template <?= $child == 'variation-template' ? 'active' : null ?>"><?= Html::a( 'Variation Templates', ['/shop/variation/template/all'] ) ?></li>
 			</ul>
 		</div>
 	</div>

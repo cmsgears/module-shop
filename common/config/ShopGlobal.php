@@ -22,7 +22,9 @@ class ShopGlobal {
 
 	// Grouping by type ------------------------------------------------
 
-	const TYPE_PRODUCT	= 'product';
+	const TYPE_PRODUCT				= 'product';
+
+	const TYPE_PRODUCT_VARIATION	= 'product-variation';
 
 	// Templates -------------------------------------------------------
 
@@ -66,6 +68,7 @@ class ShopGlobal {
 
 	// Generic Fields
 	const FIELD_PRODUCT				= 'productField';
+	const FIELD_ADDON_PRODUCT		= 'addonProductField';
 	const FIELD_PRODUCT_VARIATION	= 'productVariationField';
 
 	const FIELD_SHOP	= 'shopField';

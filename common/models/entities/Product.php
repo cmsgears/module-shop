@@ -103,6 +103,10 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property float $width
  * @property float $height
  * @property float $radius
+ * @property boolean $track
+ * @property float $stock
+ * @property float $sold
+ * @property float $warn
  * @property boolean $shop
  * @property boolean $pinned
  * @property boolean $featured
@@ -230,7 +234,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'status', 'visibility', 'order' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius' ], 'number', 'min' => 0 ],
+			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'track', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
 			[ [ 'shop', 'pinned', 'featured', 'reviews', 'gridCacheValid' ], 'boolean' ],
 			[ [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId' ], 'number', 'integerOnly' => true, 'min' => 0, 'tooSmall' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_SELECT ) ],
 			[ [ 'siteId', 'avatarId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
@@ -275,8 +279,8 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 			'visibility' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY ),
 			'order' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ORDER ),
 			'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
-			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
-			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE_UNIT ),
+			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT_UNIT ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'primary' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PRIMARY ),
 			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PURCHASE ),
@@ -286,6 +290,10 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 			'length' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_LENGTH ),
 			'width' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WIDTH ),
 			'height' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_HEIGHT ),
+			'track' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_TRACK ),
+			'stock' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_STOCK ),
+			'sold' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_SOLD ),
+			'warn' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_WARN ),
 			'shop' => Yii::$app->shopMessage->getMessage( ShopGlobal::FIELD_SHOP ),
 			'pinned' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PINNED ),
 			'featured' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_FEATURED ),
@@ -463,6 +471,11 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 		return static::$typeMap[ $this->type ];
 	}
 
+	public function getTrackStr() {
+
+		return Yii::$app->formatter->asBoolean( $this->track );
+	}
+
 	public function getShopStr() {
 
 		return Yii::$app->formatter->asBoolean( $this->shop );
@@ -493,9 +506,9 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 	 */
 	public function getTotalPrice( $precision = 2 ) {
 
-		$price = ( $this->price - $this->discount ) * $this->purchase;
+		$total = ( $this->price - $this->discount ) * $this->purchase;
 
-		return round( $price, $precision );
+		return round( $total, $precision );
 	}
 
 	// Static Methods ----------------------------------------------

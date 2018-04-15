@@ -10,11 +10,8 @@ use cmsgears\files\widgets\VideoUploader;
 use cmsgears\icons\widgets\IconChooser;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title 	= 'Update Product Variation | ' . $coreProperties->getSiteTitle();
+$this->title 	= 'Delete Product Variation | ' . $coreProperties->getSiteTitle();
 $returnUrl		= $this->context->returnUrl;
-
-$productName	= $model->product->name;
-$addonName		= isset( $model->addon ) ? $model->addon->name : null;
 
 Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts' => 'site', 'config' => [ 'controls' => 'mini' ] ] );
 ?>
@@ -29,50 +26,50 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content">
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'name' ) ?>
+							<?= $form->field( $model, 'name' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'title' ) ?>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col col2">
-							<?= $form->field( $model, 'templateId' )->dropDownList( $templatesMap, [ 'class' => 'cmt-select' ] ) ?>
-						</div>
-						<div class="col col2">
-							<?= $form->field( $model, 'order' ) ?>
+							<?= $form->field( $model, 'title' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'type' )->dropDownList( $typeMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'templateId' )->dropDownList( $templatesMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'discountType' )->dropDownList( $discountTypeMap, [ 'class' => 'cmt-select' ] ) ?>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col col2">
-							<?= IconChooser::widget( [ 'model' => $model, 'options' => [ 'class' => 'icon-picker-wrap' ] ] ) ?>
-						</div>
-						<div class="col col2">
-							<?= $form->field( $model, 'description' )->textarea() ?>
+							<?= $form->field( $model, 'order' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'startDate' )->textInput( [ 'class' => 'datepicker' ] ) ?>
+							<?= $form->field( $model, 'type' )->dropDownList( $typeMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'endDate' )->textInput( [ 'class' => 'datepicker' ] ) ?>
+							<?= $form->field( $model, 'discountType' )->dropDownList( $discountTypeMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'productId', [ 'placeholder' => 'Product', 'icon' => 'cmti cmti-search', 'value' => $productName, 'url' => 'shop/product/auto-search' ] ) ?>
+							<?= IconChooser::widget( [ 'model' => $model, 'options' => [ 'class' => 'icon-picker-wrap', 'disabled' => true ] ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'addonId', [ 'placeholder' => 'Addon', 'icon' => 'cmti cmti-search', 'value' => $addonName, 'url' => 'shop/product/auto-search' ] ) ?>
+							<?= $form->field( $model, 'description' )->textarea( [ 'readonly' => 'true' ] ) ?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col col2">
+							<?= $form->field( $model, 'startDate' )->textInput( [ 'readonly' => 'true' ] ) ?>
+						</div>
+						<div class="col col2">
+							<?= $form->field( $model, 'endDate' )->textInput( [ 'readonly' => 'true' ] ) ?>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col col2">
+							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'productId', [ 'disabled' => true, 'placeholder' => 'Product', 'icon' => 'cmti cmti-search', 'url' => 'shop/product/auto-search' ] ) ?>
+						</div>
+						<div class="col col2">
+							<?= Yii::$app->formDesigner->getAutoSuggest( $form, $model, 'addonId', [ 'disabled' => true, 'placeholder' => 'Addon', 'icon' => 'cmti cmti-search', 'url' => 'shop/product/auto-search' ] ) ?>
 						</div>
 					</div>
 				</div>
@@ -87,10 +84,10 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content">
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'unitId' )->dropDownList( $shopUnitsMap, [ 'class' => 'cmt-select' ] ) ?>
+							<?= $form->field( $model, 'unitId' )->dropDownList( $shopUnitsMap, [ 'class' => 'cmt-select', 'disabled' => true ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'quantity' ) ?>
+							<?= $form->field( $model, 'quantity' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 				</div>
@@ -105,23 +102,23 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content">
 					<div class="row">
 						<div class="col col2">
-							<?= $form->field( $model, 'price' ) ?>
+							<?= $form->field( $model, 'price' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 						<div class="col col2">
-							<?= $form->field( $model, 'discount' ) ?>
+							<?= $form->field( $model, 'discount' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col col2">
-							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'active', null, 'cmti cmti-checkbox' ) ?>
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'active', [ 'disabled' => true ], 'cmti cmti-checkbox' ) ?>
 						</div>
 						<div class="col col2">
-							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'track', [ 'class' => 'cmt-checkbox cmt-choice cmt-field-group', 'group-target' => 'keep-stock' ], 'cmti cmti-checkbox' ) ?>
+							<?= Yii::$app->formDesigner->getIconCheckbox( $form, $model, 'track', [ 'disabled' => true, 'class' => 'cmt-checkbox cmt-choice cmt-field-group', 'group-target' => 'keep-stock' ], 'cmti cmti-checkbox' ) ?>
 						</div>
 					</div>
 					<div class="row keep-stock">
 						<div class="col col2">
-							<?= $form->field( $model, 'stock' ) ?>
+							<?= $form->field( $model, 'stock' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 						<div class="col col2">
 							<?= $form->field( $model, 'sold' )->textInput( [ 'readonly' => 'true' ] ) ?>
@@ -129,7 +126,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					</div>
 					<div class="row keep-stock">
 						<div class="col col2">
-							<?= $form->field( $model, 'warn' ) ?>
+							<?= $form->field( $model, 'warn' )->textInput( [ 'readonly' => 'true' ] ) ?>
 						</div>
 					</div>
 				</div>
@@ -145,11 +142,11 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 					<div class="row padding padding-small-v">
 						<div class="col col3">
 							<label>Banner</label>
-							<?= ImageUploader::widget( [ 'model' => $banner ] ) ?>
+							<?= ImageUploader::widget( [ 'model' => $banner, 'disabled' => 'true' ] ) ?>
 						</div>
 						<div class="col col3">
 							<label>Video</label>
-							<?= VideoUploader::widget( [ 'model' => $video ] ) ?>
+							<?= VideoUploader::widget( [ 'model' => $video, 'disabled' => 'true' ] ) ?>
 						</div>
 					</div>
 				</div>
@@ -168,8 +165,8 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 		</div>
 		<div class="filler-height filler-height-medium"></div>
 		<div class="align align-right">
-			<?= Html::a( 'View All', $returnUrl, [ 'class' => 'btn btn-medium' ] ); ?>
-			<input class="element-medium" type="submit" value="Update" />
+			<?= Html::a( 'Cancel', $returnUrl, [ 'class' => 'btn btn-medium' ] ); ?>
+			<input class="element-medium" type="submit" value="Delete" />
 		</div>
 		<div class="filler-height filler-height-medium"></div>
 		<?php ActiveForm::end(); ?>

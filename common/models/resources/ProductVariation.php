@@ -3,8 +3,9 @@ namespace cmsgears\shop\common\models\resources;
 
 // Yii Imports
 use Yii;
-use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
+use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
@@ -35,7 +36,7 @@ use cmsgears\core\common\models\traits\mappers\GalleryTrait;
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
 /**
- * Variation provide options to alter primary product by features and discounts.
+ * ProductVariation provide options to alter primary product by features and discounts.
  *
  * @property integer $id
  * @property integer $templateId
@@ -49,14 +50,19 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property integer $modifiedBy
  * @property string $name
  * @property integer $type
+ * @property integer $icon
  * @property string $title
  * @property string $description
+ * @property integer $order
  * @property integer $discountType
  * @property float $price
  * @property float $discount
  * @property float $total
  * @property float $quantity
+ * @property boolean $track
+ * @property float $stock
  * @property float $sold
+ * @property float $warn
  * @property boolean $active
  * @property date $startDate
  * @property date $endDate
@@ -70,7 +76,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IGridCache, ITemplate, IVisual {
+class ProductVariation extends Entity implements IAuthor, IContent, IData, IGallery, IGridCache, ITemplate, IVisual {
 
 	// Variables ---------------------------------------------------
 
@@ -110,14 +116,14 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 
 	// Public -----------------
 
-	public static $typeMap	= [
+	public static $typeMap = [
 		self::TYPE_ADD_ON => 'Add On',
 		self::TYPE_BASE => 'Base',
 		self::TYPE_DISCOUNT => 'Discount',
 		self::TYPE_QUANTITY => 'Quantity'
 	];
 
-	public static $discountTypeMap	= [
+	public static $discountTypeMap = [
 		self::DISCOUNT_TYPE_FLAT => 'Flat Discount',
 		self::DISCOUNT_TYPE_PERCENT => 'Percentage'
 	];
@@ -129,6 +135,8 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 	// Public -----------------
 
 	// Protected --------------
+
+	protected $modelType = ShopGlobal::TYPE_PRODUCT_VARIATION;
 
 	// Private ----------------
 
@@ -181,8 +189,7 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
         // Model Rules
         $rules = [
 			// Required, Safe
-			[ [ 'productId', 'name', 'type' ], 'required' ],
-			[ [ 'startDate', 'endDate', 'content', 'active' ], 'safe' ],
+			[ [ 'productId', 'unitId', 'name', 'type', 'quantity' ], 'required' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Text Limit
 			[ 'icon', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
@@ -191,14 +198,17 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'type', 'discountType' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'price', 'discount', 'total', 'quantity', 'sold' ], 'number', 'min' => 0 ],
+			[ [ 'price', 'discount', 'total', 'quantity', 'track', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
 			[ [ 'active', 'gridCacheValid' ], 'boolean' ],
+			[ 'unitId', 'number', 'integerOnly' => true, 'min' => 0, 'tooSmall' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_SELECT ) ],
 			[ [ 'templateId', 'productId', 'addonId', 'bannerId', 'videoId', 'galleryId', 'unitId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
 			[ [ 'startDate', 'endDate' ], 'date' ],
 			[ 'endDate', 'compareDate', 'compareAttribute' => 'startDate', 'operator' => '>=', 'type' => 'datetime', 'message' => 'End Date must be greater than or equal to Start Date.' ],
 			[ 'startDate', 'validateStartDate' ],
-			[ 'endDate', 'validateEndDate' ]
+			[ 'endDate', 'validateEndDate' ],
+			[ 'addonId', 'validateAddon' ],
+			[ 'discount', 'validateDiscount' ]
 		];
 
 		// Trim Text
@@ -232,11 +242,14 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
             'description' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
             'discountType' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT_TYPE ),
-			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE ),
-			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT ),
+			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE_UNIT ),
+			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT_UNIT ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
+			'track' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_TRACK ),
+			'stock' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_STOCK ),
 			'sold' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_SOLD ),
+			'warn' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_WARN ),
 			'active' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ACTIVE ),
 			'startDate' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATE_START ),
 			'endDate' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATE_END ),
@@ -245,6 +258,31 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )
         ];
     }
+
+	// yii\db\BaseActiveRecord
+
+	/**
+	 * @inheritdoc
+	 */
+	public function beforeSave( $insert ) {
+
+		if( parent::beforeSave( $insert ) ) {
+
+			if( $this->unitId <= 0 ) {
+
+				$this->unitId = null;
+			}
+
+			if( $this->order < 0 ) {
+
+				$this->order = 0;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
 
 	// CMG interfaces ------------------------
 
@@ -267,10 +305,10 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 			if( isset( $product->startDate ) && isset( $this->startDate ) ) {
 
 				// Product
-				$pStartDate	= strtotime( $product->startDate );
+				$pStartDate = strtotime( $product->startDate );
 
 				// Variation
-				$startDate	= strtotime( $this->startDate );
+				$startDate = strtotime( $this->startDate );
 
 				if( $startDate < $pStartDate ) {
 
@@ -295,10 +333,10 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 			if( isset( $product->endDate ) && isset( $this->endDate ) ) {
 
 				// Product
-				$pEndDate	= strtotime( $product->endDate );
+				$pEndDate = strtotime( $product->endDate );
 
 				// Variation
-				$endDate	= strtotime( $this->endDate );
+				$endDate = strtotime( $this->endDate );
 
 				if( $endDate > $pEndDate ) {
 
@@ -308,7 +346,31 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 		}
 	}
 
-	// Variation -----------------------------
+	public function validateAddon( $attribute, $param ) {
+
+		if( !$this->hasErrors() ) {
+
+			if( isset( $this->addonId ) && $this->productId == $this->addonId ) {
+
+				$this->addError( 'addonId', 'Addon Product and Variation Product cannot be same.' );
+			}
+		}
+	}
+
+	public function validateDiscount( $attribute, $param ) {
+
+		if( !$this->hasErrors() && isset( $this->discount ) ) {
+
+			$total = $this->getTotalPrice();
+
+			if( $total < 0 ) {
+
+				$this->addError( 'discount', 'Please update discount value to have valid price.' );
+			}
+		}
+	}
+
+	// ProductVariation ----------------------
 
 	/**
 	 * Returns unit associated with the variation.
@@ -317,7 +379,9 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 	 */
 	public function getUnit() {
 
-		return $this->hasOne( Uom::class, [ 'id' => 'unitId' ] );
+		$uomTable = Uom::tableName();
+
+		return $this->hasOne( Uom::class, [ 'id' => 'unitId' ] )->from( "$uomTable as uom" );
 	}
 
 	/**
@@ -327,7 +391,9 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 	 */
 	public function getProduct() {
 
-		return $this->hasOne( Product::class, [ 'id' => 'productId' ] );
+		$productTable = Product::tableName();
+
+		return $this->hasOne( Product::class, [ 'id' => 'productId' ] )->from( "$productTable as product" );
 	}
 
 	/**
@@ -335,9 +401,11 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 	 *
 	 * @return \cmsgears\shop\common\models\entities\Product
 	 */
-	public function getAddonProduct() {
+	public function getAddon() {
 
-		return $this->hasOne( Product::class, [ 'id' => 'addonId' ] );
+		$productTable = Product::tableName();
+
+		return $this->hasOne( Product::class, [ 'id' => 'addonId' ] )->from( "$productTable as addon" );
 	}
 
 	/**
@@ -360,6 +428,31 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 		return self::$typeMap[ $this->discountType ];
 	}
 
+	public function getActiveStr() {
+
+		return Yii::$app->formatter->asBoolean( $this->active );
+	}
+
+	public function getTrackStr() {
+
+		return Yii::$app->formatter->asBoolean( $this->track );
+	}
+
+	public function getTotalPrice( $precision = 2 ) {
+
+		$price		= $this->price;
+		$discount	= $this->discount;
+
+		if( $this->discountType == self::DISCOUNT_TYPE_PERCENT ) {
+
+			$discount = ( ( $price * $discount ) / 100 );
+		}
+
+		$total = ( $price - $discount ) * $this->quantity;
+
+		return round( $total, $precision );
+	}
+
 	// Static Methods ----------------------------------------------
 
 	// Yii parent classes --------------------
@@ -371,12 +464,12 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 	 */
 	public static function tableName() {
 
-		return ShopTables::getTableName( ShopTables::TABLE_VARIATION );
+		return ShopTables::getTableName( ShopTables::TABLE_PRODUCT_VARIATION );
 	}
 
 	// CMG parent classes --------------------
 
-	// Variation -----------------------------
+	// ProductVariation ----------------------
 
 	// Read - Query -----------
 
@@ -385,8 +478,9 @@ class Variation extends Entity implements IAuthor, IContent, IData, IGallery, IG
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations				= isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'product', 'addon', 'banner', 'gallery', 'unit', 'creator' ];
-		$config[ 'relations' ]	= $relations;
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'template', 'product', 'addon', 'banner', 'video', 'gallery', 'unit', 'creator', 'modifier' ];
+
+		$config[ 'relations' ] = $relations;
 
 		return parent::queryWithAll( $config );
 	}
