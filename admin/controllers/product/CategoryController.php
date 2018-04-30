@@ -47,6 +47,7 @@ class CategoryController extends BaseCategoryController {
 		// Config
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
 		$this->templateType	= ShopGlobal::TYPE_PRODUCT;
+		$this->apixBase		= 'shop/category';
 
 		// Sidebar
 		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-category' ];

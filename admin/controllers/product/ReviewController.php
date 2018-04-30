@@ -49,6 +49,7 @@ class ReviewController extends BaseCommentController {
 		// Config
 		$this->parentType	= ShopGlobal::TYPE_PRODUCT;
 		$this->commentType	= ModelComment::TYPE_COMMENT;
+		$this->apixBase		= 'shop/review';
 		$this->parentUrl	= '/shop/product/update?id=';
 		$this->urlKey		= 'product-reviews';
 

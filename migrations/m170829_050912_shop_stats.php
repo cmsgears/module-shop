@@ -69,7 +69,7 @@ class m170829_050912_shop_stats extends Migration {
 		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_PRODUCT ) );
 		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_META ) );
 		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_FOLLOWER ) );
-		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_VARIATION ) );
+		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_VARIATION ) );
 	}
 
 }

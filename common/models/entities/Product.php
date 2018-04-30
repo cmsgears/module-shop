@@ -33,6 +33,7 @@ use cmsgears\core\common\models\interfaces\resources\IComment;
 use cmsgears\core\common\models\interfaces\resources\IContent;
 use cmsgears\core\common\models\interfaces\resources\IData;
 use cmsgears\core\common\models\interfaces\resources\IGridCache;
+use cmsgears\core\common\models\interfaces\resources\IMeta;
 use cmsgears\core\common\models\interfaces\resources\IVisual;
 use cmsgears\core\common\models\interfaces\mappers\ICategory;
 use cmsgears\core\common\models\interfaces\mappers\IFile;
@@ -58,6 +59,7 @@ use cmsgears\core\common\models\traits\resources\CommentTrait;
 use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
 use cmsgears\core\common\models\traits\resources\GridCacheTrait;
+use cmsgears\core\common\models\traits\resources\MetaTrait;
 use cmsgears\core\common\models\traits\resources\VisualTrait;
 use cmsgears\core\common\models\traits\mappers\CategoryTrait;
 use cmsgears\core\common\models\traits\mappers\FileTrait;
@@ -124,7 +126,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @since 1.0.0
  */
 class Product extends Entity implements IApproval, IAuthor, ICategory, IComment, IContent, IData, IFeatured, IFile, IFollower,
-	IGridCache, IMultiSite, INameType, IPageContent, ISlugType, ITag, IVisibility, IVisual {
+	IGridCache, IMeta, IMultiSite, INameType, IPageContent, ISlugType, ITag, IVisibility, IVisual {
 
 	// Variables ---------------------------------------------------
 
@@ -144,7 +146,9 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 
 	protected $modelType = ShopGlobal::TYPE_PRODUCT;
 
-	protected $followerTable;
+	protected $followerClass;
+
+	protected $metaClass;
 
 	// Private ----------------
 
@@ -160,6 +164,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 	use FileTrait;
 	use FollowerTrait;
 	use GridCacheTrait;
+	use MetaTrait;
 	use MultiSiteTrait;
 	use NameTypeTrait;
 	use PageContentTrait;
@@ -174,7 +179,9 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 
 		parent::init();
 
-		$this->followerTable = ProductFollower::tableName();
+		$this->followerClass = ProductFollower::class;
+
+		$this->metaClass = ProductMeta::class;
 	}
 
 	// Instance methods --------------------------------------------
@@ -429,26 +436,6 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 		$uomTable = Uom::tableName();
 
 		return $this->hasOne( Uom::class, [ 'id' => 'lengthUnitId' ] )->from( "$uomTable as lengthUnit" );
-	}
-
-	/**
-	 * Returns page or post followers.
-	 *
-	 * @return \cmsgears\shop\common\models\mappers\ProductFollower[]
-	 */
-	public function getProductFollowers() {
-
-		return $this->hasMany( ProductFollower::class, [ 'modelId' => 'id' ] );
-	}
-
-	/**
-	 * Returns meta and attributes.
-	 *
-	 * @return \cmsgears\shop\common\models\resources\ProductMeta[]
-	 */
-	public function getMetas() {
-
-		return $this->hasMany( ProductMeta::class, [ 'productId' => 'id' ] );
 	}
 
 	/**

@@ -39,8 +39,6 @@ class ProductController extends CrudController {
 
 	// Public -----------------
 
-	public $apixBase = 'shop/product';
-
 	public $metaService;
 
 	// Protected --------------
@@ -65,6 +63,9 @@ class ProductController extends CrudController {
 
 		// Permission
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
+
+		// Config
+		$this->apixBase = 'shop/product';
 
 		// Services
 		$this->modelService			= Yii::$app->factory->get( 'productService' );
@@ -163,9 +164,8 @@ class ProductController extends CrudController {
 			$model->validate() && $content->validate() ) {
 
 			$this->model = $this->modelService->add( $model, [
-				'admin' => true,
-				'avatar' => $avatar, 'banner' => $banner, 'video' => $video,
-				'content' => $content
+				'admin' => true, 'content' => $content,
+				'avatar' => $avatar, 'banner' => $banner, 'video' => $video
 			]);
 
 			return $this->redirect( 'all' );
@@ -213,10 +213,10 @@ class ProductController extends CrudController {
 				$model->validate() && $content->validate() ) {
 
 				// Update product
-				$this->model = $this->modelService->update( $model, [ 'admin' => true, 'avatar' => $avatar ] );
-
-				// Update model content
-				$this->modelContentService->update( $content, [ 'publish' => true, 'banner' => $banner, 'video' => $video ] );
+				$this->model = $this->modelService->update( $model, [
+					'admin' => true, 'content' => $content,
+					'avatar' => $avatar, 'banner' => $banner, 'video' => $video
+				]);
 
 				return $this->redirect( $this->returnUrl );
 			}

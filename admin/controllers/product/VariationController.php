@@ -59,6 +59,9 @@ class VariationController extends Controller {
 		// Permission
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
+		// Config
+		$this->apixBase	= 'shop/variation';
+
 		// Services
 		$this->modelService		= Yii::$app->factory->get( 'productVariationService' );
 		$this->templateService	= Yii::$app->factory->get( 'templateService' );

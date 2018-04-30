@@ -19,7 +19,7 @@ use cmsgears\shop\common\models\entities\Product;
  *
  * @property int $id
  * @property int $modelId
- * @property int $followerId
+ * @property int $parentId
  * @property string $type
  * @property boolean $active
  * @property int $createdAt
@@ -75,9 +75,9 @@ class ProductFollower extends Follower {
 	 *
 	 * @return \cmsgears\shop\common\models\entities\Product
 	 */
-	public function getModel() {
+	public function getParent() {
 
-		return $this->hasOne( Product::class, [ 'id' => 'modelId' ] );
+		return $this->hasOne( Product::class, [ 'id' => 'parentId' ] );
 	}
 
 	// Static Methods ----------------------------------------------

@@ -10,7 +10,7 @@
 namespace cmsgears\shop\common\services\interfaces\mappers;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IFollowerService;
+use cmsgears\core\common\services\interfaces\mappers\IFollowerService;
 
 /**
  * IProductFollowerService declares methods specific to product followers.

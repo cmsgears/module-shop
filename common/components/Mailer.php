@@ -23,9 +23,9 @@ class Mailer extends BaseMailer {
 
 	// Public -----------------
 
-	public $htmlLayout	= '@cmsgears/module-cms/common/mails/layouts/html';
-	public $textLayout	= '@cmsgears/module-cms/common/mails/layouts/text';
-	public $viewPath	= '@cmsgears/module-cms/common/mails/views';
+	public $htmlLayout	= '@cmsgears/module-shop/common/mails/layouts/html';
+	public $textLayout	= '@cmsgears/module-shop/common/mails/layouts/text';
+	public $viewPath	= '@cmsgears/module-shop/common/mails/views';
 
 	// Protected --------------
 

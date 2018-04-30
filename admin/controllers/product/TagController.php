@@ -47,6 +47,7 @@ class TagController extends BaseTagController {
 		// Config
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
 		$this->templateType	= ShopGlobal::TYPE_PRODUCT;
+		$this->apixBase		= 'shop/tag';
 
 		// Sidebar
 		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-tag' ];

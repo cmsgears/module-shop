@@ -46,7 +46,7 @@ class AttributeController extends BaseAttributeController {
 
 		// Config
 		$this->title	= 'Product Attribute';
-		$this->apixBase	= 'shop';
+		$this->apixBase	= 'shop/attribute';
 
 		// Services
 		$this->modelService		= Yii::$app->factory->get( 'productMetaService' );

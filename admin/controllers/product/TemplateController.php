@@ -45,7 +45,8 @@ class TemplateController extends BaseTemplateController {
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
 		// Config
-		$this->type = ShopGlobal::TYPE_PRODUCT;
+		$this->type		= ShopGlobal::TYPE_PRODUCT;
+		$this->apixBase = 'shop/template';
 
 		// Sidebar
 		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-template' ];

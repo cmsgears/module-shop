@@ -46,6 +46,7 @@ class GalleryController extends BaseGalleryController {
 
 		// Config
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
+		$this->apixBase		= 'shop/gallery';
 		$this->parentUrl	= '/shop/product/all';
 		$this->modelContent	= true;
 

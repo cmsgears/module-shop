@@ -174,6 +174,10 @@ class ProductService extends ContentService implements IProductService {
 
 		// Filters ----------
 
+		$softDelete = $modelClass::STATUS_DELETED;
+
+		$config[ 'conditions' ][] = "$modelTable.status!=$softDelete";
+
 		// Params
 		$type	= Yii::$app->request->getQueryParam( 'type' );
 		$status	= Yii::$app->request->getQueryParam( 'status' );
@@ -281,9 +285,16 @@ class ProductService extends ContentService implements IProductService {
 		// Save Files
 		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
 
+		// Default Private
 		if( !isset( $model->visibility ) ) {
 
-			$model->visibility	= $modelClass::VISIBILITY_PRIVATE;
+			$model->visibility = $modelClass::VISIBILITY_PRIVATE;
+		}
+
+		// Default New
+		if( !isset( $model->status ) ) {
+
+			$model->status = $modelClass::STATUS_NEW;
 		}
 
 		$model->total = $model->getTotalPrice();
@@ -298,18 +309,15 @@ class ProductService extends ContentService implements IProductService {
 
 	public function register( $model, $config = [] ) {
 
-		$gallery	= null;
 		$content 	= $config[ 'content' ];
-
-		$aGallery	= isset( $config[ 'attachGallery' ] ) ? $config[ 'attachGallery' ] : false;
 		$banner 	= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
 		$video 		= isset( $config[ 'video' ] ) ? $config[ 'video' ] : null;
+		$gallery	= isset( $config[ 'gallery' ] ) ? $config[ 'gallery' ] : null;
 
 		$galleryService			= Yii::$app->factory->get( 'galleryService' );
 		$modelContentService	= Yii::$app->factory->get( 'modelContentService' );
 		$modelCategoryService	= Yii::$app->factory->get( 'modelCategoryService' );
 		$modelTagService		= Yii::$app->factory->get( 'modelTagService' );
-		$addressService			= Yii::$app->factory->get( 'addressService' );
 
 		$galleryClass = $galleryService->getModelClass();
 
@@ -320,14 +328,13 @@ class ProductService extends ContentService implements IProductService {
 			// Create Product
 			$model = $this->create( $model, $config );
 
-			// Create and attach gallery
-			if( $aGallery ) {
+			// Create gallery
+			if( $gallery ) {
 
-				$gallery = $galleryService->createByParams([
-					'type' => ShopGlobal::TYPE_PRODUCT, 'status' => $galleryClass::STATUS_ACTIVE,
-					'name' => $model->name, 'title' => $model->name,
-					'siteId' => Yii::$app->core->siteId
-				]);
+				$gallery->type		= OrgGlobal::TYPE_ORG;
+				$gallery->status	= $galleryClass::STATUS_ACTIVE;
+
+				$gallery = $galleryService->create( $gallery );
 			}
 
 			// Create and attach model content
@@ -359,8 +366,12 @@ class ProductService extends ContentService implements IProductService {
 
 	public function update( $model, $config = [] ) {
 
+		$content 	= $config[ 'content' ];
 		$admin 		= isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
 		$avatar 	= isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
+		$banner 	= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
+		$video 		= isset( $config[ 'video' ] ) ? $config[ 'video' ] : null;
+		$gallery	= isset( $config[ 'gallery' ] ) ? $config[ 'gallery' ] : null;
 
 		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
 			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
@@ -370,15 +381,30 @@ class ProductService extends ContentService implements IProductService {
 			'sku', 'code', 'shop', 'price', 'discount', 'total', 'track', 'stock', 'sold', 'warn', 'startDate', 'endDate'
 		];
 
-		// Save Files
-		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
-
-		$model->total = $model->getTotalPrice();
-
 		if( $admin ) {
 
 			$attributes	= ArrayHelper::merge( $attributes, [ 'status', 'order', 'pinned', 'featured', 'reviews' ] );
 		}
+
+		$galleryService			= Yii::$app->factory->get( 'galleryService' );
+		$modelContentService	= Yii::$app->factory->get( 'modelContentService' );
+
+		// Save Files
+		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
+
+		// Create/Update gallery
+		if( isset( $gallery ) ) {
+
+			$gallery = $galleryService->createOrUpdate( $gallery );
+		}
+
+		// Update model content
+		$modelContentService->update( $content, [
+			'publish' => true, 'banner' => $banner, 'video' => $video, 'gallery' => $gallery
+		]);
+
+		// Update total price
+		$model->total = $model->getTotalPrice();
 
 		return parent::update( $model, [
 			'attributes' => $attributes
