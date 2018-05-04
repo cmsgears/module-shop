@@ -284,8 +284,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content padding padding-small">
 					<?= CategoryAuto::widget([
 						'options' => [ 'class' => 'box-mapper-auto' ],
-						'type' => ShopGlobal::TYPE_PRODUCT,
-						'model' => $model, 'app' => 'category',
+						'model' => $model, 'type' => ShopGlobal::TYPE_PRODUCT,
 						'mapActionUrl' => "$apixBase/assign-category?slug=$model->slug&type=$model->type",
 						'deleteActionUrl' => "$apixBase/remove-category?slug=$model->slug&type=$model->type"
 					]) ?>
@@ -299,8 +298,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content padding padding-small">
 					<?= TagMapper::widget([
 						'options' => [ 'id' => 'box-tag-mapper', 'class' => 'box-tag-mapper' ],
-						'loadAssets' => true,
-						'model' => $model, 'app' => 'category',
+						'model' => $model,
 						'mapActionUrl' => "$apixBase/assign-tags?slug=$model->slug&type=$model->type",
 						'deleteActionUrl' => "$apixBase/remove-tag?slug=$model->slug&type=$model->type"
 					])?>

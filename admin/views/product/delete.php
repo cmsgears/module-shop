@@ -302,7 +302,6 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 				<div class="box-content padding padding-small">
 					<?= TagMapper::widget([
 						'options' => [ 'id' => 'box-tag-mapper', 'class' => 'box-tag-mapper' ],
-						'loadAssets' => true,
 						'model' => $model, 'disabled' => true
 					])?>
 				</div>

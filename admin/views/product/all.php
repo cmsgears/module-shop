@@ -79,11 +79,11 @@ $themeTemplates		= '@themes/admin/views/templates';
 <?= Popup::widget([
 	'title' => 'Apply Bulk Action', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/bulk" ]
+	'data' => [ 'model' => 'Product', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/bulk" ]
 ]) ?>
 
 <?= Popup::widget([
 	'title' => 'Delete Product', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product', 'app' => 'main', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/delete?id=" ]
+	'data' => [ 'model' => 'Product', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/delete?id=" ]
 ]) ?>
