@@ -231,7 +231,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 			[ [ 'purchasingUnitId', 'name', 'price', 'purchase' ], 'required' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Unique
-			[ [ 'siteId', 'slug' ], 'unique', 'targetAttribute' => 'slug' ],
+			[ 'slug', 'unique', 'targetAttribute' => [ 'siteId', 'slug' ] ],
 			// Text Limit
 			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
 			[ 'icon', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
