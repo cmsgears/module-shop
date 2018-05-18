@@ -9,6 +9,7 @@
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\cms\common\config\CmsGlobal;
 
 use cmsgears\core\common\base\Migration;
 
@@ -18,6 +19,7 @@ use cmsgears\core\common\models\entities\Role;
 use cmsgears\core\common\models\entities\Permission;
 use cmsgears\core\common\models\resources\Form;
 use cmsgears\core\common\models\resources\FormField;
+use cmsgears\cms\common\models\entities\Page;
 
 use cmsgears\core\common\utilities\DateUtil;
 
@@ -62,6 +64,9 @@ class m170829_050749_shop_data extends Migration {
 
 		// Init default config
 		$this->insertDefaultConfig();
+
+		// Init system pages
+		$this->insertSystemPages();
 	}
 
 	private function insertRolePermission() {
@@ -212,6 +217,34 @@ class m170829_050749_shop_data extends Migration {
 		];
 
 		$this->batchInsert( $this->prefix . 'core_site_meta', $columns, $metas );
+	}
+
+	private function insertSystemPages() {
+
+		$columns = [ 'siteId', 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'title', 'status', 'visibility', 'icon', 'order', 'featured', 'comments', 'createdAt', 'modifiedAt' ];
+
+		$pages	= [
+			[ $this->site->id, $this->master->id, $this->master->id, 'Cart', 'cart', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, null, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->site->id, $this->master->id, $this->master->id, 'Checkout', 'checkout', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, null, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->site->id, $this->master->id, $this->master->id, 'Payment', 'payment', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, null, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->site->id, $this->master->id, $this->master->id, 'Shop', 'shop', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, null, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ]
+		];
+
+		$this->batchInsert( $this->prefix . 'cms_page', $columns, $pages );
+
+		$summary = "Lorem ipsum is a pseudo-Latin text used in web design, typography, layout, and printing in place of English to emphasise design elements over content. It\'s also called placeholder (or filler) text. It\'s a convenient tool for mock-ups. It helps to outline the visual elements of a document or presentation, eg typography, font, or layout. Lorem ipsum is mostly a part of a Latin text by the classical author and philosopher Cicero.";
+		$content = "Lorem ipsum is a pseudo-Latin text used in web design, typography, layout, and printing in place of English to emphasise design elements over content. It\'s also called placeholder (or filler) text. It\'s a convenient tool for mock-ups. It helps to outline the visual elements of a document or presentation, eg typography, font, or layout. Lorem ipsum is mostly a part of a Latin text by the classical author and philosopher Cicero.";
+
+		$columns = [ 'parentId', 'parentType', 'seoName', 'seoDescription', 'seoKeywords', 'seoRobot', 'summary', 'content', 'publishedAt' ];
+
+		$pages	= [
+			[ Page::findBySlugType( 'cart', CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ],
+			[ Page::findBySlugType( 'checkout', CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ],
+			[ Page::findBySlugType( 'payment', CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ],
+			[ Page::findBySlugType( 'shop', CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ]
+		];
+
+		$this->batchInsert( $this->prefix . 'cms_model_content', $columns, $pages );
 	}
 
     public function down() {
