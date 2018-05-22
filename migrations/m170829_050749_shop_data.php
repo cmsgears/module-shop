@@ -221,13 +221,13 @@ class m170829_050749_shop_data extends Migration {
 
 	private function insertSystemPages() {
 
-		$columns = [ 'siteId', 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'title', 'status', 'visibility', 'icon', 'order', 'featured', 'comments', 'createdAt', 'modifiedAt' ];
+		$columns = [ 'siteId', 'createdBy', 'modifiedBy', 'name', 'slug', 'type', 'icon', 'title', 'status', 'visibility', 'order', 'featured', 'comments', 'createdAt', 'modifiedAt' ];
 
 		$pages	= [
-			[ $this->site->id, $this->master->id, $this->master->id, 'Cart', 'cart', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, null, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->site->id, $this->master->id, $this->master->id, 'Checkout', 'checkout', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, null, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->site->id, $this->master->id, $this->master->id, 'Payment', 'payment', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, null, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->site->id, $this->master->id, $this->master->id, 'Shop', 'shop', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, null, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->site->id, $this->master->id, $this->master->id, 'Cart', 'cart', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->site->id, $this->master->id, $this->master->id, 'Checkout', 'checkout', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->site->id, $this->master->id, $this->master->id, 'Payment', 'payment', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			[ $this->site->id, $this->master->id, $this->master->id, 'Shop', 'shop', CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'cms_page', $columns, $pages );
