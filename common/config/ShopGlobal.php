@@ -28,6 +28,11 @@ class ShopGlobal {
 
 	// Templates -------------------------------------------------------
 
+	const TEMPLATE_CART		= 'cart';
+	const TEMPLATE_CHECKOUT	= 'checkout';
+	const TEMPLATE_PAYMENT	= 'payment';
+	const TEMPLATE_SHOP		= 'shop';
+
 	// Config ----------------------------------------------------------
 
 	const CONFIG_SHOP = 'shop';
