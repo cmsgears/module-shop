@@ -31,7 +31,6 @@ class ShopGlobal {
 	const TEMPLATE_CART		= 'cart';
 	const TEMPLATE_CHECKOUT	= 'checkout';
 	const TEMPLATE_PAYMENT	= 'payment';
-	const TEMPLATE_SHOP		= 'shop';
 
 	// Config ----------------------------------------------------------
 
