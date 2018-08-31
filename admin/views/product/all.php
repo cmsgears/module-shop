@@ -60,7 +60,9 @@ $themeTemplates		= '@themes/admin/views/templates';
 		}],
 		'name' => 'Name',
 		'template' => [ 'title' => 'Template', 'generate' => function( $model ) { return $model->modelContent->getTemplateName(); } ],
-		'qty' => [ 'title' => 'Quantity', 'generate' => function( $model ) { return $model->purchase . ' ' . $model->purchasingUnit->name; } ],
+		'qty' => [ 'title' => 'Quantity', 'generate' => function( $model ) {
+			return isset( $model->purchasingUnit ) ? $model->purchase . ' ' . $model->purchasingUnit->name : null;
+		}],
 		'shop' => [ 'title' => 'Shop', 'generate' => function( $model ) { return $model->getShopStr(); } ],
 		'price' => 'Price',
 		'total' => 'Total',

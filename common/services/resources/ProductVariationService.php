@@ -272,7 +272,7 @@ class ProductVariationService extends ResourceService implements IProductVariati
 		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
 			'templateId', 'productId', 'addonId', 'unitId', 'bannerId', 'videoId',
 			'name', 'type', 'icon', 'title', 'description', 'content',
-			'order', 'discountType', 'price', 'discount', 'total', 'quantity',
+			'order', 'discountType', 'price', 'discount', 'total', 'quantity', 'free',
 			'track', 'stock', 'sold', 'warn', 'active', 'startDate', 'endDate'
 		];
 

@@ -68,8 +68,37 @@ use cmsgears\cms\common\models\traits\resources\PageContentTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
+use cmsgears\core\common\utilities\DateUtil;
+
 /**
  * Product model represents product to be sold by shop.
+ *
+ * It supports different type of unit of measurement to avoid run time conversions. These includes:
+ * ** Primary Unit - The base unit which can be used to identify the product unit at packaging level.
+ * ** Purchasing Unit - The purchasing unit is the main unit used for shopping and tracking purpose.
+ * It can be same or different from Primary Unit. In ideal cases, it must be equal or greater than the
+ * Primary Unit i.e. the packaging is same as that of Primary Unit or several primary units are packed
+ * in larger packages.
+ * ** Quantity Unit - The quantity unit used to identify item count in Primary Unit.
+ * ** Weight Unit - The weight unit used to identity the weight of Quantity Unit.
+ * ** Volume Unit - The volume unit used to identity the volume of Quantity Unit.
+ * ** Length Unit - The length unit used to identity the dimensions of Quantity Unit.
+ *
+ * The fields price, discount and total directly relates to Purchasing Unit.
+ *
+ * The field primary directly relates to Primary Unit.
+ * The field purchase directly relates to Purchasing Unit.
+ * The field quantity directly relates to Quantity Unit.
+ * The field weight directly relates to Weight Unit.
+ * The field volume directly relates to Volume Unit.
+ * The fields length, width, height, radius directly relates to Length Unit.
+ *
+ * The flag track will be used to identity whether stock information is required for the product.
+ *
+ * The fields stock, sold and warn directly relates to Purchasing Unit and used to track product
+ * stock if track is true.
+ *
+ * The shop flag identity whether the product is available for sales.
  *
  * @property integer $id
  * @property integer $siteId
@@ -110,6 +139,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property float $sold
  * @property float $warn
  * @property boolean $shop
+ * @property string $shopNotes
  * @property boolean $pinned
  * @property boolean $featured
  * @property boolean $reviews
@@ -228,7 +258,8 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
         // Model Rules
         $rules = [
 			// Required, Safe
-			[ [ 'purchasingUnitId', 'name', 'price', 'purchase' ], 'required' ],
+			[ [ 'name' ], 'required' ],
+			[ [ 'purchasingUnitId', 'price', 'purchase' ], 'required', 'on' => 'shop' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Unique
 			[ 'slug', 'unique', 'targetAttribute' => [ 'siteId', 'slug' ] ],
@@ -238,11 +269,11 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			[ [ 'slug', 'sku', 'code' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxxLargeText ],
-			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
+			[ [ 'description', 'shopNotes' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'status', 'visibility', 'order' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'track', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
-			[ [ 'shop', 'pinned', 'featured', 'reviews', 'gridCacheValid' ], 'boolean' ],
+			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
+			[ [ 'shop', 'track', 'pinned', 'featured', 'reviews', 'gridCacheValid' ], 'boolean' ],
 			[ [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId' ], 'number', 'integerOnly' => true, 'min' => 0, 'tooSmall' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_SELECT ) ],
 			[ [ 'siteId', 'avatarId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
@@ -253,7 +284,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 		// Trim Text
         if( Yii::$app->core->trimFieldValue ) {
 
-            $trim[] = [ [ 'name', 'title', 'description' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+            $trim[] = [ [ 'name', 'title', 'description', 'shopNotes' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
 
             return ArrayHelper::merge( $trim, $rules );
         }
@@ -302,6 +333,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 			'sold' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_SOLD ),
 			'warn' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_WARN ),
 			'shop' => Yii::$app->shopMessage->getMessage( ShopGlobal::FIELD_SHOP ),
+			'shopNotes' => 'Shop Notes',
 			'pinned' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PINNED ),
 			'featured' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_FEATURED ),
 			'reviews' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_REVIEWS ),
@@ -325,6 +357,11 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 			if( $this->primaryUnitId <= 0 ) {
 
 				$this->primaryUnitId = null;
+			}
+
+			if( $this->purchasingUnitId <= 0 ) {
+
+				$this->purchasingUnitId = null;
 			}
 
 			if( $this->quantityUnitId <= 0 ) {
@@ -496,6 +533,41 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 		$total = ( $this->price - $this->discount ) * $this->purchase;
 
 		return round( $total, $precision );
+	}
+
+	public function isValidDateRange() {
+
+		$now	= DateUtil::getDateTime();
+		$valid	= true;
+
+		if( !empty( $this->startDate ) ) {
+
+			$valid = DateUtil::lessThan( $now, $this->startDate );
+		}
+
+		if( $valid && !empty( $this->endDate ) ) {
+
+			$valid = DateUtil::lessThan( $this->endDate, $now );
+		}
+
+		return $valid;
+	}
+
+	public function inStock() {
+
+		$stock = true;
+
+		if( $this->track && $this->stock <= 0 ) {
+
+			$stock = false;
+		}
+
+		return $stock;
+	}
+
+	public function isCartEnabled() {
+
+		return true;
 	}
 
 	// Static Methods ----------------------------------------------

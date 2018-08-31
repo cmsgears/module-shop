@@ -8,6 +8,8 @@
  */
 
 // CMG Imports
+use cmsgears\core\common\config\CoreGlobal;
+
 use cmsgears\core\common\base\Migration;
 
 use cmsgears\core\common\models\base\Meta;
@@ -32,11 +34,11 @@ class m170829_050630_shop extends Migration {
 	public function init() {
 
 		// Table prefix
-		$this->prefix		= Yii::$app->migration->cmgPrefix;
+		$this->prefix = Yii::$app->migration->cmgPrefix;
 
 		// Get the values via config
-		$this->fk			= Yii::$app->migration->isFk();
-		$this->options		= Yii::$app->migration->getTableOptions();
+		$this->fk		= Yii::$app->migration->isFk();
+		$this->options	= Yii::$app->migration->getTableOptions();
 
 		// Default collation
 		if( $this->db->driverName === 'mysql' ) {
@@ -68,7 +70,7 @@ class m170829_050630_shop extends Migration {
 			'siteId' => $this->bigInteger( 20 )->notNull(),
 			'avatarId' => $this->bigInteger( 20 ),
 			'primaryUnitId' => $this->bigInteger( 20 ),
-			'purchasingUnitId' => $this->bigInteger( 20 )->notNull(),
+			'purchasingUnitId' => $this->bigInteger( 20 ),
 			'quantityUnitId' => $this->bigInteger( 20 ),
 			'weightUnitId' => $this->bigInteger( 20 ),
 			'volumeUnitId' => $this->bigInteger( 20 ),
@@ -77,8 +79,8 @@ class m170829_050630_shop extends Migration {
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
 			'slug' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
-			'type' => $this->string( Yii::$app->core->mediumText )->notNull(),
-			'icon' => $this->string( Yii::$app->core->largeText )->notNull(),
+			'type' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( CoreGlobal::TYPE_DEFAULT ),
+			'icon' => $this->string( Yii::$app->core->largeText )->defaultValue( null ),
 			'title' => $this->string( Yii::$app->core->xxxLargeText )->defaultValue( null ),
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),
@@ -110,6 +112,7 @@ class m170829_050630_shop extends Migration {
 			'endDate' => $this->date()->defaultValue( null ),
 			'createdAt' => $this->dateTime()->notNull(),
 			'modifiedAt' => $this->dateTime(),
+			'shopNotes' => $this->mediumText()->defaultValue( null ),
 			'content' => $this->mediumText(),
 			'data' => $this->mediumText(),
 			'gridCache' => $this->longText(),
@@ -191,6 +194,7 @@ class m170829_050630_shop extends Migration {
 			'discount' => $this->float()->defaultValue( 0 ),
 			'total' => $this->float()->defaultValue( 0 ),
 			'quantity' => $this->float()->defaultValue( 0 ),
+			'free' => $this->float()->defaultValue( 0 ),
 			'track' => $this->boolean()->defaultValue( false ),
 			'stock' => $this->float()->defaultValue( 0 ),
 			'sold' => $this->float()->defaultValue( 0 ),

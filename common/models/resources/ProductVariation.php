@@ -59,6 +59,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property float $discount
  * @property float $total
  * @property float $quantity
+ * @property float $free
  * @property boolean $track
  * @property float $stock
  * @property float $sold
@@ -88,6 +89,10 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 	 * The add-on variation adds additional items that can be purchased together with primary
 	 * product. In most of the cases these additional items can be accessories of primary product
 	 * and adds additional cost at discounted rates. Stock must be maintained at variation level.
+	 *
+	 * <p>The <em class="bold">Add-On Variation</em> does not make any changes in the base product and it adds additional product at discounted rates if purchased together with base product.</p>
+	 * <p>It will be purchased in multiples of base product.</p>
+	 * <p>Buyer can select multiple <em class="bold">Add-On Variation</em>.</p>
 	 */
 	const TYPE_ADD_ON	=   0;
 
@@ -95,6 +100,10 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 	 * The base variation alters the primary product in look and feel. It might also provide
 	 * altered product with slight difference in core features. It does not add additional price,
 	 * but make changes in the primary product price. Stock must be maintained at variation level.
+	 *
+	 * <p>The <em class="bold">Base Variation</em> overrides and discard the shop configuration of base product. The user will place order for variation instead of base product.</p>
+	 * <p>It also gets applied to the Add-On variation.</p>
+	 * <p>Buyer can select only one <em class="bold">Base Variation</em>, though multiple variations can be active at same time.</p>
 	 */
 	const TYPE_BASE		= 200;
 
@@ -102,16 +111,25 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 	 * The discount variation adds additional discount on top of product discount. It might last
 	 * for shorter duration in order to boost sales or clearance sale. It will also be applied on
 	 * Add On and Base variations. This type of variation does not need stock maintenance.
+	 *
+	 * <p>The <em class="bold">Discount Variation</em> adds periodic discount to the base product.</p>
+	 * <p>It also gets applied to the Add-On and Base variations.</p>
+	 * <p>Base product price will be set to zero in case the discount exceeds the base price.</p>
+	 * <p>It will be discarded if <em class="bold">Quantity Variation</em> is selected by Buyer.</p>
 	 */
 	const TYPE_DISCOUNT	= 400;
 
 	/**
 	 * The quantity variation adds discount on bulk purchase. Similar to discount variation, it
 	 * will also be applied on Add On and Base variations and does not need stock maintenance.
+	 *
+	 * <p>The <em class="bold">Quantity Variation</em> adds bulk discount to the base product.</p>
+	 * <p>It also gets applied to the Add-On and Base variations.</p>
+	 * <p>Buyer can select only one <em class="bold">Quantity Variation</em> to avail bulk discount.</p>
 	 */
 	const TYPE_QUANTITY	= 600;
 
-	const DISCOUNT_TYPE_FLAT	=   0;
+	const DISCOUNT_TYPE_FLAT	=  10;
 	const DISCOUNT_TYPE_PERCENT	= 200;
 
 	// Public -----------------
@@ -189,7 +207,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
         // Model Rules
         $rules = [
 			// Required, Safe
-			[ [ 'productId', 'unitId', 'name', 'type', 'quantity' ], 'required' ],
+			[ [ 'productId', 'name', 'type' ], 'required' ],
 			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
 			// Text Limit
 			[ 'icon', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
@@ -198,17 +216,19 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
 			[ [ 'type', 'discountType' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'price', 'discount', 'total', 'quantity', 'track', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
+			[ [ 'price', 'discount', 'total', 'quantity', 'free', 'track', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
 			[ [ 'active', 'gridCacheValid' ], 'boolean' ],
 			[ 'unitId', 'number', 'integerOnly' => true, 'min' => 0, 'tooSmall' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_SELECT ) ],
-			[ [ 'templateId', 'productId', 'addonId', 'bannerId', 'videoId', 'galleryId', 'unitId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'templateId', 'productId', 'addonId', 'bannerId', 'videoId', 'galleryId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
 			[ [ 'startDate', 'endDate' ], 'date' ],
 			[ 'endDate', 'compareDate', 'compareAttribute' => 'startDate', 'operator' => '>=', 'type' => 'datetime', 'message' => 'End Date must be greater than or equal to Start Date.' ],
 			[ 'startDate', 'validateStartDate' ],
 			[ 'endDate', 'validateEndDate' ],
 			[ 'addonId', 'validateAddon' ],
-			[ 'discount', 'validateDiscount' ]
+			[ 'discount', 'validateDiscount' ],
+			[ 'type', 'validateType' ],
+			[ 'track', 'validateTrack' ]
 		];
 
 		// Trim Text
@@ -246,6 +266,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT_UNIT ),
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
+			'free' => 'Free Units',
 			'track' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_TRACK ),
 			'stock' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_STOCK ),
 			'sold' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_SOLD ),
@@ -276,6 +297,23 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 			if( $this->order < 0 ) {
 
 				$this->order = 0;
+			}
+
+			$product = $this->product;
+
+			if( empty( $this->startDate ) && isset( $product->startDate ) ) {
+
+				$this->startDate = $product->startDate;
+			}
+
+			if( empty( $this->endDate ) && isset( $product->endDate ) ) {
+
+				$this->endDate = $product->endDate;
+			}
+
+			if($this->type == self::TYPE_DISCOUNT ) {
+
+				$this->price = 0;
 			}
 
 			return true;
@@ -363,9 +401,69 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 
 			$total = $this->getTotalPrice();
 
-			if( $total < 0 ) {
+			if( in_array( $this->type, [ self::TYPE_ADD_ON, self::TYPE_BASE ] ) && $total < 0 || $total > ( $this->price * $this->quantity ) ) {
 
 				$this->addError( 'discount', 'Please update discount value to have valid price.' );
+			}
+		}
+	}
+
+	public function validateType( $attribute, $param ) {
+
+		if( !$this->hasErrors() ) {
+
+			if( empty( $this->quantity ) && in_array( $this->type, [ self::TYPE_ADD_ON, self::TYPE_BASE, self::TYPE_QUANTITY ] ) ) {
+
+				$this->addError( 'quantity', 'Quantity cannot be blank for selected variation.' );
+			}
+
+			if( empty( $this->unitId ) && in_array( $this->type, [ self::TYPE_ADD_ON, self::TYPE_BASE ] ) ) {
+
+				$this->addError( 'unitId', 'Unit of Measurement cannot be blank for selected variation.' );
+			}
+
+			if( empty( $this->price ) && in_array( $this->type, [ self::TYPE_ADD_ON, self::TYPE_BASE, self::TYPE_QUANTITY ] ) ) {
+
+				$this->addError( 'price', 'Unit Price is required for selected variation.' );
+			}
+
+			if( empty( $this->free ) && $this->type == self::TYPE_QUANTITY ) {
+
+				$this->addError( 'free', 'Specify Free Unit quantity for selected variation.' );
+			}
+
+			if( empty( $this->discountType ) && in_array( $this->type, [ self::TYPE_ADD_ON, self::TYPE_BASE ] ) ) {
+
+				$this->addError( 'discountType', 'Discount type cannot be blank for selected variation.' );
+			}
+
+			if( empty( $this->discount ) && in_array( $this->type, [ self::TYPE_ADD_ON, self::TYPE_BASE ] ) ) {
+
+				$this->addError( 'discount', 'Discount cannot be blank for selected variation.' );
+			}
+
+			if( empty( $this->addonId ) && $this->type == self::TYPE_ADD_ON ) {
+
+				$this->addError( 'addonId', 'Please select Add-On product for selected variation.' );
+			}
+		}
+	}
+
+	public function validateTrack( $attribute, $param ) {
+
+		if( !$this->hasErrors() ) {
+
+			if( $this->stock ) {
+
+				if( empty( $this->stock ) ) {
+
+					$this->addError( 'stock', 'Stock Quantity cannot be blank for maintaining stock.' );
+				}
+
+				if( empty( $this->warn ) ) {
+
+					$this->addError( 'warn', 'Warn Quantity cannot be blank for maintaining stock.' );
+				}
 			}
 		}
 	}
@@ -408,6 +506,11 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 		return $this->hasOne( Product::class, [ 'id' => 'addonId' ] )->from( "$productTable as addon" );
 	}
 
+	public function belongsToProduct( $product ) {
+
+		return $this->productId == $product->id;
+	}
+
 	/**
 	 * Returns string representation of type.
 	 *
@@ -440,15 +543,24 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 
 	public function getTotalPrice( $precision = 2 ) {
 
-		$price		= $this->price;
-		$discount	= $this->discount;
+		$price = $this->price;
 
-		if( $this->discountType == self::DISCOUNT_TYPE_PERCENT ) {
+		// Consider discount value only for AddOn and Base variations
+		if( in_array( $this->type, [ self::TYPE_ADD_ON, self::TYPE_BASE ] ) ) {
 
-			$discount = ( ( $price * $discount ) / 100 );
+			$discount = $this->discount;
+
+			if( $this->discountType == self::DISCOUNT_TYPE_PERCENT ) {
+
+				$discount = ( ( $price * $discount ) / 100 );
+			}
+
+			$total = ( $price - $discount ) * $this->quantity;
 		}
+		else {
 
-		$total = ( $price - $discount ) * $this->quantity;
+			$total = $price * $this->quantity;
+		}
 
 		return round( $total, $precision );
 	}

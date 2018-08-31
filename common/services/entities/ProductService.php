@@ -331,7 +331,9 @@ class ProductService extends ContentService implements IProductService {
 			// Create gallery
 			if( $gallery ) {
 
-				$gallery->type		= OrgGlobal::TYPE_ORG;
+				$gallery->siteId	= empty( $gallery->siteId ) ? $model->siteId : $gallery->siteId;
+				$gallery->name		= empty( $gallery->name ) ? $model->name : $gallery->name;
+				$gallery->type		= ShopGlobal::TYPE_PRODUCT;
 				$gallery->status	= $galleryClass::STATUS_ACTIVE;
 
 				$gallery = $galleryService->create( $gallery );
@@ -339,7 +341,7 @@ class ProductService extends ContentService implements IProductService {
 
 			// Create and attach model content
 			$modelContentService->create( $content, [
-				'parent' => $model, 'parentType' => ShopGlobal::TYPE_PRODUCT,
+				'parent' => $model, 'parentType' => static::$parentType,
 				'publish' => true,
 				'banner' => $banner, 'video' => $video, 'gallery' => $gallery
 			]);
@@ -366,7 +368,7 @@ class ProductService extends ContentService implements IProductService {
 
 	public function update( $model, $config = [] ) {
 
-		$content 	= $config[ 'content' ];
+		$content 	= isset( $config[ 'content' ] ) ? $config[ 'content' ] : $model->modelContent;
 		$admin 		= isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
 		$avatar 	= isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
 		$banner 	= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
@@ -378,7 +380,8 @@ class ProductService extends ContentService implements IProductService {
 			'avatarId', 'name', 'slug', 'icon',
 			'title', 'description', 'visibility', 'content',
 			'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius',
-			'sku', 'code', 'shop', 'price', 'discount', 'total', 'track', 'stock', 'sold', 'warn', 'startDate', 'endDate'
+			'sku', 'code', 'shop', 'shopNotes', 'price', 'discount', 'total', 'startDate', 'endDate',
+			'track', 'stock', 'sold', 'warn'
 		];
 
 		if( $admin ) {

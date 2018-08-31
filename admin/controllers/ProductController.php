@@ -127,7 +127,7 @@ class ProductController extends CrudController {
 
 	// CMG parent classes --------------------
 
-	// ElementController ---------------------
+	// ProductController ---------------------
 
 	public function actionAll( $config = [] ) {
 
@@ -372,7 +372,9 @@ class ProductController extends CrudController {
 				return Yii::$app->templateManager->renderViewAdmin( $template, [
 					'model' => $model,
 					'content' => $content,
-					'userReview' => false
+					'metaService' => $this->metaService,
+					'userReview' => false,
+					'adminReview' => true
 				], [ 'layout' => false ] );
 			}
 			else {

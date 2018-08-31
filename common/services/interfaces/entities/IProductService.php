@@ -10,14 +10,14 @@
 namespace cmsgears\shop\common\services\interfaces\entities;
 
 // CMG Imports
-use cmsgears\core\common\services\interfaces\base\IEntityService;
+use cmsgears\cms\common\services\interfaces\base\IContentService;
 
 /**
  * IProductService declares methods specific to product model.
  *
  * @since 1.0.0
  */
-interface IProductService extends IEntityService {
+interface IProductService extends IContentService {
 
 	// Data Provider ------
 
