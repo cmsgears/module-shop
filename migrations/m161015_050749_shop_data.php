@@ -11,8 +11,6 @@
 use cmsgears\core\common\config\CoreGlobal;
 use cmsgears\cms\common\config\CmsGlobal;
 
-use cmsgears\core\common\base\Migration;
-
 use cmsgears\core\common\models\entities\Site;
 use cmsgears\core\common\models\entities\User;
 use cmsgears\core\common\models\entities\Role;
@@ -28,7 +26,7 @@ use cmsgears\core\common\utilities\DateUtil;
  *
  * @since 1.0.0
  */
-class m170829_050749_shop_data extends Migration {
+class m161015_050749_shop_data extends \cmsgears\core\common\base\Migration {
 
 	// Public Variables
 
@@ -43,7 +41,7 @@ class m170829_050749_shop_data extends Migration {
 	public function init() {
 
 		// Table prefix
-		$this->prefix	= Yii::$app->migration->cmgPrefix;
+		$this->prefix = Yii::$app->migration->cmgPrefix;
 
 		$this->site		= Site::findBySlug( CoreGlobal::SITE_MAIN );
 		$this->master	= User::findByUsername( Yii::$app->migration->getSiteMaster() );
@@ -81,9 +79,9 @@ class m170829_050749_shop_data extends Migration {
 
 		$this->batchInsert( $this->prefix . 'core_role', $columns, $roles );
 
-		$superAdminRole		= Role::findBySlugType( 'super-admin', CoreGlobal::TYPE_SYSTEM );
-		$adminRole			= Role::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
-		$shopAdminRole		= Role::findBySlugType( 'shop-admin', CoreGlobal::TYPE_SYSTEM );
+		$superAdminRole	= Role::findBySlugType( 'super-admin', CoreGlobal::TYPE_SYSTEM );
+		$adminRole		= Role::findBySlugType( 'admin', CoreGlobal::TYPE_SYSTEM );
+		$shopAdminRole	= Role::findBySlugType( 'shop-admin', CoreGlobal::TYPE_SYSTEM );
 
 		// Permissions
 
@@ -249,7 +247,7 @@ class m170829_050749_shop_data extends Migration {
 
     public function down() {
 
-        echo "m170829_050749_shop_data will be deleted with m160621_014408_core.\n";
+        echo "m161015_050749_shop_data will be deleted with m160621_014408_core.\n";
 
         return true;
     }

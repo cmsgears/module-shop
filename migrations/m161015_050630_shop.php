@@ -10,8 +10,6 @@
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
 
-use cmsgears\core\common\base\Migration;
-
 use cmsgears\core\common\models\base\Meta;
 
 /**
@@ -20,7 +18,7 @@ use cmsgears\core\common\models\base\Meta;
  *
  * @since 1.0.0
  */
-class m170829_050630_shop extends Migration {
+class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 
 	// Public Variables
 

@@ -22,7 +22,9 @@ class ShopGlobal {
 
 	// Grouping by type ------------------------------------------------
 
-	const TYPE_PRODUCT				= 'product';
+	const TYPE_PRODUCT	= 'product';
+
+	const TYPE_OFFER	= 'offer';
 
 	const TYPE_PRODUCT_VARIATION	= 'product-variation';
 
