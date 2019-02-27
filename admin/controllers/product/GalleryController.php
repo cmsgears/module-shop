@@ -1,17 +1,29 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\admin\controllers\product;
 
 // Yii Imports
 use Yii;
 use yii\helpers\Url;
-use yii\web\NotFoundHttpException;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\common\models\resources\File;
+use cmsgears\core\admin\controllers\base\GalleryController as BaseGalleryController;
 
-class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryController {
+/**
+ * GalleryController provide actions specific to product gallery.
+ *
+ * @since 1.0.0
+ */
+class GalleryController extends BaseGalleryController {
 
 	// Variables ---------------------------------------------------
 
@@ -29,27 +41,29 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 
 		parent::init();
 
-		// Views
-		$this->setViewPath( '@cmsgears/module-shop/admin/views/product/gallery' );
+		// Permission
+		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
 		// Config
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
-		$this->parentUrl	= '/shop/shop/all';
+		$this->apixBase		= 'shop/gallery';
+		$this->parentUrl	= '/shop/product/all';
+		$this->modelContent	= true;
 
 		// Services
-		$this->parentService	= Yii::$app->factory->get( 'productService' );
+		$this->parentService = Yii::$app->factory->get( 'productService' );
 
 		// Sidebar
-		$this->sidebar		= [ 'parent' => 'sidebar-shop', 'child' => 'shop' ];
+		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
 
 		// Return Url
-		$this->returnUrl	= Url::previous( 'products' );
-		$this->returnUrl	= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/shop/all/' ], true );
+		$this->returnUrl = Url::previous( 'products' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all/' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/shop/all' ] ] ],
-			'index' => [ [ 'label' => 'Gallery' ] ],
+			'base' => [ [ 'label' => 'Products', 'url' =>  $this->returnUrl ] ],
+			'direct' => [ [ 'label' => 'Gallery' ] ],
 			'items' => [ [ 'label' => 'Gallery', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ],
 		];
 	}
@@ -70,29 +84,4 @@ class GalleryController extends \cmsgears\core\admin\controllers\base\GalleryCon
 
 	// GalleryController ---------------------
 
-	public function actionIndex( $pid = null ) {
-
-		if( isset( $pid ) && isset( $this->parentService ) ) {
-
-			$product	= $this->parentService->getById( $pid );
-
-			Url::remember( [ $this->parentUrl ], 'galleries' );
-
-			$gallery = $product->gallery;
-
-			if( isset( $gallery ) ) {
-
-				$avatar	= isset( $product->avatar ) ? $product->avatar : File::loadFile( null, 'Avatar' );
-
-				return $this->render( 'items', [
-					'id' => $gallery->id,
-					'avatar' => $avatar,
-					'product' => $product
-				] );
-			}
-		}
-
-		// Model not found
-		throw new NotFoundHttpException( Yii::$app->cmgCoreMessage->getMessage( CoreGlobal::ERROR_NOT_FOUND ) );
-	}
 }

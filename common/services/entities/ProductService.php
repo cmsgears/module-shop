@@ -1,40 +1,49 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\common\services\entities;
 
 // Yii Imports
 use Yii;
 use yii\data\Sort;
+use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\shop\common\models\base\ShopTables;
-
-use cmsgears\core\common\models\resources\Gallery;
-use cmsgears\shop\common\models\entities\Product;
-
-use cmsgears\core\common\services\traits\SlugTypeTrait;
-use cmsgears\core\common\services\traits\ApprovalTrait;
-
+use cmsgears\core\common\services\interfaces\resources\IFileService;
 use cmsgears\shop\common\services\interfaces\entities\IProductService;
+use cmsgears\shop\common\services\interfaces\resources\IProductMetaService;
 
-class ProductService extends \cmsgears\core\common\services\base\EntityService implements IProductService {
+use cmsgears\cms\common\services\base\ContentService;
+
+use cmsgears\core\common\services\traits\base\FeaturedTrait;
+use cmsgears\core\common\services\traits\base\SimilarTrait;
+use cmsgears\core\common\services\traits\resources\VisualTrait;
+use cmsgears\core\common\services\traits\mappers\CategoryTrait;
+
+/**
+ * ProductService provide service methods of product model.
+ *
+ * @since 1.0.0
+ */
+class ProductService extends ContentService implements IProductService {
 
 	// Variables ---------------------------------------------------
 
 	// Globals -------------------------------
-
-	public $fileService;
 
 	// Constants --------------
 
 	// Public -----------------
 
 	public static $modelClass	= '\cmsgears\shop\common\models\entities\Product';
-
-	public static $modelTable	= ShopTables::TABLE_PRODUCT;
-
-	public static $typed		= true;
 
 	public static $parentType	= ShopGlobal::TYPE_PRODUCT;
 
@@ -46,20 +55,26 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	// Protected --------------
 
+	protected $fileService;
+	protected $metaService;
+
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
-	use SlugTypeTrait;
-    use ApprovalTrait;
+	use CategoryTrait;
+	use FeaturedTrait;
+	use SimilarTrait;
+	use VisualTrait;
 
 	// Constructor and Initialisation ------------------------------
 
-	public function init() {
+	public function __construct( IFileService $fileService, IProductMetaService $metaService, $config = [] ) {
 
-		parent::init();
+		$this->fileService	= $fileService;
+		$this->metaService 	= $metaService;
 
-		$this->fileService	= Yii::$app->factory->get( 'fileService' );
+		parent::__construct( $config );
 	}
 
 	// Instance methods --------------------------------------------
@@ -76,45 +91,77 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	// Data Provider ------
 
+	// Data Provider ----------
+
 	public function getPage( $config = [] ) {
 
-		$modelClass		= static::$modelClass;
-		$modelTable		= static::$modelTable;
+		$modelClass	= static::$modelClass;
+		$modelTable	= $this->getModelTable();
+
+		$contentTable	= Yii::$app->factory->get( 'modelContentService' )->getModelTable();
+		$templateTable	= Yii::$app->factory->get( 'templateService' )->getModelTable();
+
+		$categoryTable	= Yii::$app->factory->get( 'categoryService' )->getModelTable();
+		$tagTable		= Yii::$app->factory->get( 'tagService' )->getModelTable();
 
 		// Sorting ----------
 
 		$sort = new Sort([
 			'attributes' => [
-				'name' => [
-					'asc' => [ 'name' => SORT_ASC ],
-					'desc' => ['name' => SORT_DESC ],
+				'id' => [
+					'asc' => [ "$modelTable.id" => SORT_ASC ],
+					'desc' => [ "$modelTable.id" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Name'
+					'label' => 'Id'
 				],
-				'price' => [
-					'asc' => [ 'price' => SORT_ASC ],
-					'desc' => ['price' => SORT_DESC ],
+				'template' => [
+					'asc' => [ "$templateTable.name" => SORT_ASC ],
+					'desc' => [ "$templateTable.name" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'Price'
+					'label' => 'Template',
 				],
-				'quantity' => [
-					'asc' => [ 'quantity' => SORT_ASC ],
-					'desc' => ['quantity' => SORT_DESC ],
-					'default' => SORT_DESC,
-					'label' => 'Quantity'
-				],
+				'name', 'slug', 'type', 'icon', 'title', 'status', 'visibility',
+				'order', 'price', 'discount', 'total', 'track', 'stock', 'sold', 'shop', 'pinned', 'featured',
 				'cdate' => [
-					'asc' => [ 'createdAt' => SORT_ASC ],
-					'desc' => ['createdAt' => SORT_DESC ],
+					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
+					'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'cdate',
+					'label' => 'Created At'
 				],
 				'udate' => [
-					'asc' => [ 'modifiedAt' => SORT_ASC ],
-					'desc' => ['modifiedAt' => SORT_DESC ],
+					'asc' => [ "$modelTable.modifiedAt" => SORT_ASC ],
+					'desc' => [ "$modelTable.modifiedAt" => SORT_DESC ],
 					'default' => SORT_DESC,
-					'label' => 'udate',
+					'label' => 'Updated At'
+				],
+				'pdate' => [
+					'asc' => [ "$contentTable.publishedAt" => SORT_ASC ],
+					'desc' => [ "$contentTable.publishedAt" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Published At'
+				],
+				// Conditional - Check for proper joins before applying the sort
+				'category' => [
+					'asc' => [ "$categoryTable.name" => SORT_ASC ],
+					'desc' => [ "$categoryTable.name" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Category'
+				],
+				'tag' => [
+					'asc' => [ "$tagTable.name" => SORT_ASC ],
+					'desc' => [ "$tagTable.name" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Tag'
+				],
+				'rating' => [
+					'asc' => [ "rating" => SORT_ASC ],
+					'desc' => [ "rating" => SORT_DESC ],
+					'default' => SORT_DESC,
+					'label' => 'Rating'
 				]
+			],
+			'defaultOrder' => [
+				'id' => SORT_DESC
 			]
 		]);
 
@@ -125,20 +172,65 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 		// Query ------------
 
-		if( !isset( $config[ 'query' ] ) ) {
+		// Filters ----------
 
-			$config[ 'hasOne' ] = true;
+		$softDelete = $modelClass::STATUS_DELETED;
+
+		$config[ 'conditions' ][] = "$modelTable.status!=$softDelete";
+
+		// Params
+		$type	= Yii::$app->request->getQueryParam( 'type' );
+		$status	= Yii::$app->request->getQueryParam( 'status' );
+		$filter	= Yii::$app->request->getQueryParam( 'model' );
+
+		// Filter - Type
+		if( isset( $type ) ) {
+
+			$config[ 'conditions' ][ "$modelTable.type" ] = $type;
 		}
 
-		// Filters ----------
+		// Filter - Status
+		if( isset( $status ) && isset( $modelClass::$urlRevStatusMap[ $status ] ) ) {
+
+			$config[ 'conditions' ][ "$modelTable.status" ]	= $modelClass::$urlRevStatusMap[ $status ];
+		}
+
+		// Filter - Model
+		if( isset( $filter ) ) {
+
+			switch( $filter ) {
+
+				case 'shop': {
+
+					$config[ 'conditions' ][ "$modelTable.shop" ] = true;
+
+					break;
+				}
+				case 'pinned': {
+
+					$config[ 'conditions' ][ "$modelTable.pinned" ] = true;
+
+					break;
+				}
+				case 'featured': {
+
+					$config[ 'conditions' ][ "$modelTable.featured" ] = true;
+
+					break;
+				}
+			}
+		}
 
 		// Searching --------
 
-		$searchCol	= Yii::$app->request->getQueryParam( 'search' );
+		$searchCol = Yii::$app->request->getQueryParam( 'search' );
 
 		if( isset( $searchCol ) ) {
 
-			$search = [ 'name' => "$modelTable.name", 'slug' => "$modelTable.slug", 'template' => "$modelTable.template" ];
+			$search = [
+				'name' => "$modelTable.name", 'title' => "$modelTable.title", 'desc' => "$modelTable.description",
+				'summary' => "modelContent.summary", 'content' => "modelContent.content"
+			];
 
 			$config[ 'search-col' ] = $search[ $searchCol ];
 		}
@@ -146,12 +238,34 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 		// Reporting --------
 
 		$config[ 'report-col' ]	= [
-				'name' => "$modelTable.name", 'slug' => "$modelTable.slug"
+			'name' => "$modelTable.name", 'title' => "$modelTable.title", 'desc' => "$modelTable.description",
+			'summary' => "modelContent.summary", 'content' => "modelContent.content",
+			'status' => "$modelTable.status", 'visibility' => "$modelTable.visibility", 'order' => "$modelTable.order",
+			'price' => "$modelTable.price", 'total' => "$modelTable.total",
+			'shop' => "$modelTable.shop", 'track' => "$modelTable.track", 'stock' => "$modelTable.stock", 'sold' => "$modelTable.sold",
+			'pinned' => "$modelTable.pinned", 'featured' => "$modelTable.featured"
 		];
 
 		// Result -----------
 
 		return parent::getPage( $config );
+	}
+
+	public function getPublicPage( $config = [] ) {
+
+		$config[ 'route' ] = isset( $config[ 'route' ] ) ? $config[ 'route' ] : 'product';
+
+		return parent::getPublicPage( $config );
+	}
+
+	public function getPageForSimilar( $config = [] ) {
+
+		$modelClass	= static::$modelClass;
+
+		$config[ 'query' ] = isset( $config[ 'query' ] ) ? $config[ 'query' ] : $modelClass::queryWithContent();
+		$config[ 'query' ] = $this->generateSimilarQuery( $config );
+
+		return $this->getPublicPage( $config );
 	}
 
 	// Read - Lists ----
@@ -164,240 +278,197 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 
 	public function create( $model, $config = [] ) {
 
-		$model	= parent::create( $model, $config );
+		$modelClass = static::$modelClass;
 
-		$this->linkGallery( $model );
+		$avatar = isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
 
-		return $model;
+		// Save Files
+		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
+
+		// Default Private
+		if( !isset( $model->visibility ) ) {
+
+			$model->visibility = $modelClass::VISIBILITY_PRIVATE;
+		}
+
+		// Default New
+		if( !isset( $model->status ) ) {
+
+			$model->status = $modelClass::STATUS_NEW;
+		}
+
+		$model->total = $model->getTotalPrice();
+
+		return parent::create( $model, $config );
+	}
+
+	public function add( $model, $config = [] ) {
+
+		return $this->register( $model, $config );
+	}
+
+	public function register( $model, $config = [] ) {
+
+		$content 	= $config[ 'content' ];
+		$banner 	= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
+		$video 		= isset( $config[ 'video' ] ) ? $config[ 'video' ] : null;
+		$gallery	= isset( $config[ 'gallery' ] ) ? $config[ 'gallery' ] : null;
+
+		$galleryService			= Yii::$app->factory->get( 'galleryService' );
+		$modelContentService	= Yii::$app->factory->get( 'modelContentService' );
+		$modelCategoryService	= Yii::$app->factory->get( 'modelCategoryService' );
+		$modelTagService		= Yii::$app->factory->get( 'modelTagService' );
+
+		$galleryClass = $galleryService->getModelClass();
+
+		$transaction = Yii::$app->db->beginTransaction();
+
+		try {
+
+			// Create Product
+			$model = $this->create( $model, $config );
+
+			// Create gallery
+			if( $gallery ) {
+
+				$gallery->siteId	= empty( $gallery->siteId ) ? $model->siteId : $gallery->siteId;
+				$gallery->name		= empty( $gallery->name ) ? $model->name : $gallery->name;
+				$gallery->type		= ShopGlobal::TYPE_PRODUCT;
+				$gallery->status	= $galleryClass::STATUS_ACTIVE;
+
+				$gallery = $galleryService->create( $gallery );
+			}
+
+			// Create and attach model content
+			$modelContentService->create( $content, [
+				'parent' => $model, 'parentType' => static::$parentType,
+				'publish' => true,
+				'banner' => $banner, 'video' => $video, 'gallery' => $gallery
+			]);
+
+			// Bind categories
+			$modelCategoryService->bindCategories( $model->id, ShopGlobal::TYPE_PRODUCT, [ 'binder' => 'CategoryBinder' ] );
+
+			// Bind tags
+			$modelTagService->bindTags( $model->id, ShopGlobal::TYPE_PRODUCT, [ 'binder' => 'TagBinder' ] );
+
+			$transaction->commit();
+
+			return $model;
+		}
+		catch( Exception $e ) {
+
+			$transaction->rollBack();
+		}
+
+		return false;
 	}
 
 	// Update -------------
 
-    public function submit( $model ) {
-
-        $this->notifyAdmin( $model );
-    }
-
 	public function update( $model, $config = [] ) {
 
-		$attributes	= [ 'name', 'description', 'type', 'status', 'visibility', 'shop', 'quantity', 'price', 'startDate', 'endDate', 'content', 'uomId' ];
+		$content 	= isset( $config[ 'content' ] ) ? $config[ 'content' ] : $model->modelContent;
+		$admin 		= isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+		$avatar 	= isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
+		$banner 	= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
+		$video 		= isset( $config[ 'video' ] ) ? $config[ 'video' ] : null;
+		$gallery	= isset( $config[ 'gallery' ] ) ? $config[ 'gallery' ] : null;
 
-		return parent::update( $model, [
-				'attributes' => $attributes
-		]);
-	}
+		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
+			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
+			'avatarId', 'name', 'slug', 'icon',
+			'title', 'description', 'visibility', 'content',
+			'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius',
+			'sku', 'code', 'shop', 'shopNotes', 'price', 'discount', 'total', 'startDate', 'endDate',
+			'track', 'stock', 'sold', 'warn'
+		];
 
-	public function linkGallery( $product ) {
+		if( $admin ) {
 
-		$model 			= new Gallery();
-		$model->name	= $product->name;
-		$model->type	= ShopGlobal::TYPE_PRODUCT;
-		$model->siteId	= Yii::$app->core->siteId;
+			$attributes	= ArrayHelper::merge( $attributes, [ 'status', 'order', 'pinned', 'featured', 'reviews' ] );
+		}
 
-		$gallery		= Yii::$app->factory->get( 'galleryService' )->create( $model );
+		$galleryService			= Yii::$app->factory->get( 'galleryService' );
+		$modelContentService	= Yii::$app->factory->get( 'modelContentService' );
 
+		// Save Files
+		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
+
+		// Create/Update gallery
 		if( isset( $gallery ) ) {
 
-			$product->galleryId	= $gallery->id;
-
-			return parent::update( $product, [
-					'attributes' => [ 'galleryId' ]
-			]);
-		}
-	}
-
-	public function updateAvatar( $product, $avatar ) {
-
-		// Save Avatar
-		$this->fileService->saveFiles( $product, [ 'avatarId' => $avatar ] );
-
-		$product->avatarId	= $avatar->id;
-
-		return parent::update( $product, [ 'attributes' => [ 'avatarId' ] ] );
-	}
-
-    // Trigger Admin Notifications where applicable and Update status
-	protected function notifyAdmin( $model, $config = [] ) {
-
-		$config[ 'admin' ]	= true;
-
-		if( $model->status < Product::STATUS_SUBMITTED ) {
-
-			$this->updateStatus( $model, Product::STATUS_SUBMITTED );
-
-			$config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_SUBMIT;
-			$config[ 'title' ]      = ShopGlobal::TITLE_REGISTERED;
-
-			// Send admin notification for new product.
-			$this->sendNotification( $model, $config );
-
-			$model->refresh();
-		}
-        else if( $model->isRejected() ) {
-
-			$this->updateStatus( $model, Product::STATUS_RE_SUBMIT );
-
-			$config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_RESUBMIT;
-			$config[ 'title' ]      = ShopGlobal::TITLE_RESUBMIT;
-
-			// Send admin notification for re-submit product.
-			$this->sendNotification( $model, $config );
-		}
-        else if( $model->isFrojen() || $model->isBlocked() ) {
-
-			if( $model->isFrojen() ) {
-
-				$this->updateStatus( $model, Product::STATUS_UPLIFT_FREEZE );
-
-				$config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_UP_FREEZE;
-				$config[ 'title' ]      = ShopGlobal::TITLE_UPLIFT_FREEZE;
-
-				// Send admin notification for uplift freeze.
-				$this->sendNotification( $model, $config );
-			}
-
-			if( $model->isBlocked() ) {
-
-				$this->updateStatus( $model, Product::STATUS_UPLIFT_BLOCK );
-
-				$config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_UP_BLOCK;
-				$config[ 'title' ]      = ShopGlobal::TITLE_UPLIFT_BLOCK;
-
-				// Send admin notification for uplift block.
-				$this->sendNotification( $model, $config );
-			}
-		}
-	}
-
-    // Trigger User Notifications where applicable and Update status
-    public function notifyUser( $model, $config = [] ) {
-
-        $email	= $model->creator->email;
-        $status	= isset( $config[ 'status' ] ) ? $config[ 'status' ] : $model->status;
-
-        $config[ 'admin' ]	= false;
-
-        switch( $status ) {
-
-            case Product::STATUS_ACTIVE: {
-
-                $this->approve( $model );
-
-                $config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_APPROVE;
-                $config[ 'title' ]		= ShopGlobal::TITLE_APPROVE;
-
-                $this->sendNotification( $model, $config );
-
-                break;
-            }
-
-            case Product::STATUS_REJECTED: {
-
-                $message    = $this->getMessage();
-
-                $this->reject( $model, $message );
-
-                $config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_REJECT;
-                $config[ 'title' ]      = ShopGlobal::TITLE_REJECT;
-                $config[ 'message' ]	= $message;
-
-                $this->sendNotification( $model, $config );
-
-                break;
-            }
-
-            case Product::STATUS_FROJEN: {
-
-                $message    = $this->getMessage();
-
-                $this->freeze( $model, $message );
-
-                $config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_FREEZE;
-                $config[ 'title' ]      = ShopGlobal::TITLE_FREEZE;
-                $config[ 'message' ]	= $message;
-
-                $this->sendNotification( $model, $config );
-
-                break;
-            }
-
-            case Product::STATUS_BLOCKED: {
-
-                $message    = $this->getMessage();
-
-                $this->block( $model, $message );
-
-                $config[ 'template' ]	= ShopGlobal::TEMPLATE_NOTIFY_BLOCKED;
-                $config[ 'title' ]      = ShopGlobal::TITLE_BLOCKED;
-                $config[ 'message' ]	= $message;
-
-                $this->sendNotification( $model, $config );
-
-                break;
-            }
-        }
-	}
-
-    protected function sendNotification( $product, $config = [] ) {
-
-		$templateType           = $config[ 'template' ];
-		$title                  = $config[ 'title' ];
-		$id                     = $product->id;
-		$name                   = $product->name;
-		$templateVars           = [];
-		$templateConfig         = [];
-
-		$templateConfig[ 'parentId' ]	= $id;
-		$templateConfig[ 'parentType' ]	= self::$parentType;
-		$templateConfig[ 'title' ]      = $title;
-
-		if( isset( $config[ 'admin' ] ) && $config[ 'admin' ] ) {
-
-			$templateConfig[ 'adminLink' ]	= "/shop/product/watch?id=$id";
-		}
-		else {
-
-            $templateConfig[ 'link' ]	= "/shop/product/review?id=$id";
-			$templateConfig[ 'users' ]	= [ $product->createdBy ];
+			$gallery = $galleryService->createOrUpdate( $gallery );
 		}
 
-		$templateVars[ 'productName' ]	= $name;
+		// Update model content
+		$modelContentService->update( $content, [
+			'publish' => true, 'banner' => $banner, 'video' => $video, 'gallery' => $gallery
+		]);
 
-		if( isset( $config[ 'message' ] ) && $config[ 'message' ] != null ) {
+		// Update total price
+		$model->total = $model->getTotalPrice();
 
-			$templateVars[ 'message' ]	= $config[ 'message' ];
-		}
-
-		return Yii::$app->eventManager->triggerNotification( $templateType, $templateVars, $templateConfig );
-	}
-
-    protected function getMessage() {
-
-        return Yii::$app->request->post( 'message' ) != null ? Yii::$app->request->post( 'message' ) : "No reason were specified.";
+		return parent::update( $model, [
+			'attributes' => $attributes
+		]);
 	}
 
 	// Delete -------------
 
-	protected function applyBulk( $model, $column, $action, $target, $config = [] ) {
+	public function delete( $model, $config = [] ) {
 
-		switch( $column ) {
+		$transaction = Yii::$app->db->beginTransaction();
 
-			case 'model': {
+		try {
 
-				switch( $action ) {
+			// Delete metas
+			$this->metaService->deleteByModelId( $model->id );
 
-					case 'delete': {
+			// Delete files
+			$this->fileService->deleteFiles( [ $model->avatar ] );
+			$this->fileService->deleteFiles( $model->files );
 
-						$this->delete( $model );
+			// Delete Model Content
+			Yii::$app->factory->get( 'modelContentService' )->delete( $model->modelContent );
 
-						break;
-					}
-				}
+			// Delete Category Mappings
+			Yii::$app->factory->get( 'modelCategoryService' )->deleteByParent( $model->id, static::$parentType );
 
-				break;
-			}
+			// Delete Tag Mappings
+			Yii::$app->factory->get( 'modelTagService' )->deleteByParent( $model->id, static::$parentType );
+
+			// Delete Option Mappings
+			Yii::$app->factory->get( 'modelOptionService' )->deleteByParent( $model->id, static::$parentType );
+
+			// Delete Comments
+			Yii::$app->factory->get( 'modelCommentService' )->deleteByParent( $model->id, static::$parentType );
+
+			// Delete Followers
+			Yii::$app->factory->get( 'productFollowerService' )->deleteByModelId( $model->id );
+
+			$transaction->commit();
+
+			// Delete model
+			return parent::delete( $model, $config );
 		}
+		catch( Exception $e ) {
+
+			$transaction->rollBack();
+
+			throw new Exception( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_DEPENDENCY )  );
+		}
+
+		return false;
 	}
+
+	// Bulk ---------------
+
+	// Notifications ------
+
+	// Cache --------------
+
+	// Additional ---------
 
 	// Static Methods ----------------------------------------------
 
@@ -422,4 +493,5 @@ class ProductService extends \cmsgears\core\common\services\base\EntityService i
 	// Update -------------
 
 	// Delete -------------
+
 }

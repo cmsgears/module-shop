@@ -14,8 +14,8 @@
 		}
 	},
     "require": {
-        "php": ">=7.0.0",
         "cmsgears/module-core": "*",
+		"cmsgears/module-cms": "*",
 		"cmsgears/module-cart": "*"
     }
 }

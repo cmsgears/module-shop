@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\common\models\entities;
 
 // Yii Imports
@@ -6,76 +14,149 @@ use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\SluggableBehavior;
+use yii\helpers\ArrayHelper;
 
 // CMG Imports
 use cmsgears\core\common\config\CoreGlobal;
+use cmsgears\cart\common\config\CartGlobal;
 use cmsgears\shop\common\config\ShopGlobal;
 
+use cmsgears\core\common\models\interfaces\base\IApproval;
+use cmsgears\core\common\models\interfaces\base\IAuthor;
+use cmsgears\core\common\models\interfaces\base\IFeatured;
+use cmsgears\core\common\models\interfaces\base\IFollower;
+use cmsgears\core\common\models\interfaces\base\IMultiSite;
+use cmsgears\core\common\models\interfaces\base\INameType;
+use cmsgears\core\common\models\interfaces\base\ISlugType;
+use cmsgears\core\common\models\interfaces\base\IVisibility;
+use cmsgears\core\common\models\interfaces\resources\IComment;
+use cmsgears\core\common\models\interfaces\resources\IContent;
+use cmsgears\core\common\models\interfaces\resources\IData;
+use cmsgears\core\common\models\interfaces\resources\IGridCache;
+use cmsgears\core\common\models\interfaces\resources\IMeta;
+use cmsgears\core\common\models\interfaces\resources\IVisual;
+use cmsgears\core\common\models\interfaces\mappers\ICategory;
+use cmsgears\core\common\models\interfaces\mappers\IFile;
+use cmsgears\core\common\models\interfaces\mappers\ITag;
+use cmsgears\cms\common\models\interfaces\resources\IPageContent;
+
+use cmsgears\core\common\models\base\Entity;
+use cmsgears\core\common\models\resources\File;
+use cmsgears\cart\common\models\resources\Uom;
 use cmsgears\shop\common\models\base\ShopTables;
-use cmsgears\shop\common\models\resources\ProductVariation;
-use cmsgears\core\common\models\resources\Gallery;
+use cmsgears\shop\common\models\resources\Variation;
+use cmsgears\shop\common\models\mappers\ProductFollower;
 
-use cmsgears\core\common\models\interfaces\IApproval;
-use cmsgears\core\common\models\interfaces\IVisibility;
-
-use cmsgears\core\common\models\traits\CreateModifyTrait;
-use cmsgears\core\common\models\traits\resources\MetaTrait;
+use cmsgears\core\common\models\traits\base\ApprovalTrait;
+use cmsgears\core\common\models\traits\base\AuthorTrait;
+use cmsgears\core\common\models\traits\base\FeaturedTrait;
+use cmsgears\core\common\models\traits\base\FollowerTrait;
+use cmsgears\core\common\models\traits\base\MultiSiteTrait;
+use cmsgears\core\common\models\traits\base\NameTypeTrait;
+use cmsgears\core\common\models\traits\base\SlugTypeTrait;
+use cmsgears\core\common\models\traits\base\VisibilityTrait;
+use cmsgears\core\common\models\traits\resources\CommentTrait;
+use cmsgears\core\common\models\traits\resources\ContentTrait;
 use cmsgears\core\common\models\traits\resources\DataTrait;
-use cmsgears\core\common\models\traits\mappers\CategoryTrait;
-use cmsgears\core\common\models\traits\SlugTypeTrait;
-use cmsgears\core\common\models\traits\NameTypeTrait;
-use cmsgears\core\common\models\traits\interfaces\VisibilityTrait;
-use cmsgears\core\common\models\traits\interfaces\ApprovalTrait;
-use cmsgears\cms\common\models\traits\resources\ContentTrait;
+use cmsgears\core\common\models\traits\resources\GridCacheTrait;
+use cmsgears\core\common\models\traits\resources\MetaTrait;
 use cmsgears\core\common\models\traits\resources\VisualTrait;
-use cmsgears\core\common\models\traits\mappers\AddressTrait;
+use cmsgears\core\common\models\traits\mappers\CategoryTrait;
+use cmsgears\core\common\models\traits\mappers\FileTrait;
 use cmsgears\core\common\models\traits\mappers\TagTrait;
-use cmsgears\community\common\models\traits\mappers\FollowTrait;
+use cmsgears\cms\common\models\traits\resources\PageContentTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
+use cmsgears\core\common\utilities\DateUtil;
+
 /**
- * Product Entity
+ * Product model represents product to be sold by shop.
  *
- * @property long $id
- * @property long $avatarId
- * @property long $galleryId
+ * It supports different type of unit of measurement to avoid run time conversions. These includes:
+ * ** Primary Unit - The base unit which can be used to identify the product unit at packaging level.
+ * ** Purchasing Unit - The purchasing unit is the main unit used for shopping and tracking purpose.
+ * It can be same or different from Primary Unit. In ideal cases, it must be equal or greater than the
+ * Primary Unit i.e. the packaging is same as that of Primary Unit or several primary units are packed
+ * in larger packages.
+ * ** Quantity Unit - The quantity unit used to identify item count in Primary Unit.
+ * ** Weight Unit - The weight unit used to identity the weight of Quantity Unit.
+ * ** Volume Unit - The volume unit used to identity the volume of Quantity Unit.
+ * ** Length Unit - The length unit used to identity the dimensions of Quantity Unit.
+ *
+ * The fields price, discount and total directly relates to Purchasing Unit.
+ *
+ * The field primary directly relates to Primary Unit.
+ * The field purchase directly relates to Purchasing Unit.
+ * The field quantity directly relates to Quantity Unit.
+ * The field weight directly relates to Weight Unit.
+ * The field volume directly relates to Volume Unit.
+ * The fields length, width, height, radius directly relates to Length Unit.
+ *
+ * The flag track will be used to identity whether stock information is required for the product.
+ *
+ * The fields stock, sold and warn directly relates to Purchasing Unit and used to track product
+ * stock if track is true.
+ *
+ * The shop flag identity whether the product is available for sales.
+ *
+ * @property integer $id
+ * @property integer $siteId
+ * @property integer $avatarId
  * @property integer $primaryUnitId
  * @property integer $purchasingUnitId
  * @property integer $quantityUnitId
  * @property integer $weightUnitId
  * @property integer $volumeUnitId
  * @property integer $lengthUnitId
- * @property short $status
+ * @property integer $createdBy
+ * @property integer $modifiedBy
  * @property string $name
  * @property string $slug
  * @property string $type
- * @property float $price
- * @property integer $discount
- * @property integer $sku
- * @property integer $primary
- * @property integer $purchase
- * @property integer $quantity
- * @property integer $total
- * @property integer $weight
- * @property integer $volume
- * @property integer $length
- * @property integer $width
- * @property integer $height
- * @property integer $radius
- * @property integer $visibility
- * @property string $summary
+ * @property string $icon
+ * @property string $title
  * @property string $description
+ * @property integer $status
+ * @property integer $visibility
+ * @property integer $order
+ * @property string $sku
+ * @property string $code
+ * @property float $price
+ * @property float $discount
+ * @property float $total
+ * @property float $primary
+ * @property float $purchase
+ * @property float $quantity
+ * @property float $weight
+ * @property float $volume
+ * @property float $length
+ * @property float $width
+ * @property float $height
+ * @property float $radius
+ * @property boolean $track
+ * @property float $stock
+ * @property float $sold
+ * @property float $warn
  * @property boolean $shop
- * @property long $createdBy
- * @property long $modifiedBy
+ * @property string $shopNotes
+ * @property boolean $pinned
+ * @property boolean $featured
+ * @property boolean $reviews
+ * @property datetime $startDate
+ * @property datetime $endDate
  * @property datetime $createdAt
  * @property datetime $modifedAt
  * @property string $content
  * @property string $data
+ * @property string $gridCache
+ * @property boolean $gridCacheValid
+ * @property datetime $gridCachedAt
+ *
+ * @since 1.0.0
  */
-
-class Product extends \cmsgears\core\common\models\base\Entity implements IApproval, IVisibility {
+class Product extends Entity implements IApproval, IAuthor, ICategory, IComment, IContent, IData, IFeatured, IFile, IFollower,
+	IGridCache, IMeta, IMultiSite, INameType, IPageContent, ISlugType, ITag, IVisibility, IVisual {
 
 	// Variables ---------------------------------------------------
 
@@ -83,17 +164,7 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	// Constants --------------
 
-	const TYPE_REGULAR		= 0;
-	const TYPE_VARIABLE		= 5;
-
 	// Public -----------------
-
-	public $modelType	= ShopGlobal::TYPE_PRODUCT;
-
-	public static $typeMap = [
-			self::TYPE_REGULAR => "Regular",
-			self::TYPE_VARIABLE => "Variable"
-	];
 
 	// Protected --------------
 
@@ -103,35 +174,45 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	// Protected --------------
 
+	protected $modelType = ShopGlobal::TYPE_PRODUCT;
+
+	protected $followerClass;
+
+	protected $metaClass;
+
 	// Private ----------------
 
 	// Traits ------------------------------------------------------
 
-    use CreateModifyTrait;
-	use MetaTrait;
-    use DataTrait;
-	use CategoryTrait;
-	use SlugTypeTrait;
-	use NameTypeTrait;
-	use VisibilityTrait;
 	use ApprovalTrait;
+    use AuthorTrait;
+	use CategoryTrait;
+	use CommentTrait;
 	use ContentTrait;
-	use VisualTrait;
-	use AddressTrait;
+    use DataTrait;
+	use FeaturedTrait;
+	use FileTrait;
+	use FollowerTrait;
+	use GridCacheTrait;
+	use MetaTrait;
+	use MultiSiteTrait;
+	use NameTypeTrait;
+	use PageContentTrait;
+	use SlugTypeTrait;
 	use TagTrait;
-    use FollowTrait;
+	use VisibilityTrait;
+	use VisualTrait;
 
 	// Constructor and Initialisation ------------------------------
 
-    public function init() {
+	public function init() {
 
-        parent::init();
+		parent::init();
 
-        self::$visibilityMap = [
-            IVisibility::VISIBILITY_PRIVATE => 'Private',
-            IVisibility::VISIBILITY_PUBLIC => 'Public'
-        ];
-    }
+		$this->followerClass = ProductFollower::class;
+
+		$this->metaClass = ProductMeta::class;
+	}
 
 	// Instance methods --------------------------------------------
 
@@ -141,64 +222,177 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	// yii\base\Component -----
 
-	/**
-	 * @inheritdoc
-	 */
-	public function behaviors() {
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() {
 
-		return [
-				'authorBehavior' => [
-						'class' => AuthorBehavior::className()
-				],
-				'timestampBehavior' => [
-						'class' => TimestampBehavior::className(),
-						'createdAtAttribute' => 'createdAt',
-						'updatedAtAttribute' => 'modifiedAt',
-						'value' => new Expression('NOW()')
-				],
-				'sluggableBehavior' => [
-						'class' => SluggableBehavior::className(),
-						'attribute' => 'name',
-						'slugAttribute' => 'slug',
-						'immutable' => true,
-						'ensureUnique' => true
-				]
-		];
-	}
+        return [
+            'authorBehavior' => [
+                'class' => AuthorBehavior::class
+            ],
+            'timestampBehavior' => [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'modifiedAt',
+                'value' => new Expression('NOW()')
+            ],
+			'sluggableBehavior' => [
+				'class' => SluggableBehavior::class,
+				'attribute' => 'name',
+				'slugAttribute' => 'slug', // Unique for Site Id
+				'immutable' => true,
+				'ensureUnique' => true,
+				'uniqueValidator' => [ 'targetAttribute' => [ 'siteId', 'slug' ] ]
+			]
+        ];
+    }
 
 	// yii\base\Model ---------
 
 	/**
 	 * @inheritdoc
 	 */
-
 	public function rules() {
 
-        return [
-        		// Required, Safe
-        		[ [ 'name' ], 'required' ],
-        		[ [ 'id', 'avatarId', 'galleryId', 'content', 'data', 'purchase', 'status', 'slug', 'summary', 'description', 'price' ], 'safe' ],
-        		// Text Limit
-        		[ [ 'name', 'sku' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
-        		// Other
-        		[ [ 'price', 'discount', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'visibility', 'shop', 'type' ], 'number', 'min' => 0 ],
-        		[ [ 'purchasingUnitId', 'quantityUnitId', 'uomId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
-        		[ [ 'createdAt', 'modifiedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
-        		[ [ 'startDate', 'endDate' ], 'date', 'format' => Yii::$app->formatter->dateFormat ],
-        		[ [ 'startDate' ], 'validateDate' ],
-        		[ [ 'endDate' ], 'validateDate' ]
+        // Model Rules
+        $rules = [
+			// Required, Safe
+			[ [ 'name' ], 'required' ],
+			[ [ 'purchasingUnitId', 'price', 'purchase' ], 'required', 'on' => 'shop' ],
+			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			// Unique
+			[ 'slug', 'unique', 'targetAttribute' => [ 'siteId', 'slug' ] ],
+			// Text Limit
+			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
+			[ 'icon', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
+			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
+			[ [ 'slug', 'sku', 'code' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
+			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxxLargeText ],
+			[ [ 'description', 'shopNotes' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
+			// Other
+			[ [ 'status', 'visibility', 'order' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ [ 'price', 'discount', 'primary', 'purchase', 'quantity', 'total', 'weight', 'volume', 'length', 'width', 'height', 'radius', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
+			[ [ 'shop', 'track', 'pinned', 'featured', 'reviews', 'gridCacheValid' ], 'boolean' ],
+			[ [ 'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId' ], 'number', 'integerOnly' => true, 'min' => 0, 'tooSmall' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_SELECT ) ],
+			[ [ 'siteId', 'avatarId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
+			[ [ 'startDate', 'endDate' ], 'date' ],
+			[ 'endDate', 'compareDate', 'compareAttribute' => 'startDate', 'operator' => '>=', 'type' => 'datetime', 'message' => 'End Date must be greater than or equal to Start Date.' ]
         ];
+
+		// Trim Text
+        if( Yii::$app->core->trimFieldValue ) {
+
+            $trim[] = [ [ 'name', 'title', 'description', 'shopNotes' ], 'filter', 'filter' => 'trim', 'skipOnArray' => true ];
+
+            return ArrayHelper::merge( $trim, $rules );
+        }
+
+        return $rules;
     }
 
     /**
      * @inheritdoc
      */
+    public function attributeLabels() {
 
-	public function attributeLabels() {
+        return [
+            'siteId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SITE ),
+			'avatarId' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_AVATAR ),
+			'primaryUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PRIMARY ),
+			'purchasingUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_PURCHASING ),
+			'quantityUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_QUANTITY ),
+			'weightUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_WEIGHT ),
+			'volumeUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_VOLUME ),
+			'lengthUnitId' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_UNIT_LENGTH ),
+			'createdBy' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_OWNER ),
+            'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
+            'slug' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_SLUG ),
+            'type' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TYPE ),
+            'icon' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ICON ),
+			'title' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_TITLE ),
+            'description' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DESCRIPTION ),
+            'status' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_STATUS ),
+			'visibility' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_VISIBILITY ),
+			'order' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_ORDER ),
+			'sku' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_SKU ),
+			'price' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_PRICE_UNIT ),
+			'discount' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_DISCOUNT_UNIT ),
+			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
+			'primary' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PRIMARY ),
+			'purchase' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QTY_PURCHASE ),
+			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
+			'weight' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WEIGHT ),
+			'volume' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_VOLUME ),
+			'length' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_LENGTH ),
+			'width' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_WIDTH ),
+			'height' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_HEIGHT ),
+			'track' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_TRACK ),
+			'stock' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_STOCK ),
+			'sold' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_SOLD ),
+			'warn' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_WARN ),
+			'shop' => Yii::$app->shopMessage->getMessage( ShopGlobal::FIELD_SHOP ),
+			'shopNotes' => 'Shop Notes',
+			'pinned' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_PINNED ),
+			'featured' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_FEATURED ),
+			'reviews' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_REVIEWS ),
+			'startDate' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATE_START ),
+			'endDate' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATE_END ),
+			'content' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_CONTENT ),
+			'data' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_DATA ),
+			'gridCache' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_GRID_CACHE )
+        ];
+    }
 
-		return [
-			'name' => Yii::$app->coreMessage->getMessage( CoreGlobal::FIELD_NAME ),
-		];
+	// yii\db\BaseActiveRecord
+
+	/**
+	 * @inheritdoc
+	 */
+	public function beforeSave( $insert ) {
+
+		if( parent::beforeSave( $insert ) ) {
+
+			if( $this->primaryUnitId <= 0 ) {
+
+				$this->primaryUnitId = null;
+			}
+
+			if( $this->purchasingUnitId <= 0 ) {
+
+				$this->purchasingUnitId = null;
+			}
+
+			if( $this->quantityUnitId <= 0 ) {
+
+				$this->quantityUnitId = null;
+			}
+
+			if( $this->weightUnitId <= 0 ) {
+
+				$this->weightUnitId = null;
+			}
+
+			if( $this->volumeUnitId <= 0 ) {
+
+				$this->volumeUnitId = null;
+			}
+
+			if( $this->lengthUnitId <= 0 ) {
+
+				$this->lengthUnitId = null;
+			}
+
+			if( $this->order < 0 ) {
+
+				$this->order = 0;
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 
 	// CMG interfaces ------------------------
@@ -207,37 +401,173 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	// Validators ----------------------------
 
-	public function validateDate( $attribute, $param ) {
-
-		if( isset( $this->startDate ) && strlen( $this->endDate ) > 0 ) {
-
-			$startDate	= strtotime( $this->startDate );
-			$endDate	= strtotime( $this->endDate );
-
-			if( $endDate < $startDate ) {
-
-				$this->addError('startDate','Please provide correct Start Date');
-
-				$this->addError('endDate','Please provide correct End Date');
-			}
-		}
-	}
-
 	// Product -------------------------------
 
+	/**
+	 * Returns primary unit associated with the item.
+	 *
+	 * @return \cmsgears\cart\common\models\resources\Uom
+	 */
+	public function getPrimaryUnit() {
+
+		$uomTable = Uom::tableName();
+
+		return $this->hasOne( Uom::class, [ 'id' => 'primaryUnitId' ] )->from( "$uomTable as primaryUnit" );
+	}
+
+	/**
+	 * Returns purchasing unit associated with the item.
+	 *
+	 * @return \cmsgears\cart\common\models\resources\Uom
+	 */
+	public function getPurchasingUnit() {
+
+		$uomTable = Uom::tableName();
+
+		return $this->hasOne( Uom::class, [ 'id' => 'purchasingUnitId' ] )->from( "$uomTable as purchasingUnit" );
+	}
+
+	/**
+	 * Returns quantity unit associated with the item.
+	 *
+	 * @return \cmsgears\cart\common\models\resources\Uom
+	 */
+	public function getQuantityUnit() {
+
+		$uomTable = Uom::tableName();
+
+		return $this->hasOne( Uom::class, [ 'id' => 'quantityUnitId' ] )->from( "$uomTable as quantityUnit" );
+	}
+
+	/**
+	 * Returns weight unit associated with the item.
+	 *
+	 * @return \cmsgears\cart\common\models\resources\Uom
+	 */
+	public function getWeightUnit() {
+
+		$uomTable = Uom::tableName();
+
+		return $this->hasOne( Uom::class, [ 'id' => 'weightUnitId' ] )->from( "$uomTable as weightUnit" );
+	}
+
+	/**
+	 * Returns volume unit associated with the item.
+	 *
+	 * @return \cmsgears\cart\common\models\resources\Uom
+	 */
+	public function getVolumeUnit() {
+
+		$uomTable = Uom::tableName();
+
+		return $this->hasOne( Uom::class, [ 'id' => 'lengthUnitId' ] )->from( "$uomTable as volumeUnit" );
+	}
+
+	/**
+	 * Returns length unit associated with the item. It will be used for length, width, height and radius.
+	 *
+	 * @return \cmsgears\cart\common\models\resources\Uom
+	 */
+	public function getLengthUnit() {
+
+		$uomTable = Uom::tableName();
+
+		return $this->hasOne( Uom::class, [ 'id' => 'lengthUnitId' ] )->from( "$uomTable as lengthUnit" );
+	}
+
+	/**
+	 * Returns the variations available for the product.
+	 *
+	 * @return Variation[]
+	 */
+	public function getVariations() {
+
+		return $this->hasMany( Variation::className(), [ 'id' => 'productId' ] );
+	}
+
+	/**
+	 * Returns string representation of type.
+	 *
+	 * @return string
+	 */
 	public function getTypeStr() {
 
 		return static::$typeMap[ $this->type ];
 	}
 
-	public function getGallery() {
+	public function getTrackStr() {
 
-		return $this->hasOne( Gallery::className(), [ 'id' => 'galleryId' ] );
+		return Yii::$app->formatter->asBoolean( $this->track );
 	}
 
-	public function getVariation() {
+	public function getShopStr() {
 
-		return $this->hasOne( ProductVariation::className(), [ 'id' => 'modelId' ] );
+		return Yii::$app->formatter->asBoolean( $this->shop );
+	}
+
+	public function getReviewsStr() {
+
+		return Yii::$app->formatter->asBoolean( $this->reviews );
+	}
+
+	/**
+	 * Check whether product is published.
+	 *
+	 * @return boolean
+	 */
+	public function isPublished() {
+
+		return $this->visibility == self::VISIBILITY_PUBLIC && ( $this->status == self::STATUS_ACTIVE || $this->status == self::STATUS_FROJEN );
+	}
+
+	/**
+	 * Returns the total price of the item.
+	 *
+	 * Total Price = ( Unit Price - Unit Discount ) * Purchasing Quantity
+	 *
+	 * @param type $precision
+	 * @return type
+	 */
+	public function getTotalPrice( $precision = 2 ) {
+
+		$total = ( $this->price - $this->discount ) * $this->purchase;
+
+		return round( $total, $precision );
+	}
+
+	public function isValidDateRange() {
+
+		$now	= DateUtil::getDateTime();
+		$valid	= true;
+
+		if( !empty( $this->startDate ) ) {
+
+			$valid = DateUtil::lessThan( $now, $this->startDate );
+		}
+
+		if( $valid && !empty( $this->endDate ) ) {
+
+			$valid = DateUtil::lessThan( $this->endDate, $now );
+		}
+
+		return $valid;
+	}
+
+	public function inStock() {
+
+		$stock = true;
+
+		if( $this->track && $this->stock <= 0 ) {
+
+			$stock = false;
+		}
+
+		return $stock;
+	}
+
+	public function isCartEnabled() {
+
+		return true;
 	}
 
 	// Static Methods ----------------------------------------------
@@ -252,7 +582,7 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	public static function tableName() {
 
-		return ShopTables::TABLE_PRODUCT;
+		return ShopTables::getTableName( ShopTables::TABLE_PRODUCT );
 	}
 
 	// CMG parent classes --------------------
@@ -261,11 +591,68 @@ class Product extends \cmsgears\core\common\models\base\Entity implements IAppro
 
 	// Read - Query -----------
 
+	/**
+	 * @inheritdoc
+	 */
+	public static function queryWithHasOne( $config = [] ) {
+
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [
+			'purchasingUnit', 'quantityUnit', 'weightUnit', 'volumeUnit', 'lengthUnit',
+			'avatar', 'modelContent', 'modelContent.template', 'site', 'creator', 'modifier' ];
+
+		$config[ 'relations' ] = $relations;
+
+		return parent::queryWithAll( $config );
+	}
+
+	/**
+	 * Return query to find the model with avatar and content.
+	 *
+	 * @param array $config
+	 * @return \yii\db\ActiveQuery to query with avatar and content.
+	 */
+	public static function queryWithContent( $config = [] ) {
+
+		$config[ 'relations' ] = [ 'avatar', 'modelContent', 'modelContent.template' ];
+
+		return parent::queryWithAll( $config );
+	}
+
+	/**
+	 * Return query to find the model with avatar, content, template, banner, video and gallery.
+	 *
+	 * @param array $config
+	 * @return \yii\db\ActiveQuery to query with avatar, content, template, banner, video and gallery.
+	 */
+	public static function queryWithFullContent( $config = [] ) {
+
+		$config[ 'relations' ] = [ 'avatar', 'modelContent', 'modelContent.template', 'modelContent.banner', 'modelContent.video', 'modelContent.gallery' ];
+
+		return parent::queryWithAll( $config );
+	}
+
+	/**
+	 * Return query to find the model with avatar, content, template, banner, author and author avatar.
+	 *
+	 * @param array $config
+	 * @return \yii\db\ActiveQuery to query with avatar, content, template, banner, author and author avatar.
+	 */
+	public static function queryWithAuthor( $config = [] ) {
+
+		$config[ 'relations' ][] = [ 'avatar', 'modelContent', 'modelContent.template', 'modelContent.banner', 'creator' ];
+
+		$config[ 'relations' ][] = [ 'creator.avatar'  => function ( $query ) {
+			$fileTable = File::tableName();
+			$query->from( "$fileTable aavatar" ); }
+		];
+
+		return parent::queryWithAll( $config );
+	}
+
 	// Create -----------------
 
 	// Update -----------------
 
 	// Delete -----------------
-}
 
-?>
+}

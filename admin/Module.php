@@ -1,10 +1,28 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\admin;
 
 // Yii Imports
-use \Yii;
+use Yii;
 
-class Module extends \cmsgears\core\common\base\Module {
+// CMG Imports
+use cmsgears\shop\common\config\ShopGlobal;
+
+use cmsgears\core\common\base\Module as BaseModule;
+
+/**
+ * The Admin Module of Shop Module.
+ *
+ * @since 1.0.0
+ */
+class Module extends BaseModule {
 
 	// Variables ---------------------------------------------------
 
@@ -13,6 +31,8 @@ class Module extends \cmsgears\core\common\base\Module {
 	// Public -----------------
 
 	public $controllerNamespace = 'cmsgears\shop\admin\controllers';
+
+	public $config = [ ShopGlobal::CONFIG_SHOP ];
 
 	// Protected --------------
 
@@ -47,4 +67,5 @@ class Module extends \cmsgears\core\common\base\Module {
 
 		return $path;
 	}
+
 }

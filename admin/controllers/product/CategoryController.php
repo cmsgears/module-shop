@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of CMSGears Framework. Please view License file distributed
+ * with the source code for license details.
+ *
+ * @link https://www.cmsgears.org/
+ * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
+ */
+
 namespace cmsgears\shop\admin\controllers\product;
 
 // Yii Imports
@@ -8,13 +16,18 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-class CategoryController extends \cmsgears\core\admin\controllers\base\CategoryController {
+use cmsgears\cms\admin\controllers\base\CategoryController as BaseCategoryController;
+
+/**
+ * CategoryController provides actions specific to product categories.
+ *
+ * @since 1.0.0
+ */
+class CategoryController extends BaseCategoryController {
 
 	// Variables ---------------------------------------------------
 
 	// Globals ----------------
-
-	public $templateType;
 
 	// Public -----------------
 
@@ -29,17 +42,19 @@ class CategoryController extends \cmsgears\core\admin\controllers\base\CategoryC
 		parent::init();
 
 		// Permission
-		$this->crudPermission	= ShopGlobal::PERM_SHOP;
+		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
-		$this->type				= ShopGlobal::TYPE_PRODUCT;
-		$this->templateType		= ShopGlobal::TEMPLATE_DEFAULT;
+		// Config
+		$this->type			= ShopGlobal::TYPE_PRODUCT;
+		$this->templateType	= ShopGlobal::TYPE_PRODUCT;
+		$this->apixBase		= 'shop/category';
 
 		// Sidebar
-		$this->sidebar			= [ 'parent' => 'sidebar-shop', 'child' => 'category' ];
+		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-category' ];
 
 		// Return Url
-		$this->returnUrl		= Url::previous( 'categories' );
-		$this->returnUrl		= isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/category/all' ], true );
+		$this->returnUrl = Url::previous( 'categories' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/category/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
@@ -67,10 +82,11 @@ class CategoryController extends \cmsgears\core\admin\controllers\base\CategoryC
 
 	// CategoryController --------------------
 
-	public function actionAll() {
+	public function actionAll( $config = [] ) {
 
 		Url::remember( Yii::$app->request->getUrl(), 'categories' );
 
-		return parent::actionAll();
+		return parent::actionAll( $config );
 	}
+
 }
