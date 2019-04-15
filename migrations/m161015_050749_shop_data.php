@@ -65,6 +65,8 @@ class m161015_050749_shop_data extends \cmsgears\core\common\base\Migration {
 
 		// Init system pages
 		$this->insertSystemPages();
+
+		$this->insertNotificationTemplates();
 	}
 
 	private function insertRolePermission() {
@@ -243,6 +245,18 @@ class m161015_050749_shop_data extends \cmsgears\core\common\base\Migration {
 		];
 
 		$this->batchInsert( $this->prefix . 'cms_model_content', $columns, $pages );
+	}
+
+	private function insertNotificationTemplates() {
+
+		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'icon', 'type', 'description', 'active', 'renderer', 'fileRender', 'layout', 'layoutGroup', 'viewPath', 'createdAt', 'modifiedAt', 'content', 'data' ];
+
+		$templates = [
+			// Products
+			[ $this->master->id, $this->master->id, 'Register Product', 'register-product', null, 'notification', 'Trigger notification to the Site Admin when new product has been submitted.', true, 'twig', 0, null, false, null, DateUtil::getDateTime(), DateUtil::getDateTime(), 'A new Product - <b>{{ $model->displayName }}</b> has been submitted to the Shop.', '{"config":{"admin":"1","user":"0","adminEmail":"0","userEmail":"0"}}' ]
+		];
+
+		$this->batchInsert( $this->prefix . 'core_template', $columns, $templates );
 	}
 
     public function down() {

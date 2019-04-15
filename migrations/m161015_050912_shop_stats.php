@@ -21,8 +21,6 @@ class m161015_050912_shop_stats extends \cmsgears\core\common\base\Migration {
 
 	// Public Variables
 
-	public $options;
-
 	// Private Variables
 
 	private $prefix;
@@ -31,15 +29,6 @@ class m161015_050912_shop_stats extends \cmsgears\core\common\base\Migration {
 
 		// Table prefix
 		$this->prefix = Yii::$app->migration->cmgPrefix;
-
-		// Get the values via config
-		$this->options = Yii::$app->migration->getTableOptions();
-
-		// Default collation
-		if( $this->db->driverName === 'mysql' ) {
-
-			$this->options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-		}
 	}
 
 	public function up() {
@@ -50,9 +39,9 @@ class m161015_050912_shop_stats extends \cmsgears\core\common\base\Migration {
 
 	private function insertTables() {
 
-		$columns 	= [ 'tableName', 'type', 'count' ];
+		$columns = [ 'tableName', 'type', 'count' ];
 
-		$tableData	= [
+		$tableData = [
 			[ $this->prefix . 'shop_product', 'rows', 0 ],
 			[ $this->prefix . 'shop_product_meta', 'rows', 0 ],
 			[ $this->prefix . 'shop_product_follower', 'rows', 0 ],
