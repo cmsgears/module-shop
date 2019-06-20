@@ -79,6 +79,7 @@ class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 			'slug' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
 			'type' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( CoreGlobal::TYPE_DEFAULT ),
 			'icon' => $this->string( Yii::$app->core->largeText )->defaultValue( null ),
+			'texture' => $this->string( Yii::$app->core->largeText )->defaultValue( null ),
 			'title' => $this->string( Yii::$app->core->xxxLargeText )->defaultValue( null ),
 			'description' => $this->string( Yii::$app->core->xtraLargeText )->defaultValue( null ),
 			'status' => $this->smallInteger( 6 )->defaultValue( 0 ),

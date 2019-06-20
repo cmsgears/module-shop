@@ -16,14 +16,12 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\base\TemplateController as BaseTemplateController;
-
 /**
  * TemplateController provide actions specific to product templates.
  *
  * @since 1.0.0
  */
-class TemplateController extends BaseTemplateController {
+class TemplateController extends \cmsgears\core\admin\controllers\base\TemplateController {
 
 	// Variables ---------------------------------------------------
 
@@ -46,22 +44,22 @@ class TemplateController extends BaseTemplateController {
 
 		// Config
 		$this->type		= ShopGlobal::TYPE_PRODUCT;
-		$this->apixBase = 'shop/template';
+		$this->apixBase = 'shop/product/template';
 
 		// Sidebar
 		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-template' ];
 
 		// Return Url
-		$this->returnUrl = Url::previous( 'templates' );
+		$this->returnUrl = Url::previous( 'product-templates' );
 		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/template/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs = [
 			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/product/all' ] ] ],
-			'all' => [ [ 'label' => 'Templates' ] ],
-			'create' => [ [ 'label' => 'Templates', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
-			'update' => [ [ 'label' => 'Templates', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Templates', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
+			'all' => [ [ 'label' => 'Product Templates' ] ],
+			'create' => [ [ 'label' => 'Product Templates', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Product Templates', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Product Templates', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 
@@ -83,7 +81,7 @@ class TemplateController extends BaseTemplateController {
 
 	public function actionAll( $config = [] ) {
 
-		Url::remember( Yii::$app->request->getUrl(), 'templates' );
+		Url::remember( Yii::$app->request->getUrl(), 'product-templates' );
 
 		return parent::actionAll( $config );
 	}

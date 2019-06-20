@@ -22,8 +22,6 @@ use cmsgears\shop\common\config\ShopGlobal;
 use cmsgears\core\common\models\resources\File;
 use cmsgears\cart\common\models\resources\Uom;
 
-use cmsgears\core\admin\controllers\base\CrudController;
-
 use cmsgears\core\common\behaviors\ActivityBehavior;
 
 /**
@@ -31,7 +29,7 @@ use cmsgears\core\common\behaviors\ActivityBehavior;
  *
  * @since 1.0.0
  */
-class ProductController extends CrudController {
+class ProductController extends \cmsgears\core\admin\controllers\base\CrudController {
 
 	// Variables ---------------------------------------------------
 
@@ -39,9 +37,16 @@ class ProductController extends CrudController {
 
 	// Public -----------------
 
+	public $title;
+	public $reviews;
+
 	public $metaService;
 
 	// Protected --------------
+
+	protected $type;
+	protected $templateType;
+	protected $prettyReview;
 
 	protected $templateService;
 
@@ -65,12 +70,18 @@ class ProductController extends CrudController {
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
 		// Config
-		$this->apixBase = 'shop/product';
+		$this->type			= CoreGlobal::TYPE_DEFAULT;
+		$this->templateType	= ShopGlobal::TYPE_PRODUCT;
+		$this->title		= 'Product';
+		$this->baseUrl		= 'product';
+		$this->apixBase		= 'shop/product';
+		$this->reviews		= true;
+		$this->prettyReview	= false;
 
 		// Services
-		$this->modelService			= Yii::$app->factory->get( 'productService' );
-		$this->metaService			= Yii::$app->factory->get( 'productMetaService' );
-		$this->templateService		= Yii::$app->factory->get( 'templateService' );
+		$this->modelService		= Yii::$app->factory->get( 'productService' );
+		$this->metaService		= Yii::$app->factory->get( 'productMetaService' );
+		$this->templateService	= Yii::$app->factory->get( 'templateService' );
 
 		$this->modelContentService	= Yii::$app->factory->get( 'modelContentService' );
 		$this->modelCategoryService	= Yii::$app->factory->get( 'modelCategoryService' );
@@ -90,7 +101,11 @@ class ProductController extends CrudController {
 			'create' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
 			'update' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
 			'delete' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
-			'review' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Review' ] ]
+			'review' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Review' ] ],
+			'gallery' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Gallery' ] ],
+			'data' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Data' ] ],
+			'config' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Config' ] ],
+			'settings' => [ [ 'label' => 'Products', 'url' => $this->returnUrl ], [ 'label' => 'Settings' ] ]
 		];
 	}
 
@@ -107,8 +122,18 @@ class ProductController extends CrudController {
 		$behaviors = parent::behaviors();
 
 		$behaviors[ 'rbac' ][ 'actions' ][ 'review' ] = [ 'permission' => $this->crudPermission ];
+		$behaviors[ 'rbac' ][ 'actions' ][ 'gallery' ] = [ 'permission' => $this->crudPermission ];
+		$behaviors[ 'rbac' ][ 'actions' ][ 'data' ] = [ 'permission' => $this->crudPermission ];
+		$behaviors[ 'rbac' ][ 'actions' ][ 'attributes' ] = [ 'permission' => $this->crudPermission ];
+		$behaviors[ 'rbac' ][ 'actions' ][ 'config' ] = [ 'permission' => $this->crudPermission ];
+		$behaviors[ 'rbac' ][ 'actions' ][ 'settings' ] = [ 'permission' => $this->crudPermission ];
 
 		$behaviors[ 'verbs' ][ 'actions' ][ 'review' ] = [ 'get', 'post' ];
+		$behaviors[ 'verbs' ][ 'actions' ][ 'gallery' ] = [ 'get', 'post' ];
+		$behaviors[ 'verbs' ][ 'actions' ][ 'data' ] = [ 'get', 'post' ];
+		$behaviors[ 'verbs' ][ 'actions' ][ 'attributes' ] = [ 'get', 'post' ];
+		$behaviors[ 'verbs' ][ 'actions' ][ 'config' ] = [ 'get', 'post' ];
+		$behaviors[ 'verbs' ][ 'actions' ][ 'settings' ] = [ 'get', 'post' ];
 
 		$behaviors[ 'activity' ] = [
 			'class' => ActivityBehavior::class,
@@ -122,6 +147,17 @@ class ProductController extends CrudController {
 	}
 
 	// yii\base\Controller ----
+
+	public function actions() {
+
+		return [
+			'gallery' => [ 'class' => 'cmsgears\cms\common\actions\regular\gallery\Browse' ],
+			'data' => [ 'class' => 'cmsgears\cms\common\actions\data\data\Form' ],
+			'attributes' => [ 'class' => 'cmsgears\cms\common\actions\data\attribute\Form' ],
+			'config' => [ 'class' => 'cmsgears\cms\common\actions\data\config\Form' ],
+			'settings' => [ 'class' => 'cmsgears\cms\common\actions\data\setting\Form' ]
+		];
+	}
 
 	// CMG interfaces ------------------------
 
@@ -171,7 +207,7 @@ class ProductController extends CrudController {
 			return $this->redirect( 'all' );
 		}
 
-		$templatesMap = $this->templateService->getIdNameMapByType( ShopGlobal::TYPE_PRODUCT, [ 'default' => true ] );
+		$templatesMap = $this->templateService->getIdNameMapByType( $this->templateType, [ 'default' => true ] );
 
 		$shopUnitsMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_QUANTITY, Uom::GROUP_WEIGHT_US ] );
 		$weightUnitsMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_WEIGHT_METRIC, Uom::GROUP_WEIGHT_US ] );
@@ -221,7 +257,7 @@ class ProductController extends CrudController {
 				return $this->redirect( $this->returnUrl );
 			}
 
-			$templatesMap = $this->templateService->getIdNameMapByType( ShopGlobal::TYPE_PRODUCT, [ 'default' => true ] );
+			$templatesMap = $this->templateService->getIdNameMapByType( $this->templateType, [ 'default' => true ] );
 
 			$shopUnitsMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_QUANTITY, Uom::GROUP_WEIGHT_US ] );
 			$weightUnitsMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_WEIGHT_METRIC, Uom::GROUP_WEIGHT_US ] );
@@ -275,7 +311,7 @@ class ProductController extends CrudController {
 				}
 			}
 
-			$templatesMap = $this->templateService->getIdNameMapByType( ShopGlobal::TYPE_PRODUCT, [ 'default' => true ] );
+			$templatesMap = $this->templateService->getIdNameMapByType( $this->templateType, [ 'default' => true ] );
 
 			$shopUnitsMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_QUANTITY, Uom::GROUP_WEIGHT_US ] );
 			$weightUnitsMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_WEIGHT_METRIC, Uom::GROUP_WEIGHT_US ] );
@@ -319,9 +355,17 @@ class ProductController extends CrudController {
 
 				switch( $status ) {
 
+					case $modelClass::STATUS_ACCEPTED: {
+
+						$this->modelService->accept( $model, [ 'notify' => false ] );
+
+						Yii::$app->coreMailer->sendAcceptMail( $model, $email, $message );
+
+						break;
+					}
 					case $modelClass::STATUS_SUBMITTED: {
 
-						$this->modelService->approve( $model, $message );
+						$this->modelService->approve( $model, [ 'notify' => false ] );
 
 						Yii::$app->coreMailer->sendApproveMail( $model, $email, $message );
 
@@ -329,7 +373,10 @@ class ProductController extends CrudController {
 					}
 					case $modelClass::STATUS_REJECTED: {
 
-						$this->modelService->reject( $model, $message );
+						$model->setRejectMessage( $message );
+						$model->refresh();
+
+						$this->modelService->reject( $model, [ 'notify' => false ] );
 
 						Yii::$app->coreMailer->sendRejectMail( $model, $email, $message );
 
@@ -337,7 +384,10 @@ class ProductController extends CrudController {
 					}
 					case $modelClass::STATUS_FROJEN: {
 
-						$this->modelService->freeze( $model, $message );
+						$model->setRejectMessage( $message );
+						$model->refresh();
+
+						$this->modelService->freeze( $model, [ 'notify' => false ] );
 
 						Yii::$app->coreMailer->sendFreezeMail( $model, $email, $message );
 
@@ -345,7 +395,10 @@ class ProductController extends CrudController {
 					}
 					case $modelClass::STATUS_BLOCKED: {
 
-						$this->modelService->block( $model, $message );
+						$model->setRejectMessage( $message );
+						$model->refresh();
+
+						$this->modelService->block( $model, [ 'notify' => false ] );
 
 						Yii::$app->coreMailer->sendBlockMail( $model, $email, $message );
 
@@ -353,7 +406,7 @@ class ProductController extends CrudController {
 					}
 					case $modelClass::STATUS_ACTIVE: {
 
-						$this->modelService->activate( $model );
+						$this->modelService->activate( $model, [ 'notify' => false ] );
 
 						$model->updateDataMeta( CoreGlobal::DATA_APPROVAL_REQUEST, false );
 
@@ -367,7 +420,7 @@ class ProductController extends CrudController {
 			$content	= $model->modelContent;
 			$template	= $content->template;
 
-			if( isset( $template ) ) {
+			if( $this->prettyReview && isset( $template ) ) {
 
 				return Yii::$app->templateManager->renderViewAdmin( $template, [
 					'model' => $model,
@@ -379,7 +432,7 @@ class ProductController extends CrudController {
 			}
 			else {
 
-				$templatesMap = $this->templateService->getIdNameMapByType( ShopGlobal::TYPE_PRODUCT, [ 'default' => true ] );
+				$templatesMap = $this->templateService->getIdNameMapByType( $this->templateType, [ 'default' => true ] );
 
 				$shopUnitsMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_QUANTITY, Uom::GROUP_WEIGHT_US ] );
 				$weightUnitsMap	= $this->uomService->getIdNameMapByGroups( [ Uom::GROUP_WEIGHT_METRIC, Uom::GROUP_WEIGHT_US ] );
@@ -387,6 +440,8 @@ class ProductController extends CrudController {
 				$lengthUnitsMap	= $this->uomService->getIdNameMapByGroup( Uom::GROUP_LENGTH_US );
 
 				return $this->render( 'review', [
+					'modelService' => $this->modelService,
+					'metaService' => $this->metaService,
 					'model' => $model,
 					'content' => $content,
 					'avatar' => $model->avatar,

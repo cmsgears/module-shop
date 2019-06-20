@@ -7,19 +7,17 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\admin\controllers\apix;
+namespace cmsgears\shop\admin\controllers\apix\variation;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\apix\GalleryController as BaseGalleryController;
-
 /**
- * GalleryController provides actions specific to product galleries.
+ * TemplateController provides actions specific to product templates.
  *
  * @since 1.0.0
  */
-class GalleryController extends BaseGalleryController {
+class TemplateController extends \cmsgears\core\admin\controllers\apix\TemplateController {
 
 	// Variables ---------------------------------------------------
 
@@ -37,7 +35,7 @@ class GalleryController extends BaseGalleryController {
 
 		parent::init();
 
-		// Permission
+		// Permissions
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 	}
 
@@ -55,6 +53,6 @@ class GalleryController extends BaseGalleryController {
 
 	// CMG parent classes --------------------
 
-	// GalleryController ---------------------
+	// TemplateController --------------------
 
 }

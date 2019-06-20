@@ -24,7 +24,6 @@ use cmsgears\shop\common\config\ShopGlobal;
 use cmsgears\core\common\models\interfaces\base\IApproval;
 use cmsgears\core\common\models\interfaces\base\IAuthor;
 use cmsgears\core\common\models\interfaces\base\IFeatured;
-use cmsgears\core\common\models\interfaces\base\IFollower;
 use cmsgears\core\common\models\interfaces\base\IMultiSite;
 use cmsgears\core\common\models\interfaces\base\INameType;
 use cmsgears\core\common\models\interfaces\base\ISlugType;
@@ -37,20 +36,25 @@ use cmsgears\core\common\models\interfaces\resources\IMeta;
 use cmsgears\core\common\models\interfaces\resources\IVisual;
 use cmsgears\core\common\models\interfaces\mappers\ICategory;
 use cmsgears\core\common\models\interfaces\mappers\IFile;
+use cmsgears\core\common\models\interfaces\mappers\IFollower;
+use cmsgears\core\common\models\interfaces\mappers\IOption;
 use cmsgears\core\common\models\interfaces\mappers\ITag;
 use cmsgears\cms\common\models\interfaces\resources\IPageContent;
+use cmsgears\cms\common\models\interfaces\mappers\IBlock;
+use cmsgears\cms\common\models\interfaces\mappers\IElement;
+use cmsgears\cms\common\models\interfaces\mappers\IWidget;
 
 use cmsgears\core\common\models\base\Entity;
 use cmsgears\core\common\models\resources\File;
 use cmsgears\cart\common\models\resources\Uom;
 use cmsgears\shop\common\models\base\ShopTables;
-use cmsgears\shop\common\models\resources\Variation;
+use cmsgears\shop\common\models\resources\ProductMeta;
+use cmsgears\shop\common\models\resources\ProductVariation;
 use cmsgears\shop\common\models\mappers\ProductFollower;
 
 use cmsgears\core\common\models\traits\base\ApprovalTrait;
 use cmsgears\core\common\models\traits\base\AuthorTrait;
 use cmsgears\core\common\models\traits\base\FeaturedTrait;
-use cmsgears\core\common\models\traits\base\FollowerTrait;
 use cmsgears\core\common\models\traits\base\MultiSiteTrait;
 use cmsgears\core\common\models\traits\base\NameTypeTrait;
 use cmsgears\core\common\models\traits\base\SlugTypeTrait;
@@ -63,8 +67,13 @@ use cmsgears\core\common\models\traits\resources\MetaTrait;
 use cmsgears\core\common\models\traits\resources\VisualTrait;
 use cmsgears\core\common\models\traits\mappers\CategoryTrait;
 use cmsgears\core\common\models\traits\mappers\FileTrait;
+use cmsgears\core\common\models\traits\mappers\FollowerTrait;
+use cmsgears\core\common\models\traits\mappers\OptionTrait;
 use cmsgears\core\common\models\traits\mappers\TagTrait;
 use cmsgears\cms\common\models\traits\resources\PageContentTrait;
+use cmsgears\cms\common\models\traits\mappers\BlockTrait;
+use cmsgears\cms\common\models\traits\mappers\ElementTrait;
+use cmsgears\cms\common\models\traits\mappers\WidgetTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
 
@@ -115,6 +124,7 @@ use cmsgears\core\common\utilities\DateUtil;
  * @property string $slug
  * @property string $type
  * @property string $icon
+ * @property string $texture
  * @property string $title
  * @property string $description
  * @property integer $status
@@ -155,8 +165,9 @@ use cmsgears\core\common\utilities\DateUtil;
  *
  * @since 1.0.0
  */
-class Product extends Entity implements IApproval, IAuthor, ICategory, IComment, IContent, IData, IFeatured, IFile, IFollower,
-	IGridCache, IMeta, IMultiSite, INameType, IPageContent, ISlugType, ITag, IVisibility, IVisual {
+class Product extends Entity implements IApproval, IAuthor, IBlock, ICategory, IComment,
+	IContent, IData, IElement, IFeatured, IFile, IFollower, IGridCache, IMeta, IMultiSite, INameType,
+	IPageContent, ISlugType, IOption, ITag, IVisibility, IVisual, IWidget {
 
 	// Variables ---------------------------------------------------
 
@@ -186,10 +197,12 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 
 	use ApprovalTrait;
     use AuthorTrait;
+	use BlockTrait;
 	use CategoryTrait;
 	use CommentTrait;
 	use ContentTrait;
     use DataTrait;
+	use ElementTrait;
 	use FeaturedTrait;
 	use FileTrait;
 	use FollowerTrait;
@@ -197,21 +210,23 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 	use MetaTrait;
 	use MultiSiteTrait;
 	use NameTypeTrait;
+	use OptionTrait;
 	use PageContentTrait;
 	use SlugTypeTrait;
 	use TagTrait;
 	use VisibilityTrait;
 	use VisualTrait;
+	use WidgetTrait;
 
 	// Constructor and Initialisation ------------------------------
 
-	public function init() {
-
-		parent::init();
+	public function __construct( $config = [] ) {
 
 		$this->followerClass = ProductFollower::class;
 
 		$this->metaClass = ProductMeta::class;
+
+		parent::__construct();
 	}
 
 	// Instance methods --------------------------------------------
@@ -265,7 +280,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 			[ 'slug', 'unique', 'targetAttribute' => [ 'siteId', 'slug' ] ],
 			// Text Limit
 			[ 'type', 'string', 'min' => 1, 'max' => Yii::$app->core->mediumText ],
-			[ 'icon', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
+			[ [ 'icon', 'texture' ], 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			[ [ 'slug', 'sku', 'code' ], 'string', 'min' => 1, 'max' => Yii::$app->core->xxLargeText ],
 			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxxLargeText ],
@@ -482,7 +497,7 @@ class Product extends Entity implements IApproval, IAuthor, ICategory, IComment,
 	 */
 	public function getVariations() {
 
-		return $this->hasMany( Variation::className(), [ 'id' => 'productId' ] );
+		return $this->hasMany( ProductVariation::className(), [ 'id' => 'productId' ] );
 	}
 
 	/**

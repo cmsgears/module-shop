@@ -13,12 +13,12 @@ $coreProperties = $this->context->getCoreProperties();
 $this->title 	= 'Add Product Variation | ' . $coreProperties->getSiteTitle();
 $returnUrl		= $this->context->returnUrl;
 
-Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts' => 'site', 'config' => [ 'controls' => 'mini' ] ] );
+Editor::widget();
 ?>
-<div class="box-crud-wrap row">
-	<div class="box-crud-wrap-main colf colf3x2">
+<div class="box-crud-wrap">
+	<div class="box-crud-wrap-main">
 		<?php $form = ActiveForm::begin( [ 'id' => 'frm-variation', 'options' => [ 'class' => 'form' ] ] ); ?>
-		<div class="box box-crud">
+		<div class="box box-crud layer layer-3">
 			<div class="box-header">
 				<div class="box-header-title">Basic Details</div>
 			</div>
@@ -76,7 +76,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 			</div>
 		</div>
 		<div class="filler-height filler-height-medium"></div>
-		<div class="box box-crud">
+		<div class="box box-crud layer layer-2">
 			<div class="box-header">
 				<div class="box-header-title">Units & Dimensions</div>
 			</div>
@@ -94,7 +94,7 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 			</div>
 		</div>
 		<div class="filler-height filler-height-medium"></div>
-		<div class="box box-crud">
+		<div class="box box-crud layer layer-1">
 			<div class="box-header">
 				<div class="box-header-title">Shop</div>
 			</div>
@@ -166,12 +166,9 @@ Editor::widget( [ 'selector' => '.content-editor', 'loadAssets' => true, 'fonts'
 		<div class="filler-height filler-height-medium"></div>
 		<div class="align align-right">
 			<?= Html::a( 'Cancel', $returnUrl, [ 'class' => 'btn btn-medium' ] ); ?>
-			<input class="element-medium" type="submit" value="Add" />
+			<input class="frm-element-medium" type="submit" value="Add" />
 		</div>
 		<div class="filler-height filler-height-medium"></div>
 		<?php ActiveForm::end(); ?>
-	</div>
-	<div class="box-crud-wrap-sidebar colf colf3">
-
 	</div>
 </div>

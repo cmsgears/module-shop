@@ -16,14 +16,12 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\base\AttributeController as BaseAttributeController;
-
 /**
  * AttributeController provides actions specific to product attributes.
  *
  * @since 1.0.0
  */
-class AttributeController extends BaseAttributeController {
+class AttributeController extends \cmsgears\core\admin\controllers\base\AttributeController {
 
 	// Variables ---------------------------------------------------
 
@@ -46,7 +44,7 @@ class AttributeController extends BaseAttributeController {
 
 		// Config
 		$this->title	= 'Product Attribute';
-		$this->apixBase	= 'shop/attribute';
+		$this->apixBase	= 'shop/product/attribute';
 
 		// Services
 		$this->modelService		= Yii::$app->factory->get( 'productMetaService' );
@@ -56,20 +54,23 @@ class AttributeController extends BaseAttributeController {
 		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
 
 		// Return Url
-		$this->returnUrl = Url::previous( 'attributes' );
-		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/meta/all' ], true );
+		$this->returnUrl = Url::previous( 'product-attributes' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/attribute/all' ], true );
 
-		// Product Url
-		$productUrl = Url::previous( 'products' );
-		$productUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all' ], true );
+		// All Url
+		$allUrl = Url::previous( 'products' );
+		$allUrl = isset( $allUrl ) ? $allUrl : Url::toRoute( [ '/shop/product/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  $productUrl ] ],
-			'all' => [ [ 'label' => 'Attributes' ] ],
-			'create' => [ [ 'label' => 'Attributes', 'url' => $this->returnUrl ], [ 'label' => 'Create' ] ],
-			'update' => [ [ 'label' => 'Attributes', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Attributes', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
+			'base' => [
+				[ 'label' => 'Home', 'url' => Url::toRoute( '/dashboard' ) ],
+				[ 'label' => 'Products', 'url' =>  $allUrl ]
+			],
+			'all' => [ [ 'label' => 'Product Attributes' ] ],
+			'create' => [ [ 'label' => 'Product Attributes', 'url' => $this->returnUrl ], [ 'label' => 'Create' ] ],
+			'update' => [ [ 'label' => 'Product Attributes', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Product Attributes', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 
@@ -91,7 +92,7 @@ class AttributeController extends BaseAttributeController {
 
 	public function actionAll( $pid ) {
 
-		Url::remember( Yii::$app->request->getUrl(), 'attributes' );
+		Url::remember( Yii::$app->request->getUrl(), 'product-attributes' );
 
 		return parent::actionAll( $pid );
 	}

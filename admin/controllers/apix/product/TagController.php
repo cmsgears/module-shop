@@ -7,22 +7,17 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\admin\controllers\apix;
-
-// Yii Imports
-use Yii;
+namespace cmsgears\shop\admin\controllers\apix\product;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\apix\AttributeController as BaseAttributeController;
-
 /**
- * AttributeController provides actions specific to product attributes.
+ * TagController provides actions specific to product tags.
  *
  * @since 1.0.0
  */
-class AttributeController extends BaseAttributeController {
+class TagController extends \cmsgears\core\admin\controllers\apix\TagController {
 
 	// Variables ---------------------------------------------------
 
@@ -42,9 +37,6 @@ class AttributeController extends BaseAttributeController {
 
 		// Permission
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
-
-		// Services
-		$this->modelService = Yii::$app->factory->get( 'productMetaService' );
 	}
 
 	// Instance methods --------------------------------------------
@@ -61,6 +53,6 @@ class AttributeController extends BaseAttributeController {
 
 	// CMG parent classes --------------------
 
-	// AttributeController -------------------
+	// TagController -------------------------
 
 }

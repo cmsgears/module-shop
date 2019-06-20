@@ -7,19 +7,17 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\admin\controllers\apix;
+namespace cmsgears\shop\admin\controllers\apix\product;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\apix\TemplateController as BaseTemplateController;
-
 /**
- * TemplateController provides actions specific to product templates.
+ * CategoryController provides actions specific to product categories.
  *
  * @since 1.0.0
  */
-class TemplateController extends BaseTemplateController {
+class CategoryController extends \cmsgears\core\admin\controllers\apix\CategoryController {
 
 	// Variables ---------------------------------------------------
 
@@ -37,7 +35,7 @@ class TemplateController extends BaseTemplateController {
 
 		parent::init();
 
-		// Permissions
+		// Permission
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 	}
 
@@ -55,6 +53,6 @@ class TemplateController extends BaseTemplateController {
 
 	// CMG parent classes --------------------
 
-	// TemplateController --------------------
+	// CategoryController ---------------------
 
 }
