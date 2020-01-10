@@ -20,13 +20,19 @@ class ShopGlobal {
 
 	// System Pages ---------------------------------------------------
 
+	const PAGE_SEARCH_PRODUCTS = 'shop';
+
+	const PAGE_CART		= 'cart';
+	const PAGE_CHECKOUT	= 'checkout';
+	const PAGE_PAYMENT	= 'payment';
+
 	// Grouping by type ------------------------------------------------
 
-	const TYPE_PRODUCT	= 'product';
+	const TYPE_PRODUCT = 'product';
 
-	const TYPE_OFFER	= 'offer';
+	const TYPE_OFFER = 'offer';
 
-	const TYPE_PRODUCT_VARIATION	= 'product-variation';
+	const TYPE_PRODUCT_VARIATION = 'product-variation';
 
 	// Templates -------------------------------------------------------
 
