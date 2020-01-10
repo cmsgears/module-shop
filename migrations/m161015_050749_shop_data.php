@@ -228,7 +228,9 @@ class m161015_050749_shop_data extends \cmsgears\core\common\base\Migration {
 			[ $this->site->id, $this->master->id, $this->master->id, 'Cart', ShopGlobal::PAGE_CART, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->site->id, $this->master->id, $this->master->id, 'Checkout', ShopGlobal::PAGE_CHECKOUT, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
 			[ $this->site->id, $this->master->id, $this->master->id, 'Payment', ShopGlobal::PAGE_PAYMENT, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
-			[ $this->site->id, $this->master->id, $this->master->id, 'Shop', ShopGlobal::PAGE_SEARCH_PRODUCTS, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ]
+			[ $this->site->id, $this->master->id, $this->master->id, 'Shop', ShopGlobal::PAGE_SHOP, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ],
+			// Search Pages
+			[ $this->site->id, $this->master->id, $this->master->id, 'Search Products', ShopGlobal::PAGE_SEARCH_PRODUCTS, CmsGlobal::TYPE_PAGE, null, null, Page::STATUS_ACTIVE, Page::VISIBILITY_PUBLIC, 0, false, false, DateUtil::getDateTime(), DateUtil::getDateTime() ]
 		];
 
 		$this->batchInsert( $this->prefix . 'cms_page', $columns, $pages );
@@ -242,6 +244,8 @@ class m161015_050749_shop_data extends \cmsgears\core\common\base\Migration {
 			[ Page::findBySlugType( ShopGlobal::PAGE_CART, CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ],
 			[ Page::findBySlugType( ShopGlobal::PAGE_CHECKOUT, CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ],
 			[ Page::findBySlugType( ShopGlobal::PAGE_PAYMENT, CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ],
+			[ Page::findBySlugType( ShopGlobal::PAGE_SHOP, CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ],
+			// Search Pages
 			[ Page::findBySlugType( ShopGlobal::PAGE_SEARCH_PRODUCTS, CmsGlobal::TYPE_PAGE )->id, CmsGlobal::TYPE_PAGE, null, null, null, null, $summary, $content, DateUtil::getDateTime() ]
 		];
 
@@ -250,11 +254,11 @@ class m161015_050749_shop_data extends \cmsgears\core\common\base\Migration {
 
 	private function insertNotificationTemplates() {
 
-		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'icon', 'type', 'description', 'active', 'renderer', 'fileRender', 'layout', 'layoutGroup', 'viewPath', 'createdAt', 'modifiedAt', 'content', 'data' ];
+		$columns = [ 'createdBy', 'modifiedBy', 'name', 'slug', 'icon', 'type', 'description', 'active', 'renderer', 'fileRender', 'layout', 'layoutGroup', 'viewPath', 'createdAt', 'modifiedAt', 'message', 'content', 'data' ];
 
 		$templates = [
-			// Products
-			[ $this->master->id, $this->master->id, 'Register Product', 'register-product', null, 'notification', 'Trigger notification to the Site Admin when new product has been submitted.', true, 'twig', 0, null, false, null, DateUtil::getDateTime(), DateUtil::getDateTime(), 'A new Product - <b>{{model.displayName}}</b> has been submitted to the Shop.', '{"config":{"admin":"1","user":"0","direct":"0","adminEmail":"0","userEmail":"0","directEmail":"0"}}' ]
+			// Product
+			[ $this->master->id, $this->master->id, 'New Product', ShopGlobal::TPL_NOTIFY_PRODUCT_NEW, null, 'notification', 'Trigger Notification and Email to Admin, when new Product is created by site users.', true, 'twig', 0, null, false, null, DateUtil::getDateTime(), DateUtil::getDateTime(), 'New Product - <b>{{model.displayName}}</b>', 'New Product - <b>{{model.displayName}}</b> has been submitted for registration. {% if config.link %}Please follow this <a href="{{config.link}}">link</a>.{% endif %}{% if config.adminLink %}Please follow this <a href="{{config.adminLink}}">link</a>.{% endif %}', '{"config":{"admin":"1","user":"0","direct":"0","adminEmail":"1","userEmail":"0","directEmail":"0"}}' ]
 		];
 
 		$this->batchInsert( $this->prefix . 'core_template', $columns, $templates );
