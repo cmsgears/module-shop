@@ -16,14 +16,12 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\cms\admin\controllers\base\TagController as BaseTagController;
-
 /**
  * TagController provides actions specific to product tags.
  *
  * @since 1.0.0
  */
-class TagController extends BaseTagController {
+class TagController extends \cmsgears\cms\admin\controllers\base\TagController {
 
 	// Variables ---------------------------------------------------
 
@@ -45,24 +43,32 @@ class TagController extends BaseTagController {
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
 		// Config
+		$this->title		= 'Product';
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
 		$this->templateType	= ShopGlobal::TYPE_PRODUCT;
-		$this->apixBase		= 'shop/tag';
+		$this->apixBase		= 'shop/product/tag';
+		$this->parentPath	= '/shop/product/tag';
 
 		// Sidebar
 		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-tag' ];
 
 		// Return Url
-		$this->returnUrl = Url::previous( 'tags' );
+		$this->returnUrl = Url::previous( 'product-tags' );
 		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/tag/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/product/all' ] ] ],
-			'all' => [ [ 'label' => 'Tags' ] ],
-			'create' => [ [ 'label' => 'Tags', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
-			'update' => [ [ 'label' => 'Tags', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Tags', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
+			'base' => [
+				[ 'label' => 'Home', 'url' => Url::toRoute( '/dashboard' ) ]
+			],
+			'all' => [ [ 'label' => 'Product Tags' ] ],
+			'create' => [ [ 'label' => 'Product Tags', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Product Tags', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Product Tags', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
+			'gallery' => [ [ 'label' => 'Product Tags', 'url' => $this->returnUrl ], [ 'label' => 'Gallery' ] ],
+			'data' => [ [ 'label' => 'Product Tags', 'url' => $this->returnUrl ], [ 'label' => 'Data' ] ],
+			'config' => [ [ 'label' => 'Product Tags', 'url' => $this->returnUrl ], [ 'label' => 'Config' ] ],
+			'settings' => [ [ 'label' => 'Product Tags', 'url' => $this->returnUrl ], [ 'label' => 'Settings' ] ]
 		];
 	}
 
@@ -84,7 +90,7 @@ class TagController extends BaseTagController {
 
 	public function actionAll( $config = [] ) {
 
-		Url::remember( Yii::$app->request->getUrl(), 'tags' );
+		Url::remember( Yii::$app->request->getUrl(), 'product-tags' );
 
 		return parent::actionAll( $config );
 	}

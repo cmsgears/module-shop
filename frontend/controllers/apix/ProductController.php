@@ -13,15 +13,12 @@ namespace cmsgears\shop\frontend\controllers\apix;
 use Yii;
 use yii\filters\VerbFilter;
 
-// CMG Imports
-use cmsgears\core\frontend\controllers\base\Controller;
-
 /**
  * ProductController provides actions specific to product model.
  *
  * @since 1.0.0
  */
-class ProductController extends Controller {
+class ProductController extends \cmsgears\core\frontend\controllers\base\Controller {
 
 	// Variables ---------------------------------------------------
 
@@ -63,29 +60,54 @@ class ProductController extends Controller {
 					// Searching
 					'auto-search' => [ 'permission' => $this->crudPermission ],
 					// Avatar
-					'avatar' => [ 'permission' => $this->crudPermission ],
+					'assign-avatar' => [ 'permission' => $this->crudPermission ],
 					'clear-avatar' => [ 'permission' => $this->crudPermission ],
 					// Banner
-					'banner' => [ 'permission' => $this->crudPermission ],
+					'assign-banner' => [ 'permission' => $this->crudPermission ],
 					'clear-banner' => [ 'permission' => $this->crudPermission ],
+					// Video
+					'assign-video' => [ 'permission' => $this->crudPermission ],
+					'clear-video' => [ 'permission' => $this->crudPermission ],
+					// Files
+					'assign-file' => [ 'permission' => $this->crudPermission ],
+					'clear-file' => [ 'permission' => $this->crudPermission ],
+					// Gallery
+					'update-gallery' => [ 'permission' => $this->crudPermission ],
+					'get-gallery-item' => [ 'permission' => $this->crudPermission ],
+					'add-gallery-item' => [ 'permission' => $this->crudPermission ],
+					'update-gallery-item' => [ 'permission' => $this->crudPermission ],
+					'delete-gallery-item' => [ 'permission' => $this->crudPermission ],
+					// Categories
+					'assign-category' => [ 'permission' => $this->crudPermission ],
+					'remove-category' => [ 'permission' => $this->crudPermission ],
+					'toggle-category' => [ 'permission' => $this->crudPermission ],
+					// Options
+					'assign-option' => [ 'permission' => $this->crudPermission ],
+					'remove-option' => [ 'permission' => $this->crudPermission ],
+					'delete-option' => [ 'permission' => $this->crudPermission ],
+					'toggle-option' => [ 'permission' => $this->crudPermission ],
+					// Tags
+					'assign-tags' => [ 'permission' => $this->crudPermission ],
+					'remove-tag' => [ 'permission' => $this->crudPermission ],
 					// Metas
 					'add-meta' => [ 'permission' => $this->crudPermission ],
 					'update-meta' => [ 'permission' => $this->crudPermission ],
 					'toggle-meta' => [ 'permission' => $this->crudPermission ],
 					'delete-meta' => [ 'permission' => $this->crudPermission ],
 					'settings' => [ 'permission' => $this->crudPermission ],
-					// Categories
-					'assign-category' => [ 'permission' => $this->crudPermission ],
-					'remove-category' => [ 'permission' => $this->crudPermission ],
-					// Tags
-					'assign-tags' => [ 'permission' => $this->crudPermission ],
-					'remove-tag' => [ 'permission' => $this->crudPermission ],
-					// Gallery Items
-					'get-gallery-item' => [ 'permission' => $this->crudPermission ],
-					'create-gallery-item' => [ 'permission' => $this->crudPermission ],
-					'update-gallery-item' => [ 'permission' => $this->crudPermission ],
-					'delete-gallery-item' => [ 'permission' => $this->crudPermission ],
-					// Data Object
+					// Elements
+					'assign-element' => [ 'permission' => $this->crudPermission ],
+					'remove-element' => [ 'permission' => $this->crudPermission ],
+					// Widgets
+					'assign-widget' => [ 'permission' => $this->crudPermission ],
+					'remove-widget' => [ 'permission' => $this->crudPermission ],
+					// Sidebars
+					'assign-sidebar' => [ 'permission' => $this->crudPermission ],
+					'remove-sidebar' => [ 'permission' => $this->crudPermission ],
+					// Blocks
+					'assign-block' => [ 'permission' => $this->crudPermission ],
+					'remove-block' => [ 'permission' => $this->crudPermission ],
+					// Data Object - Reserved
 					'set-data' => [ 'permission' => $this->crudPermission ],
 					'remove-data' => [ 'permission' => $this->crudPermission ],
 					'set-attribute' => [ 'permission' => $this->crudPermission ],
@@ -102,29 +124,54 @@ class ProductController extends Controller {
 					// Searching
 					'auto-search' => [ 'post' ],
 					// Avatar
-					'avatar' => [ 'post' ],
+					'assign-avatar' => [ 'post' ],
 					'clear-avatar' => [ 'post' ],
 					// Banner
-					'banner' => [ 'post' ],
+					'assign-banner' => [ 'post' ],
 					'clear-banner' => [ 'post' ],
+					// Video
+					'assign-video' => [ 'post' ],
+					'clear-video' => [ 'post' ],
+					// Files
+					'assign-file' => [ 'post' ],
+					'clear-file' => [ 'post' ],
+					// Gallery
+					'update-gallery' => [ 'post' ],
+					'get-gallery-item' => [ 'post' ],
+					'add-gallery-item' => [ 'post' ],
+					'update-gallery-item' => [ 'post' ],
+					'delete-gallery-item' => [ 'post' ],
+					// Categories
+					'assign-category' => [ 'post' ],
+					'remove-category' => [ 'post' ],
+					'toggle-category' => [ 'post' ],
+					// Options
+					'assign-option' => [ 'post' ],
+					'remove-option' => [ 'post' ],
+					'delete-option' => [ 'post' ],
+					'toggle-option' => [ 'post' ],
+					// Tags
+					'assign-tags' => [ 'post' ],
+					'remove-tag' => [ 'post' ],
 					// Metas
 					'add-meta' => [ 'post' ],
 					'update-meta' => [ 'post' ],
 					'toggle-meta' => [ 'post' ],
 					'delete-meta' => [ 'post' ],
 					'settings' => [ 'post' ],
-					// Categories
-					'assign-category' => [ 'post' ],
-					'remove-category' => [ 'post' ],
-					// Tags
-					'assign-tags' => [ 'post' ],
-					'remove-tag' => [ 'post' ],
-					// Gallery Items
-					'get-gallery-item' => [ 'post' ],
-					'create-gallery-item' => [ 'post' ],
-					'update-gallery-item' => [ 'post' ],
-					'delete-gallery-item' => [ 'post' ],
-					// Data Object
+					// Elements
+					'assign-element' => [ 'post' ],
+					'remove-element' => [ 'post' ],
+					// Widgets
+					'assign-widget' => [ 'post' ],
+					'remove-widget' => [ 'post' ],
+					// Sidebars
+					'assign-sidebar' => [ 'post' ],
+					'remove-sidebar' => [ 'post' ],
+					// Blocks
+					'assign-block' => [ 'post' ],
+					'remove-block' => [ 'post' ],
+					// Data Object - Reserved
 					'set-data' => [ 'post' ],
 					'remove-data' => [ 'post' ],
 					'set-attribute' => [ 'post' ],
@@ -133,8 +180,9 @@ class ProductController extends Controller {
 					'remove-config' => [ 'post' ],
 					'set-setting' => [ 'post' ],
 					'remove-setting' => [ 'post' ],
-					// Social
+					// Reviews
 					'submit-review' => [ 'post' ],
+					// Community
 					'like' => [ 'post' ]
 				]
 			]
@@ -149,39 +197,65 @@ class ProductController extends Controller {
 			// Searching
 			'auto-search' => [ 'class' => 'cmsgears\core\common\actions\content\AutoSearch' ],
 			// Avatar
-			'avatar' => [ 'class' => 'cmsgears\core\common\actions\content\Avatar' ],
-			'clear-avatar' => [ 'class' => 'cmsgears\core\common\actions\content\ClearAvatar' ],
+			'assign-avatar' => [ 'class' => 'cmsgears\core\common\actions\content\avatar\Assign' ],
+			'clear-avatar' => [ 'class' => 'cmsgears\core\common\actions\content\avatar\Clear' ],
 			// Banner
-			'banner' => [ 'class' => 'cmsgears\cms\common\actions\content\Banner' ],
-			'clear-banner' => [ 'class' => 'cmsgears\core\common\actions\content\ClearBanner' ],
+			'assign-banner' => [ 'class' => 'cmsgears\cms\common\actions\content\banner\Assign' ],
+			'clear-banner' => [ 'class' => 'cmsgears\cms\common\actions\content\banner\Clear' ],
+			// Video
+			'assign-video' => [ 'class' => 'cmsgears\cms\common\actions\content\video\Assign' ],
+			'clear-video' => [ 'class' => 'cmsgears\cms\common\actions\content\video\Clear' ],
+			// Files
+			'assign-file' => [ 'class' => 'cmsgears\core\common\actions\file\Assign' ],
+			'clear-file' => [ 'class' => 'cmsgears\core\common\actions\file\Clear' ],
+			// Gallery
+			'update-gallery' => [ 'class' => 'cmsgears\cms\common\actions\gallery\Update' ],
+			'get-gallery-item' => [ 'class' => 'cmsgears\cms\common\actions\gallery\item\Read' ],
+			'add-gallery-item' => [ 'class' => 'cmsgears\cms\common\actions\gallery\item\Create' ],
+			'update-gallery-item' => [ 'class' => 'cmsgears\cms\common\actions\gallery\item\Update' ],
+			'delete-gallery-item' => [ 'class' => 'cmsgears\cms\common\actions\gallery\item\Delete' ],
+			// Categories
+			'assign-category' => [ 'class' => 'cmsgears\core\common\actions\category\Assign' ],
+			'remove-category' => [ 'class' => 'cmsgears\core\common\actions\category\Remove' ],
+			'toggle-category' => [ 'class' => 'cmsgears\core\common\actions\category\Toggle' ],
+			// Options
+			'assign-option' => [ 'class' => 'cmsgears\core\common\actions\option\Assign' ],
+			'remove-option' => [ 'class' => 'cmsgears\core\common\actions\option\Remove' ],
+			'delete-option' => [ 'class' => 'cmsgears\core\common\actions\option\Delete' ],
+			'toggle-option' => [ 'class' => 'cmsgears\core\common\actions\option\Toggle' ],
+			// Tags
+			'assign-tags' => [ 'class' => 'cmsgears\core\common\actions\tag\Assign' ],
+			'remove-tag' => [ 'class' => 'cmsgears\core\common\actions\tag\Remove' ],
 			// Metas
 			'add-meta' => [ 'class' => 'cmsgears\core\common\actions\meta\Create' ],
 			'update-meta' => [ 'class' => 'cmsgears\core\common\actions\meta\Update' ],
 			'toggle-meta' => [ 'class' => 'cmsgears\core\common\actions\meta\Toggle' ],
 			'delete-meta' => [ 'class' => 'cmsgears\core\common\actions\meta\Delete' ],
 			'settings' => [ 'class' => 'cmsgears\core\common\actions\meta\UpdateMultiple' ],
-			// Categories
-			'assign-category' => [ 'class' => 'cmsgears\core\common\actions\category\Assign' ],
-			'remove-category' => [ 'class' => 'cmsgears\core\common\actions\category\Remove' ],
-			// Tags
-			'assign-tags' => [ 'class' => 'cmsgears\core\common\actions\tag\Assign' ],
-			'remove-tag' => [ 'class' => 'cmsgears\core\common\actions\tag\Remove' ],
-			// Gallery Items
-			'get-gallery-item' => [ 'class' => 'cmsgears\core\common\actions\gallery\ReadItem' ],
-			'create-gallery-item' => [ 'class' => 'cmsgears\core\common\actions\gallery\CreateItem' ],
-			'update-gallery-item' => [ 'class' => 'cmsgears\core\common\actions\gallery\UpdateItem' ],
-			'delete-gallery-item' => [ 'class' => 'cmsgears\core\common\actions\gallery\DeleteItem' ],
-			// Data Object
-			'set-data' => [ 'class' => 'cmsgears\core\common\actions\data\SetData' ],
-			'remove-data' => [ 'class' => 'cmsgears\core\common\actions\data\RemoveData' ],
-			'set-attribute' => [ 'class' => 'cmsgears\core\common\actions\data\SetAttribute' ],
-			'remove-attribute' => [ 'class' => 'cmsgears\core\common\actions\data\RemoveAttribute' ],
-			'set-config' => [ 'class' => 'cmsgears\core\common\actions\data\SetConfig' ],
-			'remove-config' => [ 'class' => 'cmsgears\core\common\actions\data\RemoveConfig' ],
-			'set-setting' => [ 'class' => 'cmsgears\core\common\actions\data\SetSetting' ],
-			'remove-setting' => [ 'class' => 'cmsgears\core\common\actions\data\RemoveSetting' ],
-			// Social
+			// Elements
+			'assign-element' => [ 'class' => 'cmsgears\core\common\actions\object\Assign' ],
+			'remove-element' => [ 'class' => 'cmsgears\core\common\actions\object\Remove' ],
+			// Widgets
+			'assign-widget' => [ 'class' => 'cmsgears\core\common\actions\object\Assign' ],
+			'remove-widget' => [ 'class' => 'cmsgears\core\common\actions\object\Remove' ],
+			// Sidebars
+			'assign-sidebar' => [ 'class' => 'cmsgears\core\common\actions\object\Assign' ],
+			'remove-sidebar' => [ 'class' => 'cmsgears\core\common\actions\object\Remove' ],
+			// Blocks
+			'assign-block' => [ 'class' => 'cmsgears\core\common\actions\object\Assign' ],
+			'remove-block' => [ 'class' => 'cmsgears\core\common\actions\object\Remove' ],
+			// Data Object - Reserved
+			'set-data' => [ 'class' => 'cmsgears\core\common\actions\data\data\Set' ],
+			'remove-data' => [ 'class' => 'cmsgears\core\common\actions\data\data\Remove' ],
+			'set-attribute' => [ 'class' => 'cmsgears\core\common\actions\data\attribute\Set' ],
+			'remove-attribute' => [ 'class' => 'cmsgears\core\common\actions\data\attribute\Remove' ],
+			'set-config' => [ 'class' => 'cmsgears\core\common\actions\data\config\Set' ],
+			'remove-config' => [ 'class' => 'cmsgears\core\common\actions\data\config\Remove' ],
+			'set-setting' => [ 'class' => 'cmsgears\core\common\actions\data\setting\Set' ],
+			'remove-setting' => [ 'class' => 'cmsgears\core\common\actions\data\setting\Remove' ],
+			// Reviews
 			'submit-review' => [ 'class' => 'cmsgears\core\common\actions\comment\Review' ],
+			// Community
 			'like' => [ 'class' => 'cmsgears\core\common\actions\follower\Like' ]
 		];
 	}

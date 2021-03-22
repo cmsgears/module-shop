@@ -22,20 +22,20 @@ use cmsgears\shop\common\config\ShopGlobal;
 use cmsgears\core\common\models\resources\File;
 use cmsgears\cart\common\models\resources\Uom;
 
-use cmsgears\core\admin\controllers\base\Controller;
-
 /**
  * VariationController provide actions specific to product variations.
  *
  * @since 1.0.0
  */
-class VariationController extends Controller {
+class VariationController extends \cmsgears\core\admin\controllers\base\Controller {
 
 	// Variables ---------------------------------------------------
 
 	// Globals ----------------
 
 	// Public -----------------
+
+	public $title;
 
 	// Protected --------------
 
@@ -60,7 +60,9 @@ class VariationController extends Controller {
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
 		// Config
+		$this->title	= 'Product Variation';
 		$this->apixBase	= 'shop/variation';
+		$this->baseUrl	= 'variation';
 
 		// Services
 		$this->modelService		= Yii::$app->factory->get( 'productVariationService' );
@@ -75,7 +77,7 @@ class VariationController extends Controller {
 
 		// Return Url
 		$this->returnUrl = Url::previous( 'product-variations' );
-		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/variation/all/' ], true );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/variation/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
@@ -83,7 +85,8 @@ class VariationController extends Controller {
 			'all' => [ [ 'label' => 'Variations' ] ],
 			'create' => [ [ 'label' => 'Variations', 'url' => $this->returnUrl ], [ 'label' => 'Create' ] ],
 			'update' => [ [ 'label' => 'Variations', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Variations', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
+			'delete' => [ [ 'label' => 'Variations', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
+			'gallery' => [ [ 'label' => 'Variations', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 
@@ -105,7 +108,8 @@ class VariationController extends Controller {
 					'all'  => [ 'permission' => $this->crudPermission ],
 					'create'  => [ 'permission' => $this->crudPermission ],
 					'update'  => [ 'permission' => $this->crudPermission ],
-					'delete'  => [ 'permission' => $this->crudPermission ]
+					'delete'  => [ 'permission' => $this->crudPermission ],
+					'gallery'  => [ 'permission' => $this->crudPermission ]
 				]
 			],
 			'verbs' => [
@@ -115,13 +119,21 @@ class VariationController extends Controller {
 					'all'  => [ 'get' ],
 					'create'  => [ 'get', 'post' ],
 					'update'  => [ 'get', 'post' ],
-					'delete'  => [ 'get', 'post' ]
+					'delete'  => [ 'get', 'post' ],
+					'gallery'  => [ 'get', 'post' ]
 				]
 			]
 		];
 	}
 
 	// yii\base\Controller ----
+
+	public function actions() {
+
+		return [
+			'gallery' => [ 'class' => 'cmsgears\core\common\actions\regular\gallery\Browse' ]
+		];
+	}
 
 	// CMG interfaces ------------------------
 

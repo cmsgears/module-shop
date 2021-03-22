@@ -7,19 +7,20 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\admin\controllers\apix;
+namespace cmsgears\shop\admin\controllers\apix\category;
+
+// Yii Imports
+use Yii;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\apix\CommentController as BaseCommentController;
-
 /**
- * ReviewController provides actions specific to product reviews.
+ * FileController provides actions specific to page files.
  *
  * @since 1.0.0
  */
-class ReviewController extends BaseCommentController {
+class FileController extends \cmsgears\core\admin\controllers\apix\base\FileController {
 
 	// Variables ---------------------------------------------------
 
@@ -38,7 +39,10 @@ class ReviewController extends BaseCommentController {
 		parent::init();
 
 		// Permission
-		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
+		$this->crudPermission = ShopGlobal::PERM_SHOP_ADMIN;
+
+		// Services
+		$this->parentService = Yii::$app->factory->get( 'categoryService' );
 	}
 
 	// Instance methods --------------------------------------------
@@ -55,6 +59,6 @@ class ReviewController extends BaseCommentController {
 
 	// CMG parent classes --------------------
 
-	// ReviewController ----------------------
+	// FileController ------------------------
 
 }

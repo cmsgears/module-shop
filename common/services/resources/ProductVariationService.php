@@ -19,8 +19,6 @@ use cmsgears\shop\common\config\ShopGlobal;
 use cmsgears\core\common\services\interfaces\resources\IFileService;
 use cmsgears\shop\common\services\interfaces\resources\IProductVariationService;
 
-use cmsgears\core\common\services\base\ResourceService;
-
 use cmsgears\core\common\services\traits\resources\VisualTrait;
 
 /**
@@ -28,7 +26,7 @@ use cmsgears\core\common\services\traits\resources\VisualTrait;
  *
  * @since 1.0.0
  */
-class ProductVariationService extends ResourceService implements IProductVariationService {
+class ProductVariationService extends \cmsgears\core\common\services\base\ResourceService implements IProductVariationService {
 
 	// Variables ---------------------------------------------------
 

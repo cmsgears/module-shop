@@ -18,22 +18,37 @@ class ShopGlobal {
 
 	// System Sites ---------------------------------------------------
 
+	const SITE_SHOP = 'shop';
+
 	// System Pages ---------------------------------------------------
+
+	const PAGE_SEARCH_PRODUCTS = 'search-products';
+
+	const PAGE_CART		= 'cart';
+	const PAGE_CHECKOUT	= 'checkout';
+	const PAGE_PAYMENT	= 'payment';
+
+	const PAGE_SHOP		= 'shop';
+	const PAGE_OFFERS	= 'offers';
 
 	// Grouping by type ------------------------------------------------
 
-	const TYPE_PRODUCT	= 'product';
+	const TYPE_PRODUCT = 'product';
 
-	const TYPE_OFFER	= 'offer';
+	const TYPE_OFFER = 'offer';
 
-	const TYPE_PRODUCT_VARIATION	= 'product-variation';
+	const TYPE_PRODUCT_VARIATION = 'product-variation';
 
 	// Templates -------------------------------------------------------
 
 	const TEMPLATE_CART		= 'cart';
 	const TEMPLATE_CHECKOUT	= 'checkout';
 	const TEMPLATE_PAYMENT	= 'payment';
+
 	const TEMPLATE_SHOP		= 'shop';
+	const TEMPLATE_OFFER	= 'offer';
+
+	const TPL_NOTIFY_PRODUCT_NEW = 'product-new';
 
 	// Config ----------------------------------------------------------
 
@@ -41,12 +56,12 @@ class ShopGlobal {
 
 	// Roles -----------------------------------------------------------
 
-	const ROLE_SHOP_ADMIN		= 'shop-admin';
+	const ROLE_SHOP_ADMIN = 'shop-admin';
 
 	// Permissions -----------------------------------------------------
 
 	// Shop
-	const PERM_SHOP_ADMIN		= 'admin-shop';
+	const PERM_SHOP_ADMIN = 'admin-shop';
 
 	// Product
 	const PERM_PRODUCT_ADMIN	= 'admin-products';

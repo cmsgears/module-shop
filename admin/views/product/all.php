@@ -5,15 +5,19 @@ use cmsgears\widgets\popup\Popup;
 use cmsgears\widgets\grid\DataGrid;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title	= 'Products | ' . $coreProperties->getSiteTitle();
+$title			= $this->context->title;
+$this->title	= "{$title}s | " . $coreProperties->getSiteTitle();
+$apixBase		= $this->context->apixBase;
+$baseUrl		= $this->context->baseUrl;
+$reviews		= $this->context->reviews;
 
 // View Templates
 $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
 $themeTemplates		= '@themes/admin/views/templates';
 ?>
 <?= DataGrid::widget([
-	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => 'create', 'data' => [ ],
-	'title' => 'Products', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'dataProvider' => $dataProvider, 'baseUrl' => $baseUrl, 'add' => true, 'addUrl' => 'create', 'data' => [ 'reviews' => $reviews ],
+	'title' => $this->title, 'options' => [ 'class' => 'grid-data grid-data-admin' ],
 	'searchColumns' => [ 'name' => 'Name', 'title' => 'Title', 'desc' => 'Description', 'summary' => 'Summary', 'content' => 'Content' ],
 	'sortColumns' => [
 		'name' => 'Name', 'title' => 'Title', 'status' => 'Status', 'template' => 'Template',
@@ -48,7 +52,7 @@ $themeTemplates		= '@themes/admin/views/templates';
 		'sold' => [ 'title' => 'Sold', 'type' => 'range' ]
 	],
 	'bulkPopup' => 'popup-grid-bulk', 'bulkActions' => [
-		'status' => [ 'confirmed' => 'Confirm', 'rejected' => 'Reject', 'active' => 'Activate', 'frozen' => 'Freeze', 'blocked' => 'Block', 'terminated' => 'Terminate' ],
+		'status' => [ 'confirm' => 'Confirm', 'approve' => 'Approve', 'reject' => 'Reject', 'activate' => 'Activate', 'freeze' => 'Freeze', 'block' => 'Block', 'terminate' => 'Terminate' ],
 		'model' => [ 'pinned' => 'Pinned', 'featured' => 'Featured', 'delete' => 'Delete' ]
 	],
 	'header' => false, 'footer' => true,
@@ -81,11 +85,11 @@ $themeTemplates		= '@themes/admin/views/templates';
 <?= Popup::widget([
 	'title' => 'Apply Bulk Action', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Product', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/bulk" ]
-]) ?>
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "$apixBase/bulk" ]
+])?>
 
 <?= Popup::widget([
-	'title' => 'Delete Product', 'size' => 'medium',
+	'title' => "Delete $title", 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/delete?id=" ]
-]) ?>
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "$apixBase/delete?id=" ]
+])?>

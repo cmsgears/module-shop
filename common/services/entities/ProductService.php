@@ -17,15 +17,13 @@ use yii\helpers\ArrayHelper;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
+use cmsgears\cms\common\models\resources\ModelContent;
+
 use cmsgears\core\common\services\interfaces\resources\IFileService;
 use cmsgears\shop\common\services\interfaces\entities\IProductService;
 use cmsgears\shop\common\services\interfaces\resources\IProductMetaService;
 
-use cmsgears\cms\common\services\base\ContentService;
-
-use cmsgears\core\common\services\traits\base\FeaturedTrait;
 use cmsgears\core\common\services\traits\base\SimilarTrait;
-use cmsgears\core\common\services\traits\resources\VisualTrait;
 use cmsgears\core\common\services\traits\mappers\CategoryTrait;
 
 /**
@@ -33,7 +31,7 @@ use cmsgears\core\common\services\traits\mappers\CategoryTrait;
  *
  * @since 1.0.0
  */
-class ProductService extends ContentService implements IProductService {
+class ProductService extends \cmsgears\cms\common\services\base\ContentService implements IProductService {
 
 	// Variables ---------------------------------------------------
 
@@ -43,9 +41,9 @@ class ProductService extends ContentService implements IProductService {
 
 	// Public -----------------
 
-	public static $modelClass	= '\cmsgears\shop\common\models\entities\Product';
+	public static $modelClass = '\cmsgears\shop\common\models\entities\Product';
 
-	public static $parentType	= ShopGlobal::TYPE_PRODUCT;
+	public static $parentType = ShopGlobal::TYPE_PRODUCT;
 
 	// Protected --------------
 
@@ -63,9 +61,7 @@ class ProductService extends ContentService implements IProductService {
 	// Traits ------------------------------------------------------
 
 	use CategoryTrait;
-	use FeaturedTrait;
 	use SimilarTrait;
-	use VisualTrait;
 
 	// Constructor and Initialisation ------------------------------
 
@@ -98,7 +94,7 @@ class ProductService extends ContentService implements IProductService {
 		$modelClass	= static::$modelClass;
 		$modelTable	= $this->getModelTable();
 
-		$contentTable	= Yii::$app->factory->get( 'modelContentService' )->getModelTable();
+		//$contentTable	= Yii::$app->factory->get( 'modelContentService' )->getModelTable();
 		$templateTable	= Yii::$app->factory->get( 'templateService' )->getModelTable();
 
 		$categoryTable	= Yii::$app->factory->get( 'categoryService' )->getModelTable();
@@ -121,7 +117,8 @@ class ProductService extends ContentService implements IProductService {
 					'label' => 'Template',
 				],
 				'name', 'slug', 'type', 'icon', 'title', 'status', 'visibility',
-				'order', 'price', 'discount', 'total', 'track', 'stock', 'sold', 'shop', 'pinned', 'featured',
+				'order', 'price', 'discount', 'total', 'track', 'stock', 'sold',
+				'shop', 'pinned', 'featured',
 				'cdate' => [
 					'asc' => [ "$modelTable.createdAt" => SORT_ASC ],
 					'desc' => [ "$modelTable.createdAt" => SORT_DESC ],
@@ -135,8 +132,8 @@ class ProductService extends ContentService implements IProductService {
 					'label' => 'Updated At'
 				],
 				'pdate' => [
-					'asc' => [ "$contentTable.publishedAt" => SORT_ASC ],
-					'desc' => [ "$contentTable.publishedAt" => SORT_DESC ],
+					'asc' => [ "modelContent.publishedAt" => SORT_ASC ],
+					'desc' => [ "modelContent.publishedAt" => SORT_DESC ],
 					'default' => SORT_DESC,
 					'label' => 'Published At'
 				],
@@ -173,10 +170,6 @@ class ProductService extends ContentService implements IProductService {
 		// Query ------------
 
 		// Filters ----------
-
-		$softDelete = $modelClass::STATUS_DELETED;
-
-		$config[ 'conditions' ][] = "$modelTable.status!=$softDelete";
 
 		// Params
 		$type	= Yii::$app->request->getQueryParam( 'type' );
@@ -278,24 +271,18 @@ class ProductService extends ContentService implements IProductService {
 
 	public function create( $model, $config = [] ) {
 
-		$modelClass = static::$modelClass;
-
 		$avatar = isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
+
+		$modelClass = static::$modelClass;
 
 		// Save Files
 		$this->fileService->saveFiles( $model, [ 'avatarId' => $avatar ] );
 
 		// Default Private
-		if( !isset( $model->visibility ) ) {
-
-			$model->visibility = $modelClass::VISIBILITY_PRIVATE;
-		}
+		$model->visibility = $model->visibility ?? $modelClass::VISIBILITY_PRIVATE;
 
 		// Default New
-		if( !isset( $model->status ) ) {
-
-			$model->status = $modelClass::STATUS_NEW;
-		}
+		$model->status = $model->status ?? $modelClass::STATUS_NEW;
 
 		$model->total = $model->getTotalPrice();
 
@@ -304,15 +291,22 @@ class ProductService extends ContentService implements IProductService {
 
 	public function add( $model, $config = [] ) {
 
+		//$admin	= isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+		//$mail	= isset( $config[ 'mail' ] ) ? $config[ 'mail' ] : true;
+
 		return $this->register( $model, $config );
 	}
 
 	public function register( $model, $config = [] ) {
 
-		$content 	= $config[ 'content' ];
-		$banner 	= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
-		$video 		= isset( $config[ 'video' ] ) ? $config[ 'video' ] : null;
-		$gallery	= isset( $config[ 'gallery' ] ) ? $config[ 'gallery' ] : null;
+		//$notify	= isset( $config[ 'notify' ] ) ? $config[ 'notify' ] : true;
+		//$mail	= isset( $config[ 'mail' ] ) ? $config[ 'mail' ] : true;
+
+		$content		= isset( $config[ 'content' ] ) ? $config[ 'content' ] : new ModelContent();
+		$banner			= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
+		$video			= isset( $config[ 'video' ] ) ? $config[ 'video' ] : null;
+		$gallery		= isset( $config[ 'gallery' ] ) ? $config[ 'gallery' ] : null;
+		$mappingsType	= isset( $config[ 'mappingsType' ] ) ? $config[ 'mappingsType' ] : static::$parentType;
 
 		$galleryService			= Yii::$app->factory->get( 'galleryService' );
 		$modelContentService	= Yii::$app->factory->get( 'modelContentService' );
@@ -328,15 +322,23 @@ class ProductService extends ContentService implements IProductService {
 			// Create Product
 			$model = $this->create( $model, $config );
 
-			// Create gallery
-			if( $gallery ) {
+			// Create Gallery
+			if( isset( $gallery ) ) {
 
-				$gallery->siteId	= empty( $gallery->siteId ) ? $model->siteId : $gallery->siteId;
-				$gallery->name		= empty( $gallery->name ) ? $model->name : $gallery->name;
-				$gallery->type		= ShopGlobal::TYPE_PRODUCT;
+				$gallery->type		= static::$parentType;
 				$gallery->status	= $galleryClass::STATUS_ACTIVE;
+				$gallery->siteId	= Yii::$app->core->siteId;
+				$gallery->name		= empty( $gallery->name ) ? $model->name : $gallery->name;
 
 				$gallery = $galleryService->create( $gallery );
+			}
+			else {
+
+				$gallery = $galleryService->createByParams([
+					'type' => static::$parentType, 'status' => $galleryClass::STATUS_ACTIVE,
+					'name' => $model->name, 'title' => $model->displayName,
+					'siteId' => Yii::$app->core->siteId
+				]);
 			}
 
 			// Create and attach model content
@@ -347,10 +349,10 @@ class ProductService extends ContentService implements IProductService {
 			]);
 
 			// Bind categories
-			$modelCategoryService->bindCategories( $model->id, ShopGlobal::TYPE_PRODUCT, [ 'binder' => 'CategoryBinder' ] );
+			$modelCategoryService->bindCategories( $model->id, $mappingsType, [ 'binder' => 'CategoryBinder' ] );
 
 			// Bind tags
-			$modelTagService->bindTags( $model->id, ShopGlobal::TYPE_PRODUCT, [ 'binder' => 'TagBinder' ] );
+			$modelTagService->bindTags( $model->id, $mappingsType, [ 'binder' => 'TagBinder' ] );
 
 			$transaction->commit();
 
@@ -368,17 +370,18 @@ class ProductService extends ContentService implements IProductService {
 
 	public function update( $model, $config = [] ) {
 
-		$content 	= isset( $config[ 'content' ] ) ? $config[ 'content' ] : $model->modelContent;
-		$admin 		= isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
-		$avatar 	= isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
-		$banner 	= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
-		$video 		= isset( $config[ 'video' ] ) ? $config[ 'video' ] : null;
-		$gallery	= isset( $config[ 'gallery' ] ) ? $config[ 'gallery' ] : null;
+		$admin = isset( $config[ 'admin' ] ) ? $config[ 'admin' ] : false;
+
+		$content		= isset( $config[ 'content' ] ) ? $config[ 'content' ] : $model->modelContent;
+		$avatar			= isset( $config[ 'avatar' ] ) ? $config[ 'avatar' ] : null;
+		$banner			= isset( $config[ 'banner' ] ) ? $config[ 'banner' ] : null;
+		$video			= isset( $config[ 'video' ] ) ? $config[ 'video' ] : null;
+		$gallery		= isset( $config[ 'gallery' ] ) ? $config[ 'gallery' ] : null;
+		$mappingsType	= isset( $config[ 'mappingsType' ] ) ? $config[ 'mappingsType' ] : static::$parentType;
 
 		$attributes	= isset( $config[ 'attributes' ] ) ? $config[ 'attributes' ] : [
 			'primaryUnitId', 'purchasingUnitId', 'quantityUnitId', 'weightUnitId', 'volumeUnitId', 'lengthUnitId',
-			'avatarId', 'name', 'slug', 'icon',
-			'title', 'description', 'visibility', 'content',
+			'avatarId', 'name', 'slug', 'icon', 'texture', 'title', 'description', 'visibility', 'content',
 			'primary', 'purchase', 'quantity', 'weight', 'volume', 'length', 'width', 'height', 'radius',
 			'sku', 'code', 'shop', 'shopNotes', 'price', 'discount', 'total', 'startDate', 'endDate',
 			'track', 'stock', 'sold', 'warn'
@@ -402,9 +405,12 @@ class ProductService extends ContentService implements IProductService {
 		}
 
 		// Update model content
-		$modelContentService->update( $content, [
-			'publish' => true, 'banner' => $banner, 'video' => $video, 'gallery' => $gallery
-		]);
+		if( isset( $content ) ) {
+
+			$modelContentService->update( $content, [
+				'publish' => true, 'banner' => $banner, 'video' => $video, 'gallery' => $gallery
+			]);
+		}
 
 		// Update total price
 		$model->total = $model->getTotalPrice();
@@ -418,48 +424,51 @@ class ProductService extends ContentService implements IProductService {
 
 	public function delete( $model, $config = [] ) {
 
-		$transaction = Yii::$app->db->beginTransaction();
+		$config[ 'hard' ] = $config[ 'hard' ] ?? !Yii::$app->core->isSoftDelete();
 
-		try {
+		if( $config[ 'hard' ] ) {
 
-			// Delete metas
-			$this->metaService->deleteByModelId( $model->id );
+			$transaction = Yii::$app->db->beginTransaction();
 
-			// Delete files
-			$this->fileService->deleteFiles( [ $model->avatar ] );
-			$this->fileService->deleteFiles( $model->files );
+			try {
 
-			// Delete Model Content
-			Yii::$app->factory->get( 'modelContentService' )->delete( $model->modelContent );
+				// Delete metas
+				$this->metaService->deleteByModelId( $model->id );
 
-			// Delete Category Mappings
-			Yii::$app->factory->get( 'modelCategoryService' )->deleteByParent( $model->id, static::$parentType );
+				// Delete files
+				$this->fileService->delete( $model->avatar );
+				$this->fileService->deleteMultiple( $model->files );
 
-			// Delete Tag Mappings
-			Yii::$app->factory->get( 'modelTagService' )->deleteByParent( $model->id, static::$parentType );
+				// Delete Model Content, Gallery, Banner, Video
+				Yii::$app->factory->get( 'modelContentService' )->delete( $model->modelContent );
 
-			// Delete Option Mappings
-			Yii::$app->factory->get( 'modelOptionService' )->deleteByParent( $model->id, static::$parentType );
+				// Delete Category Mappings
+				Yii::$app->factory->get( 'modelCategoryService' )->deleteByParent( $model->id, static::$parentType );
 
-			// Delete Comments
-			Yii::$app->factory->get( 'modelCommentService' )->deleteByParent( $model->id, static::$parentType );
+				// Delete Tag Mappings
+				Yii::$app->factory->get( 'modelTagService' )->deleteByParent( $model->id, static::$parentType );
 
-			// Delete Followers
-			Yii::$app->factory->get( 'productFollowerService' )->deleteByModelId( $model->id );
+				// Delete Option Mappings
+				Yii::$app->factory->get( 'modelOptionService' )->deleteByParent( $model->id, static::$parentType );
 
-			$transaction->commit();
+				// Delete Comments
+				Yii::$app->factory->get( 'modelCommentService' )->deleteByParent( $model->id, static::$parentType );
 
-			// Delete model
-			return parent::delete( $model, $config );
+				// Delete Followers
+				Yii::$app->factory->get( 'productFollowerService' )->deleteByModelId( $model->id );
+
+				$transaction->commit();
+			}
+			catch( Exception $e ) {
+
+				$transaction->rollBack();
+
+				throw new Exception( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_DEPENDENCY ) );
+			}
 		}
-		catch( Exception $e ) {
 
-			$transaction->rollBack();
-
-			throw new Exception( Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_DEPENDENCY )  );
-		}
-
-		return false;
+		// Delete model
+		return parent::delete( $model, $config );
 	}
 
 	// Bulk ---------------

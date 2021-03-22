@@ -16,14 +16,12 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\base\GalleryController as BaseGalleryController;
-
 /**
- * GalleryController provide actions specific to product gallery.
+ * FileController provides actions specific to product files.
  *
  * @since 1.0.0
  */
-class GalleryController extends BaseGalleryController {
+class FileController extends \cmsgears\core\admin\controllers\base\FileController {
 
 	// Variables ---------------------------------------------------
 
@@ -45,10 +43,8 @@ class GalleryController extends BaseGalleryController {
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
 		// Config
-		$this->type			= ShopGlobal::TYPE_PRODUCT;
-		$this->apixBase		= 'shop/gallery';
-		$this->parentUrl	= '/shop/product/all';
-		$this->modelContent	= true;
+		$this->title	= 'Product File';
+		$this->apixBase	= 'shop/product/file';
 
 		// Services
 		$this->parentService = Yii::$app->factory->get( 'productService' );
@@ -57,14 +53,23 @@ class GalleryController extends BaseGalleryController {
 		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product' ];
 
 		// Return Url
-		$this->returnUrl = Url::previous( 'products' );
-		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all/' ], true );
+		$this->returnUrl = Url::previous( 'product-files' );
+		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/file/all' ], true );
+
+		// All Url
+		$allUrl = Url::previous( 'products' );
+		$allUrl = isset( $allUrl ) ? $allUrl : Url::toRoute( [ '/shop/product/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  $this->returnUrl ] ],
-			'direct' => [ [ 'label' => 'Gallery' ] ],
-			'items' => [ [ 'label' => 'Gallery', 'url' => $this->returnUrl ], [ 'label' => 'Items' ] ],
+			'base' => [
+				[ 'label' => 'Home', 'url' => Url::toRoute( '/dashboard' ) ],
+				[ 'label' => 'Products', 'url' =>  $allUrl ]
+			],
+			'all' => [ [ 'label' => 'Product Files' ] ],
+			'create' => [ [ 'label' => 'Product Files', 'url' => $this->returnUrl ], [ 'label' => 'Create' ] ],
+			'update' => [ [ 'label' => 'Product Files', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Product Files', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 
@@ -82,6 +87,13 @@ class GalleryController extends BaseGalleryController {
 
 	// CMG parent classes --------------------
 
-	// GalleryController ---------------------
+	// FileController ------------------------
+
+	public function actionAll( $pid ) {
+
+		Url::remember( Yii::$app->request->getUrl(), 'product-files' );
+
+		return parent::actionAll( $pid );
+	}
 
 }

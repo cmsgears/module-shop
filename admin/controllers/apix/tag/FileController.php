@@ -7,19 +7,20 @@
  * @copyright Copyright (c) 2015 VulpineCode Technologies Pvt. Ltd.
  */
 
-namespace cmsgears\shop\admin\controllers\apix;
+namespace cmsgears\shop\admin\controllers\apix\tag;
+
+// Yii Imports
+use Yii;
 
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\admin\controllers\apix\CategoryController as BaseCategoryController;
-
 /**
- * CategoryController provides actions specific to product categories.
+ * FileController provides actions specific to page files.
  *
  * @since 1.0.0
  */
-class CategoryController extends BaseCategoryController {
+class FileController extends \cmsgears\core\admin\controllers\apix\base\FileController {
 
 	// Variables ---------------------------------------------------
 
@@ -38,7 +39,10 @@ class CategoryController extends BaseCategoryController {
 		parent::init();
 
 		// Permission
-		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
+		$this->crudPermission = ShopGlobal::PERM_SHOP_ADMIN;
+
+		// Services
+		$this->parentService = Yii::$app->factory->get( 'tagService' );
 	}
 
 	// Instance methods --------------------------------------------
@@ -55,6 +59,6 @@ class CategoryController extends BaseCategoryController {
 
 	// CMG parent classes --------------------
 
-	// CategoryController ---------------------
+	// FileController ------------------------
 
 }

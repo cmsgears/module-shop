@@ -16,14 +16,12 @@ use yii\helpers\Url;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\cms\admin\controllers\base\CategoryController as BaseCategoryController;
-
 /**
  * CategoryController provides actions specific to product categories.
  *
  * @since 1.0.0
  */
-class CategoryController extends BaseCategoryController {
+class CategoryController extends \cmsgears\cms\admin\controllers\base\CategoryController {
 
 	// Variables ---------------------------------------------------
 
@@ -45,24 +43,32 @@ class CategoryController extends BaseCategoryController {
 		$this->crudPermission = ShopGlobal::PERM_PRODUCT_ADMIN;
 
 		// Config
+		$this->title		= 'Product';
 		$this->type			= ShopGlobal::TYPE_PRODUCT;
 		$this->templateType	= ShopGlobal::TYPE_PRODUCT;
-		$this->apixBase		= 'shop/category';
+		$this->apixBase		= 'shop/product/category';
+		$this->parentPath	= '/shop/product/category';
 
 		// Sidebar
 		$this->sidebar = [ 'parent' => 'sidebar-shop', 'child' => 'product-category' ];
 
 		// Return Url
-		$this->returnUrl = Url::previous( 'categories' );
+		$this->returnUrl = Url::previous( 'product-categories' );
 		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/category/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs	= [
-			'base' => [ [ 'label' => 'Products', 'url' =>  [ '/shop/product/all' ] ] ],
-			'all' => [ [ 'label' => 'Categories' ] ],
-			'create' => [ [ 'label' => 'Categories', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
-			'update' => [ [ 'label' => 'Categories', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Categories', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
+			'base' => [
+				[ 'label' => 'Home', 'url' => Url::toRoute( '/dashboard' ) ]
+			],
+			'all' => [ [ 'label' => 'Product Categories' ] ],
+			'create' => [ [ 'label' => 'Product Categories', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Product Categories', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Product Categories', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ],
+			'gallery' => [ [ 'label' => 'Product Categories', 'url' => $this->returnUrl ], [ 'label' => 'Gallery' ] ],
+			'data' => [ [ 'label' => 'Product Categories', 'url' => $this->returnUrl ], [ 'label' => 'Data' ] ],
+			'config' => [ [ 'label' => 'Product Categories', 'url' => $this->returnUrl ], [ 'label' => 'Config' ] ],
+			'settings' => [ [ 'label' => 'Product Categories', 'url' => $this->returnUrl ], [ 'label' => 'Settings' ] ]
 		];
 	}
 
@@ -84,7 +90,7 @@ class CategoryController extends BaseCategoryController {
 
 	public function actionAll( $config = [] ) {
 
-		Url::remember( Yii::$app->request->getUrl(), 'categories' );
+		Url::remember( Yii::$app->request->getUrl(), 'product-categories' );
 
 		return parent::actionAll( $config );
 	}

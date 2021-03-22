@@ -18,14 +18,12 @@ use cmsgears\shop\common\config\ShopGlobal;
 
 use cmsgears\core\common\models\resources\ModelComment;
 
-use cmsgears\core\admin\controllers\base\CommentController as BaseCommentController;
-
 /**
  * ReviewController provides actions specific to product comments.
  *
  * @since 1.0.0
  */
-class ReviewController extends BaseCommentController {
+class ReviewController extends \cmsgears\core\admin\controllers\base\CommentController {
 
 	// Variables ---------------------------------------------------
 
@@ -49,7 +47,8 @@ class ReviewController extends BaseCommentController {
 		// Config
 		$this->parentType	= ShopGlobal::TYPE_PRODUCT;
 		$this->commentType	= ModelComment::TYPE_COMMENT;
-		$this->apixBase		= 'shop/review';
+		$this->apixBase		= 'shop/product/review';
+		$this->title		= 'Review';
 		$this->parentUrl	= '/shop/product/update?id=';
 		$this->urlKey		= 'product-reviews';
 
@@ -63,17 +62,17 @@ class ReviewController extends BaseCommentController {
 		$this->returnUrl = Url::previous( $this->urlKey );
 		$this->returnUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/review/all' ], true );
 
-		// Product Url
-		$productUrl = Url::previous( 'products' );
-		$productUrl = isset( $this->returnUrl ) ? $this->returnUrl : Url::toRoute( [ '/shop/product/all' ], true );
+		// All Url
+		$allUrl = Url::previous( 'products' );
+		$allUrl = isset( $allUrl ) ? $allUrl : Url::toRoute( [ '/shop/product/all' ], true );
 
 		// Breadcrumbs
 		$this->breadcrumbs = [
-			'base' => [ [ 'label' => 'Products', 'url' =>  $productUrl ] ],
-			'all' => [ [ 'label' => 'Reviews' ] ],
-			'create' => [ [ 'label' => 'Reviews', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
-			'update' => [ [ 'label' => 'Reviews', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
-			'delete' => [ [ 'label' => 'Reviews', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
+			'base' => [ [ 'label' => 'Products', 'url' =>  $allUrl ] ],
+			'all' => [ [ 'label' => 'Product Reviews' ] ],
+			'create' => [ [ 'label' => 'Product Reviews', 'url' => $this->returnUrl ], [ 'label' => 'Add' ] ],
+			'update' => [ [ 'label' => 'Product Reviews', 'url' => $this->returnUrl ], [ 'label' => 'Update' ] ],
+			'delete' => [ [ 'label' => 'Product Reviews', 'url' => $this->returnUrl ], [ 'label' => 'Delete' ] ]
 		];
 	}
 

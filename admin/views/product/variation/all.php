@@ -5,15 +5,18 @@ use cmsgears\widgets\popup\Popup;
 use cmsgears\widgets\grid\DataGrid;
 
 $coreProperties = $this->context->getCoreProperties();
-$this->title	= 'Product Variations | ' . $coreProperties->getSiteTitle();
+$title			= $this->context->title;
+$this->title	= "{$title}s | " . $coreProperties->getSiteTitle();
+$apixBase		= $this->context->apixBase;
+$baseUrl		= $this->context->baseUrl;
 
 // View Templates
 $moduleTemplates	= '@cmsgears/module-shop/admin/views/templates';
 $themeTemplates		= '@themes/admin/views/templates';
 ?>
 <?= DataGrid::widget([
-	'dataProvider' => $dataProvider, 'add' => true, 'addUrl' => "create?pid={$product->id}", 'data' => [ 'product' => $product ],
-	'title' => 'Product Variations', 'options' => [ 'class' => 'grid-data grid-data-admin' ],
+	'dataProvider' => $dataProvider, 'baseUrl' => $baseUrl, 'add' => true, 'addUrl' => "create?pid={$product->id}", 'data' => [ 'product' => $product ],
+	'title' => $this->title, 'options' => [ 'class' => 'grid-data grid-data-admin' ],
 	'searchColumns' => [ 'name' => 'Name', 'title' => 'Title', 'desc' => 'Description', 'content' => 'Content' ],
 	'sortColumns' => [
 		'name' => 'Name', 'type' => 'Type', 'title' => 'Title', 'template' => 'Template',
@@ -69,11 +72,11 @@ $themeTemplates		= '@themes/admin/views/templates';
 <?= Popup::widget([
 	'title' => 'Apply Bulk Action', 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'bulk',
-	'data' => [ 'model' => 'Product Variation', 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/variation/bulk" ]
-]) ?>
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'bulk', 'url' => "shop/product/variation/bulk" ]
+])?>
 
 <?= Popup::widget([
-	'title' => 'Delete Product Variation', 'size' => 'medium',
+	'title' => "Delete $title", 'size' => 'medium',
 	'templateDir' => Yii::getAlias( "$themeTemplates/widget/popup/grid" ), 'template' => 'delete',
-	'data' => [ 'model' => 'Product Variation', 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/variation/delete?id=" ]
-]) ?>
+	'data' => [ 'model' => $title, 'app' => 'grid', 'controller' => 'crud', 'action' => 'delete', 'url' => "shop/product/variation/delete?id=" ]
+])?>
