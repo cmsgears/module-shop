@@ -67,7 +67,7 @@ class Factory extends \cmsgears\core\common\base\Component {
 	 */
 	public function registerResourceServices() {
 
-		$factory	= Yii::$app->factory->getContainer();
+		$factory = Yii::$app->factory->getContainer();
 
 		$factory->set( 'cmsgears\shop\common\services\interfaces\resources\IProductMetaService', 'cmsgears\shop\common\services\resources\ProductMetaService' );
 		$factory->set( 'cmsgears\shop\common\services\interfaces\resources\IProductVariationService', 'cmsgears\shop\common\services\resources\ProductVariationService' );

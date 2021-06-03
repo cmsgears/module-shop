@@ -9,15 +9,12 @@
 
 namespace cmsgears\shop\common\components;
 
-// CMG Imports
-use cmsgears\core\common\base\Component;
-
 /**
  * Shop component initialises the Shop Module.
  *
  * @since 1.0.0
  */
-class Shop extends Component {
+class Shop extends \cmsgears\core\common\base\Component {
 
 	// Global -----------------
 

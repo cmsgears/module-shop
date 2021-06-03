@@ -10,25 +10,28 @@
 namespace cmsgears\shop\common\models\mappers;
 
 // CMG Imports
-use cmsgears\core\common\models\base\Follower;
 use cmsgears\shop\common\models\base\ShopTables;
 use cmsgears\shop\common\models\entities\Product;
 
 /**
  * ProductFollower represents interest of user in page or post.
  *
- * @property int $id
- * @property int $modelId
- * @property int $parentId
- * @property string $type
+ * @property integer $id
+ * @property integer $modelId
+ * @property integer $parentId
+ * @property integer $type
+ * @property integer $order
  * @property boolean $active
- * @property int $createdAt
- * @property int $modifiedAt
+ * @property boolean $pinned
+ * @property boolean $featured
+ * @property boolean $popular
+ * @property integer $createdAt
+ * @property integer $modifiedAt
  * @property string data
  *
  * @since 1.0.0
  */
-class ProductFollower extends Follower {
+class ProductFollower extends \cmsgears\core\common\models\base\Follower {
 
 	// Variables ---------------------------------------------------
 

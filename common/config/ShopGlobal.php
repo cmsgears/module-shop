@@ -22,7 +22,8 @@ class ShopGlobal {
 
 	// System Pages ---------------------------------------------------
 
-	const PAGE_SEARCH_PRODUCTS = 'search-products';
+	const PAGE_SEARCH_PRODUCTS	= 'search-products';
+	const PAGE_SEARCH_OFFERS	= 'search-offers';
 
 	const PAGE_CART		= 'cart';
 	const PAGE_CHECKOUT	= 'checkout';
@@ -45,10 +46,11 @@ class ShopGlobal {
 	const TEMPLATE_CHECKOUT	= 'checkout';
 	const TEMPLATE_PAYMENT	= 'payment';
 
-	const TEMPLATE_SHOP		= 'shop';
-	const TEMPLATE_OFFER	= 'offer';
+	const TEMPLATE_SHOP		= 'shop'; // Products Page
+	const TEMPLATE_OFFER	= 'offer'; // Offers Page
 
 	const TPL_NOTIFY_PRODUCT_NEW = 'product-new';
+	const TPL_NOTIFY_OFFER_NEW = 'offer-new';
 
 	// Config ----------------------------------------------------------
 
@@ -78,6 +80,21 @@ class ShopGlobal {
 	const PERM_PRODUCT_IMPORT	= 'import-products';
 	const PERM_PRODUCT_EXPORT	= 'export-products';
 
+	// Offer
+	const PERM_OFFER_ADMIN	= 'admin-offers';
+
+	const PERM_OFFER_MANAGE	= 'manage-offers';
+	const PERM_OFFER_AUTHOR	= 'offer-author';
+
+	const PERM_OFFER_VIEW		= 'view-offers';
+	const PERM_OFFER_ADD		= 'add-offer';
+	const PERM_OFFER_UPDATE		= 'update-offer';
+	const PERM_OFFER_DELETE		= 'delete-offer';
+	const PERM_OFFER_APPROVE	= 'approve-offer';
+	const PERM_OFFER_PRINT		= 'print-offer';
+	const PERM_OFFER_IMPORT		= 'import-offers';
+	const PERM_OFFER_EXPORT		= 'export-offers';
+
 	// Model Attributes ------------------------------------------------
 
 	// Default Maps ----------------------------------------------------
@@ -93,6 +110,8 @@ class ShopGlobal {
 	const FIELD_ADDON_PRODUCT		= 'addonProductField';
 	const FIELD_PRODUCT_VARIATION	= 'productVariationField';
 
-	const FIELD_SHOP	= 'shopField';
+	const FIELD_OFFER = 'offerField';
+
+	const FIELD_SHOP = 'shopField';
 
 }

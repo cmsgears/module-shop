@@ -12,14 +12,12 @@ namespace cmsgears\shop\common\services\mappers;
 // CMG Imports
 use cmsgears\shop\common\services\interfaces\mappers\IProductFollowerService;
 
-use cmsgears\core\common\services\base\FollowerService;
-
 /**
  * ProductFollowerService provide service methods of product followers.
  *
  * @since 1.0.0
  */
-class ProductFollowerService extends FollowerService implements IProductFollowerService {
+class ProductFollowerService extends \cmsgears\core\common\services\base\FollowerService implements IProductFollowerService {
 
 	// Variables ---------------------------------------------------
 

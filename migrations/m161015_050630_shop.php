@@ -66,6 +66,7 @@ class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 		$this->createTable( $this->prefix . 'shop_product', [
 			'id' => $this->bigPrimaryKey( 20 ),
 			'siteId' => $this->bigInteger( 20 )->notNull(),
+			'userId' => $this->bigInteger( 20 ),
 			'avatarId' => $this->bigInteger( 20 ),
 			'primaryUnitId' => $this->bigInteger( 20 ),
 			'purchasingUnitId' => $this->bigInteger( 20 ),
@@ -77,7 +78,7 @@ class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 			'modifiedBy' => $this->bigInteger( 20 ),
 			'name' => $this->string( Yii::$app->core->xLargeText )->notNull(),
 			'slug' => $this->string( Yii::$app->core->xxLargeText )->notNull(),
-			'type' => $this->string( Yii::$app->core->mediumText )->notNull()->defaultValue( CoreGlobal::TYPE_DEFAULT ),
+			'type' => $this->string( Yii::$app->core->mediumText )->notNull(),
 			'icon' => $this->string( Yii::$app->core->largeText )->defaultValue( null ),
 			'texture' => $this->string( Yii::$app->core->largeText )->defaultValue( null ),
 			'title' => $this->string( Yii::$app->core->xxxLargeText )->defaultValue( null ),
@@ -99,13 +100,15 @@ class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 			'width' => $this->float()->defaultValue( 0 ),
 			'height' => $this->float()->defaultValue( 0 ),
 			'radius' => $this->float()->defaultValue( 0 ),
-			'track' => $this->boolean()->defaultValue( false ),
+			'inventory' => $this->boolean()->defaultValue( false ),
 			'stock' => $this->float()->defaultValue( 0 ),
 			'sold' => $this->float()->defaultValue( 0 ),
 			'warn' => $this->float()->defaultValue( 0 ),
+			'cart' => $this->boolean()->notNull()->defaultValue( false ),
 			'shop' => $this->boolean()->notNull()->defaultValue( false ),
 			'pinned' => $this->boolean()->notNull()->defaultValue( false ),
 			'featured' => $this->boolean()->notNull()->defaultValue( false ),
+			'popular' => $this->boolean()->notNull()->defaultValue( false ),
 			'reviews' => $this->boolean()->notNull()->defaultValue( false ),
 			'startDate' => $this->date()->defaultValue( null ),
 			'endDate' => $this->date()->defaultValue( null ),
@@ -121,6 +124,7 @@ class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 
 		// Indexes
 		$this->createIndex( 'idx_' . $this->prefix . 'product_site', $this->prefix . 'shop_product', 'siteId' );
+		$this->createIndex( 'idx_' . $this->prefix . 'product_user', $this->prefix . 'shop_product', 'userId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_avatar', $this->prefix . 'shop_product', 'avatarId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_prim', $this->prefix . 'shop_product', 'primaryUnitId' );
 		$this->createIndex( 'idx_' . $this->prefix . 'product_pur', $this->prefix . 'shop_product', 'purchasingUnitId' );
@@ -198,7 +202,7 @@ class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 			'total' => $this->float()->defaultValue( 0 ),
 			'quantity' => $this->float()->defaultValue( 0 ),
 			'free' => $this->float()->defaultValue( 0 ),
-			'track' => $this->boolean()->defaultValue( false ),
+			'inventory' => $this->boolean()->defaultValue( false ),
 			'stock' => $this->float()->defaultValue( 0 ),
 			'sold' => $this->float()->defaultValue( 0 ),
 			'warn' => $this->float()->defaultValue( 0 ),
@@ -230,6 +234,7 @@ class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 
 		// Product
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_site', $this->prefix . 'shop_product', 'siteId', $this->prefix . 'core_site', 'id', 'CASCADE' );
+		$this->addForeignKey( 'fk_' . $this->prefix . 'product_user', $this->prefix . 'shop_product', 'userId', $this->prefix . 'core_user', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_avatar', $this->prefix . 'shop_product', 'avatarId', $this->prefix . 'core_file', 'id', 'SET NULL' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_prim', $this->prefix . 'shop_product', 'primaryUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
 		$this->addForeignKey( 'fk_' . $this->prefix . 'product_pur', $this->prefix . 'shop_product', 'purchasingUnitId', $this->prefix . 'cart_uom', 'id', 'RESTRICT' );
@@ -277,6 +282,7 @@ class m161015_050630_shop extends \cmsgears\core\common\base\Migration {
 
 		// Product
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_site', $this->prefix . 'shop_product' );
+		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_user', $this->prefix . 'shop_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_avatar', $this->prefix . 'shop_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_prim', $this->prefix . 'shop_product' );
 		$this->dropForeignKey( 'fk_' . $this->prefix . 'product_pur', $this->prefix . 'shop_product' );

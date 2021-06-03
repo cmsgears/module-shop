@@ -81,6 +81,11 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Resour
 
 	public function getPage( $config = [] ) {
 
+		$searchParam	= $config[ 'search-param' ] ?? 'keywords';
+		$searchColParam	= $config[ 'search-col-param' ] ?? 'search';
+
+		$defaultSort = isset( $config[ 'defaultSort' ] ) ? $config[ 'defaultSort' ] : [ 'id' => SORT_DESC ];
+
 		$modelClass	= static::$modelClass;
 		$modelTable	= $this->getModelTable();
 
@@ -127,7 +132,7 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Resour
 					'default' => SORT_DESC,
 					'label' => 'Discount Type'
 				],
-				'price', 'discount', 'total', 'quantity', 'track', 'stock', 'sold', 'active',
+				'price', 'discount', 'total', 'quantity', 'inventory', 'stock', 'sold', 'active',
 				'sdate' => [
 					'asc' => [ "$modelTable.startDate" => SORT_ASC ],
 					'desc' => [ "$modelTable.startDate" => SORT_DESC ],
@@ -172,9 +177,9 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Resour
 		$filter	= Yii::$app->request->getQueryParam( 'model' );
 
 		// Filter - Type
-		if( isset( $type ) ) {
+		if( isset( $type ) && empty( $config[ 'conditions' ][ "$modelTable.type" ] ) && isset( $modelClass::$urlRevTypeMap[ $status ] ) ) {
 
-			$config[ 'conditions' ][ "$modelTable.type" ] = $type;
+			$config[ 'conditions' ][ "$modelTable.type" ] = $modelClass::$urlRevTypeMap[ $status ];
 		}
 
 		// Filter - Model
@@ -199,26 +204,41 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Resour
 
 		// Searching --------
 
-		$searchCol = Yii::$app->request->getQueryParam( 'search' );
+		$searchCol		= Yii::$app->request->getQueryParam( $searchColParam );
+		$keywordsCol	= Yii::$app->request->getQueryParam( $searchParam );
+
+		$search = [
+			'name' => "$modelTable.name",
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description",
+			'content' => "$modelTable.content"
+		];
 
 		if( isset( $searchCol ) ) {
 
-			$search = [
-				'name' => "$modelTable.name", 'title' => "$modelTable.title", 'desc' => "$modelTable.description",
-				'content' => "$modelTable.content"
-			];
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search[ $searchCol ];
+		}
+		else if( isset( $keywordsCol ) ) {
 
-			$config[ 'search-col' ] = $search[ $searchCol ];
+			$config[ 'search-col' ] = $config[ 'search-col' ] ?? $search;
 		}
 
 		// Reporting --------
 
 		$config[ 'report-col' ]	= [
-			'name' => "$modelTable.name", 'title' => "$modelTable.title", 'desc' => "$modelTable.description",
-			'content' => "$modelTable.content", 'active' => "$modelTable.active",
-			'order' => "$modelTable.order", 'dtype' => "$modelTable.discountType",
-			'price' => "$modelTable.price", 'discount' => "$modelTable.discount", 'total' => "$modelTable.total",
-			'track' => "$modelTable.track", 'stock' => "$modelTable.stock", 'sold' => "$modelTable.sold"
+			'name' => "$modelTable.name",
+			'title' => "$modelTable.title",
+			'desc' => "$modelTable.description",
+			'content' => "$modelTable.content",
+			'active' => "$modelTable.active",
+			'order' => "$modelTable.order",
+			'dtype' => "$modelTable.discountType",
+			'price' => "$modelTable.price",
+			'discount' => "$modelTable.discount",
+			'total' => "$modelTable.total",
+			'inventory' => "$modelTable.inventory",
+			'stock' => "$modelTable.stock",
+			'sold' => "$modelTable.sold"
 		];
 
 		// Result -----------
@@ -255,6 +275,7 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Resour
 		// Save Files
 		$this->fileService->saveFiles( $model, [ 'bannerId' => $banner, 'videoId' => $video ] );
 
+		// Refresh Price
 		$model->total = $model->getTotalPrice();
 
 		return parent::create( $model, $config );
@@ -271,12 +292,13 @@ class ProductVariationService extends \cmsgears\core\common\services\base\Resour
 			'templateId', 'productId', 'addonId', 'unitId', 'bannerId', 'videoId',
 			'name', 'type', 'icon', 'title', 'description', 'content',
 			'order', 'discountType', 'price', 'discount', 'total', 'quantity', 'free',
-			'track', 'stock', 'sold', 'warn', 'active', 'startDate', 'endDate'
+			'inventory', 'stock', 'sold', 'warn', 'active', 'startDate', 'endDate'
 		];
 
 		// Save Files
 		$this->fileService->saveFiles( $model, [ 'bannerId' => $banner, 'videoId' => $video ] );
 
+		// Refresh Price
 		$model->total = $model->getTotalPrice();
 
 		return parent::update( $model, [
