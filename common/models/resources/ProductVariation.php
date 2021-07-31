@@ -330,6 +330,24 @@ class ProductVariation extends \cmsgears\core\common\models\base\Resource implem
 				$this->order = 0;
 			}
 
+			// Default Type
+			if( empty( $this->type ) ) {
+
+				$this->type = self::TYPE_BASE;
+			}
+
+			// Default Active
+			if( empty( $this->active ) ) {
+
+				$this->active = true;
+			}
+
+			// Default Inventory
+			if( empty( $this->inventory ) ) {
+
+				$this->inventory = false;
+			}
+
 			$product = $this->product;
 
 			if( empty( $this->startDate ) && isset( $product->startDate ) ) {
@@ -588,6 +606,26 @@ class ProductVariation extends \cmsgears\core\common\models\base\Resource implem
 		}
 
 		return round( $total, $precision );
+	}
+
+	public function isAddOn() {
+
+		return $this->type == self::TYPE_ADD_ON;
+	}
+
+	public function isBase() {
+
+		return $this->type == self::TYPE_BASE;
+	}
+
+	public function isDiscount() {
+
+		return $this->type == self::TYPE_DISCOUNT;
+	}
+
+	public function isQuantity() {
+
+		return $this->type == self::TYPE_QUANTITY;
 	}
 
 	// Static Methods ----------------------------------------------
