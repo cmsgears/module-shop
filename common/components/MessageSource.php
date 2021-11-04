@@ -12,15 +12,13 @@ namespace cmsgears\shop\common\components;
 // CMG Imports
 use cmsgears\shop\common\config\ShopGlobal;
 
-use cmsgears\core\common\base\MessageSource as BaseMessageSource;
-
 /**
  * MessageSource stores and provide the messages and message templates available in
  * Shop Module.
  *
  * @since 1.0.0
  */
-class MessageSource extends BaseMessageSource {
+class MessageSource extends \cmsgears\core\common\base\MessageSource {
 
 	// Global -----------------
 
@@ -33,6 +31,7 @@ class MessageSource extends BaseMessageSource {
 		ShopGlobal::FIELD_PRODUCT => 'Product',
 		ShopGlobal::FIELD_ADDON_PRODUCT => 'Addon Product',
 		ShopGlobal::FIELD_PRODUCT_VARIATION => 'Product Variation',
+		ShopGlobal::FIELD_OFFER => 'Offer',
 		ShopGlobal::FIELD_SHOP => 'Shop'
 	];
 

@@ -12,14 +12,12 @@ namespace cmsgears\shop\common\services\resources;
 // CMG Imports
 use cmsgears\shop\common\services\interfaces\resources\IProductMetaService;
 
-use cmsgears\core\common\services\base\MetaService;
-
 /**
  * ProductMetaService provide service methods of product meta.
  *
  * @since 1.0.0
  */
-class ProductMetaService extends MetaService implements IProductMetaService {
+class ProductMetaService extends \cmsgears\core\common\services\base\MetaService implements IProductMetaService {
 
 	// Variables ---------------------------------------------------
 

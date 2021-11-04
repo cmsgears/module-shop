@@ -8,7 +8,9 @@
  */
 
 // CMG Imports
-use cmsgears\core\common\models\resources\Stats;
+use cmsgears\core\common\config\CoreGlobal;
+
+use cmsgears\core\common\models\resources\ModelStats;
 use cmsgears\shop\common\models\base\ShopTables;
 
 /**
@@ -39,24 +41,24 @@ class m161015_050912_shop_stats extends \cmsgears\core\common\base\Migration {
 
 	private function insertTables() {
 
-		$columns = [ 'tableName', 'type', 'count' ];
+		$columns = [ 'parentId', 'parentType', 'name', 'type', 'count' ];
 
 		$tableData = [
-			[ $this->prefix . 'shop_product', 'rows', 0 ],
-			[ $this->prefix . 'shop_product_meta', 'rows', 0 ],
-			[ $this->prefix . 'shop_product_follower', 'rows', 0 ],
-			[ $this->prefix . 'shop_variation', 'rows', 0 ]
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'shop_product', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'shop_product_meta', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'shop_product_follower', 'rows', 0 ],
+			[ 1, CoreGlobal::TYPE_SITE, $this->prefix . 'shop_variation', 'rows', 0 ]
 		];
 
-		$this->batchInsert( $this->prefix . 'core_stats', $columns, $tableData );
+		$this->batchInsert( $this->prefix . 'core_model_stats', $columns, $tableData );
 	}
 
 	public function down() {
 
-		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_PRODUCT ) );
-		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_META ) );
-		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_FOLLOWER ) );
-		Stats::deleteByTableName( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_VARIATION ) );
+		ModelStats::deleteByTable( ShopTables::getTableName( ShopTables::TABLE_PRODUCT ) );
+		ModelStats::deleteByTable( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_META ) );
+		ModelStats::deleteByTable( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_FOLLOWER ) );
+		ModelStats::deleteByTable( ShopTables::getTableName( ShopTables::TABLE_PRODUCT_VARIATION ) );
 	}
 
 }

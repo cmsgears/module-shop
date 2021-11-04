@@ -20,7 +20,6 @@ use cmsgears\core\common\models\interfaces\resources\ITemplate;
 use cmsgears\core\common\models\interfaces\resources\IVisual;
 use cmsgears\core\common\models\interfaces\mappers\IGallery;
 
-use cmsgears\core\common\models\base\Entity;
 use cmsgears\cart\common\models\resources\Uom;
 use cmsgears\shop\common\models\base\ShopTables;
 use cmsgears\shop\common\models\entities\Product;
@@ -34,6 +33,8 @@ use cmsgears\core\common\models\traits\resources\VisualTrait;
 use cmsgears\core\common\models\traits\mappers\GalleryTrait;
 
 use cmsgears\core\common\behaviors\AuthorBehavior;
+
+use cmsgears\core\common\utilities\DateUtil;
 
 /**
  * ProductVariation provide options to alter primary product by features and discounts.
@@ -60,7 +61,7 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  * @property float $total
  * @property float $quantity
  * @property float $free
- * @property boolean $track
+ * @property boolean $inventory
  * @property float $stock
  * @property float $sold
  * @property float $warn
@@ -77,7 +78,8 @@ use cmsgears\core\common\behaviors\AuthorBehavior;
  *
  * @since 1.0.0
  */
-class ProductVariation extends Entity implements IAuthor, IContent, IData, IGallery, IGridCache, ITemplate, IVisual {
+class ProductVariation extends \cmsgears\core\common\models\base\Resource implements IAuthor, IContent,
+	IData, IGallery, IGridCache, ITemplate, IVisual {
 
 	// Variables ---------------------------------------------------
 
@@ -94,7 +96,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 	 * <p>It will be purchased in multiples of base product.</p>
 	 * <p>Buyer can select multiple <em class="bold">Add-On Variation</em>.</p>
 	 */
-	const TYPE_ADD_ON	=   0;
+	const TYPE_ADD_ON = 0;
 
 	/**
 	 * The base variation alters the primary product in look and feel. It might also provide
@@ -105,7 +107,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 	 * <p>It also gets applied to the Add-On variation.</p>
 	 * <p>Buyer can select only one <em class="bold">Base Variation</em>, though multiple variations can be active at same time.</p>
 	 */
-	const TYPE_BASE		= 200;
+	const TYPE_BASE = 200;
 
 	/**
 	 * The discount variation adds additional discount on top of product discount. It might last
@@ -139,6 +141,27 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 		self::TYPE_BASE => 'Base',
 		self::TYPE_DISCOUNT => 'Discount',
 		self::TYPE_QUANTITY => 'Quantity'
+	];
+
+	public static $revTypeMap = [
+		'Add On' => self::TYPE_ADD_ON,
+		'Base' => self::TYPE_BASE,
+		'Discount' => self::TYPE_DISCOUNT,
+		'Quantity' => self::TYPE_QUANTITY
+	];
+
+	public static $urlRevTypeMap = [
+		'addon' => self::TYPE_ADD_ON,
+		'base' => self::TYPE_BASE,
+		'discount' => self::TYPE_DISCOUNT,
+		'quantity' => self::TYPE_QUANTITY
+	];
+
+	public static $filterTypeMap = [
+		'addon' => 'Add On',
+		'base' => 'Base',
+		'discount' => 'Discount',
+		'quantity' => 'Quantity'
 	];
 
 	public static $discountTypeMap = [
@@ -208,18 +231,18 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
         $rules = [
 			// Required, Safe
 			[ [ 'productId', 'name', 'type' ], 'required' ],
-			[ [ 'id', 'content', 'data', 'gridCache' ], 'safe' ],
+			[ [ 'id', 'content' ], 'safe' ],
 			// Text Limit
 			[ 'icon', 'string', 'min' => 1, 'max' => Yii::$app->core->largeText ],
 			[ 'name', 'string', 'min' => 1, 'max' => Yii::$app->core->xLargeText ],
 			[ 'title', 'string', 'min' => 1, 'max' => Yii::$app->core->xxxLargeText ],
 			[ 'description', 'string', 'min' => 1, 'max' => Yii::$app->core->xtraLargeText ],
 			// Other
-			[ [ 'type', 'discountType' ], 'number', 'integerOnly' => true, 'min' => 0 ],
-			[ [ 'price', 'discount', 'total', 'quantity', 'free', 'track', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
-			[ [ 'active', 'gridCacheValid' ], 'boolean' ],
-			[ 'unitId', 'number', 'integerOnly' => true, 'min' => 0, 'tooSmall' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_SELECT ) ],
-			[ [ 'templateId', 'productId', 'addonId', 'bannerId', 'videoId', 'galleryId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
+			[ [ 'type', 'order', 'discountType' ], 'number', 'integerOnly' => true, 'min' => 0 ],
+			[ [ 'price', 'discount', 'total', 'quantity', 'stock', 'sold', 'warn' ], 'number', 'min' => 0 ],
+			[ [ 'free', 'inventory', 'active', 'gridCacheValid' ], 'boolean' ],
+			[ [ 'templateId', 'unitId' ], 'number', 'integerOnly' => true, 'min' => 0, 'tooSmall' => Yii::$app->coreMessage->getMessage( CoreGlobal::ERROR_SELECT ) ],
+			[ [ 'productId', 'addonId', 'bannerId', 'videoId', 'galleryId', 'createdBy', 'modifiedBy' ], 'number', 'integerOnly' => true, 'min' => 1 ],
 			[ [ 'createdAt', 'modifiedAt', 'gridCachedAt' ], 'date', 'format' => Yii::$app->formatter->datetimeFormat ],
 			[ [ 'startDate', 'endDate' ], 'date' ],
 			[ 'endDate', 'compareDate', 'compareAttribute' => 'startDate', 'operator' => '>=', 'type' => 'datetime', 'message' => 'End Date must be greater than or equal to Start Date.' ],
@@ -228,7 +251,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 			[ 'addonId', 'validateAddon' ],
 			[ 'discount', 'validateDiscount' ],
 			[ 'type', 'validateType' ],
-			[ 'track', 'validateTrack' ]
+			[ 'inventory', 'validateInventory' ]
 		];
 
 		// Trim Text
@@ -267,7 +290,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 			'total' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_TOTAL ),
 			'quantity' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY ),
 			'free' => 'Free Units',
-			'track' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_TRACK ),
+			'inventory' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_INVENTORY ),
 			'stock' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_STOCK ),
 			'sold' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_SOLD ),
 			'warn' => Yii::$app->cartMessage->getMessage( CartGlobal::FIELD_QUANTITY_WARN ),
@@ -289,14 +312,40 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 
 		if( parent::beforeSave( $insert ) ) {
 
-			if( $this->unitId <= 0 ) {
+			// Default Template
+			if( empty( $this->templateId ) || $this->templateId <= 0 ) {
+
+				$this->templateId = null;
+			}
+
+			// Default Unit
+			if( empty( $this->unitId ) || $this->unitId <= 0 ) {
 
 				$this->unitId = null;
 			}
 
-			if( $this->order < 0 ) {
+			// Default Order - zero
+			if( empty( $this->order ) || $this->order <= 0 ) {
 
 				$this->order = 0;
+			}
+
+			// Default Type
+			if( empty( $this->type ) ) {
+
+				$this->type = self::TYPE_BASE;
+			}
+
+			// Default Active
+			if( empty( $this->active ) ) {
+
+				$this->active = true;
+			}
+
+			// Default Inventory
+			if( empty( $this->inventory ) ) {
+
+				$this->inventory = false;
 			}
 
 			$product = $this->product;
@@ -311,7 +360,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 				$this->endDate = $product->endDate;
 			}
 
-			if($this->type == self::TYPE_DISCOUNT ) {
+			if( $this->type == self::TYPE_DISCOUNT ) {
 
 				$this->price = 0;
 			}
@@ -342,13 +391,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 
 			if( isset( $product->startDate ) && isset( $this->startDate ) ) {
 
-				// Product
-				$pStartDate = strtotime( $product->startDate );
-
-				// Variation
-				$startDate = strtotime( $this->startDate );
-
-				if( $startDate < $pStartDate ) {
+				if( DateUtil::lessThan( $product->startDate, $this->startDate ) ) {
 
 					$this->addError( 'startDate', 'Variation start date must be greater than or equal to product start date.' );
 				}
@@ -370,13 +413,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 
 			if( isset( $product->endDate ) && isset( $this->endDate ) ) {
 
-				// Product
-				$pEndDate = strtotime( $product->endDate );
-
-				// Variation
-				$endDate = strtotime( $this->endDate );
-
-				if( $endDate > $pEndDate ) {
+				if( DateUtil::greaterThan( $product->endDate, $this->endDate ) ) {
 
 					$this->addError( 'endDate', 'Variation end date must be less than or equal to product end date.' );
 				}
@@ -403,7 +440,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 
 			if( in_array( $this->type, [ self::TYPE_ADD_ON, self::TYPE_BASE ] ) && $total < 0 || $total > ( $this->price * $this->quantity ) ) {
 
-				$this->addError( 'discount', 'Please update discount value to have valid price.' );
+				$this->addError( 'discount', 'Update discount value to have valid price.' );
 			}
 		}
 	}
@@ -449,20 +486,20 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 		}
 	}
 
-	public function validateTrack( $attribute, $param ) {
+	public function validateInventory( $attribute, $param ) {
 
 		if( !$this->hasErrors() ) {
 
-			if( $this->stock ) {
+			if( $this->inventory ) {
 
 				if( empty( $this->stock ) ) {
 
-					$this->addError( 'stock', 'Stock Quantity cannot be blank for maintaining stock.' );
+					$this->addError( 'stock', 'Stock Quantity cannot be blank for inventory.' );
 				}
 
 				if( empty( $this->warn ) ) {
 
-					$this->addError( 'warn', 'Warn Quantity cannot be blank for maintaining stock.' );
+					$this->addError( 'warn', 'Warn Quantity cannot be blank for inventory.' );
 				}
 			}
 		}
@@ -495,7 +532,7 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 	}
 
 	/**
-	 * Returns addon product associated with the variation.
+	 * Returns add-on product associated with the variation.
 	 *
 	 * @return \cmsgears\shop\common\models\entities\Product
 	 */
@@ -506,6 +543,12 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 		return $this->hasOne( Product::class, [ 'id' => 'addonId' ] )->from( "$productTable as addon" );
 	}
 
+	/**
+	 * Check whether the variation belongs to the given product.
+	 *
+	 * @param \cmsgears\shop\common\models\entities\Product $product
+	 * @return boolean
+	 */
 	public function belongsToProduct( $product ) {
 
 		return $this->productId == $product->id;
@@ -536,9 +579,9 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 		return Yii::$app->formatter->asBoolean( $this->active );
 	}
 
-	public function getTrackStr() {
+	public function getInventoryStr() {
 
-		return Yii::$app->formatter->asBoolean( $this->track );
+		return Yii::$app->formatter->asBoolean( $this->inventory );
 	}
 
 	public function getTotalPrice( $precision = 2 ) {
@@ -563,6 +606,26 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 		}
 
 		return round( $total, $precision );
+	}
+
+	public function isAddOn() {
+
+		return $this->type == self::TYPE_ADD_ON;
+	}
+
+	public function isBase() {
+
+		return $this->type == self::TYPE_BASE;
+	}
+
+	public function isDiscount() {
+
+		return $this->type == self::TYPE_DISCOUNT;
+	}
+
+	public function isQuantity() {
+
+		return $this->type == self::TYPE_QUANTITY;
 	}
 
 	// Static Methods ----------------------------------------------
@@ -590,7 +653,9 @@ class ProductVariation extends Entity implements IAuthor, IContent, IData, IGall
 	 */
 	public static function queryWithHasOne( $config = [] ) {
 
-		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [ 'template', 'product', 'addon', 'banner', 'video', 'gallery', 'unit', 'creator', 'modifier' ];
+		$relations = isset( $config[ 'relations' ] ) ? $config[ 'relations' ] : [
+			'template', 'product', 'addon', 'banner', 'video', 'gallery', 'unit'
+		];
 
 		$config[ 'relations' ] = $relations;
 
